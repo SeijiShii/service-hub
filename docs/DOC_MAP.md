@@ -2,7 +2,7 @@
 
 **最終更新**: 2026-05-26 07:58 (+09:00)
 **最新コマンド**: /flow:concept (D20260526_001_concept_initial)
-**統計**: 機能フォルダ 5 / 横断フォルダ 4 / 改修 0 / バグ修正 0 / クレーム 0 / Open 論点 2
+**統計**: 機能フォルダ 5 / 横断フォルダ 4 / 改修 0 / バグ修正 0 / クレーム 0 / Open 論点 3
 
 > このファイルは AI 用エントリポイント。目的別に「どこから読むか」を示す。
 
@@ -15,7 +15,7 @@
 | 次に何をすべきか判断する | `./SCENARIO.md` (§5 カーソル) | `./AI_LOG/INDEX.md` | `/flow:auto` 起動 |
 | 特定機能を理解する | `./<feature>/README.md` | `./<feature>/INDEX.md` | feature 一覧は §2 |
 | 設計判断の経緯を辿る | `./AI_LOG/INDEX.md` | 該当セッションファイル | decision_id 索引 |
-| 未決論点を見る | `./concept.md §8` | `./AI_LOG/INDEX.md` Open 論点 | 2 件 |
+| 未決論点を見る | `./concept.md §8` | `./AI_LOG/INDEX.md` Open 論点 | 3 件 |
 | 実装前準備 | `./PREREQUISITES.md` | — | API トークン一覧 |
 
 ## 1. プロダクト全体
@@ -43,7 +43,7 @@
 
 ## 4. 設計判断の経緯
 - AI_LOG インデックス: [./AI_LOG/INDEX.md](./AI_LOG/INDEX.md)
-- Open 論点: 2 件（concept §8 と同期）
+- Open 論点: 3 件（concept §8 と同期）
 
 ## 5. 観点・選好データ（PJ 外部参照）
 - 観点 SoT: `~/.claude/flow-data/perspectives.md`（O25 秘密管理 / O29 公開 / O32 BaaS 分離 が特に関連）

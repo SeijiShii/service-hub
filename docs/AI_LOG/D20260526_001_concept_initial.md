@@ -145,4 +145,55 @@
   context: |
     エンドユーザー非公開・単一ユーザーのため、外部AI・行動分析・法務書類・公開周知は不要。
     エラー監視は Sentry を §4.3 監視で採用、コスト追跡は §4.6 最小構成。§9/§4.8 に不要明記。
+
+- id: D20260526-007
+  timestamp: 2026-05-26T08:00:00+09:00
+  command: /flow:concept
+  phase: Step 7.7 / Git 自動コミット
+  question: git init してコミットするか
+  options:
+    - git init + コミット (recommended)
+    - git init のみ
+    - git 管理しない
+  recommended: git init + コミット
+  chosen: git init + コミット
+  chosen_type: explicit-choice
+  depends_on: []
+  context: |
+    新規リポを git init し docs 一式を 1 commit (95c1cd2、branch main)。
+    .env/.env.local は .gitignore で除外、.env.example のみ追跡 (秘密混入なし確認済)。push は手動。
+
+- id: D20260526-008
+  timestamp: 2026-05-26T08:01:00+09:00
+  command: /flow:concept
+  phase: Step 7.5 / preferences 更新
+  question: 今回の設計を preferences.md に反映するか
+  options:
+    - 更新する (recommended)
+    - 更新しない
+  recommended: 更新する
+  chosen: 更新する
+  chosen_type: explicit-choice
+  depends_on: []
+  context: |
+    学習元 PJ 数 1→2。Neon スタック (Vercel Functions/Neon/Clerk/Drizzle) を正式計上開始、
+    React/Vercel/Sentry/CI/flow ドキュメントを採用 2 に、新カテゴリ (UI/データ取得/チャート/スケジューラ) 追加。
+
+- id: D20260526-009
+  timestamp: 2026-05-26T08:05:00+09:00
+  command: /flow:concept
+  phase: 追加指示 / service-info 契約のクロスサービス波及
+  question: アプリ層指標をどう取り、契約をどう全サービスに展開するか
+  options:
+    - 各サービスが標準 service-info エンドポイントを公開し HUB が pull + 契約は service-hub SoT + 確定後 hana-memo retrofit + flow 標準化 (recommended)
+  recommended: 上記
+  chosen: 各サービスが標準 service-info エンドポイントを公開し HUB が pull / 契約 SoT=service-hub / 確定後 hana-memo retrofit + flow 系コマンド標準化
+  chosen_type: explicit-choice
+  depends_on: [D20260526-002, D20260526-004]
+  context: |
+    seiji 追加指示「サービス情報取得 API の仕様が決まったら第一弾マイクロサービス(hana-memo)にも反映」
+    「flow 系コマンドにもその連携を含める」。PaaS API では取れないアプリ層指標を各サービスの
+    標準エンドポイント経由で HUB が pull (push ではない=D002 整合)。契約は [論点-003] で確定予定、
+    確定後に (1) hana-memo retrofit (/flow:revise)、(2) perspectives 観点登録で flow 全体に標準化。
+    flow への具体的反映先・方法は次の AskUserQuestion で確認。
 ```
