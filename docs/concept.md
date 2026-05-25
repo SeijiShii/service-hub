@@ -121,6 +121,19 @@ services.toml            # サービスレジストリ SoT (Git 管理)
 | 運用・監視 | collection_runs テーブルで pull の成否を記録。pull 失敗・無料枠超過は seiji に通知 | 「観測ツール自体が黙って壊れる」を防ぐ |
 | データ規模 | サービス数 〜数十、スナップショットは日次/時次 × プロバイダ × メトリクスで低volume。Neon 無料枠で十分 | 単一ユーザー・低頻度 pull |
 
+<!-- auto-generated-start -->
+### 3.X セキュリティ要件（/flow:secure L1 由来、2026-05-26）
+
+> `docs/SECURITY_REVIEW_20260526.md` のレビュー結果を要件として明文化。本 PJ の最重要脅威は**複数 PaaS トークンの集中**（O25）。
+
+- **O25 秘密情報（最優先）**: 全 PaaS トークンは **read-only スコープ**で発行。秘密は `.env` / Vercel Secrets のみ、リポジトリに置かない。`.gitignore` で `.env*.local` 除外、pre-commit で gitleaks/detect-secrets を推奨。
+- **O23/authn**: HUB 全ルートを Clerk で **seiji 単一アカウントに限定**（未認証は全ブロック）。単一ユーザーのためリソース別 RBAC/RLS は不要。
+- **O24 入力検証（実装時）**: 外向き fetch（サービス URL ping / プロバイダ API）に **タイムアウト + リダイレクト/内部アドレス抑止**。プロバイダ JSON は安全パース。**`usage_snapshots.raw_json` にトークン/シークレットを保存しない**（スクラブ必須）。→ [論点-004]
+- **O27 外向きレート遵守**: プロバイダ API の**レート制限を厳守**し、結果は DB スナップショットにキャッシュ（画面から直叩きしない）。
+- **service-info 共有シークレット（O48/[論点-003]）**: HUB↔サービス間の共有シークレットは**各サービスごとに env 保持**。Git 管理の `services.toml` には**絶対に書かない**（非機密記述子のみ）。
+- **O28 依存 CVE**: 実装後に `/flow:secure --phase=deps` + Dependabot を CI に組み込み（§10.5）。
+<!-- auto-generated-end -->
+
 ## 4. 全体アーキテクチャ
 
 ```
@@ -361,6 +374,21 @@ service-hub が定義する service-info エンドポイント契約（[論点-0
 - **判断期限**: docs/_shared/providers/ + docs/_shared/types/ の機能設計時（/flow:feature）
 - **担当**: seiji
 
+### [論点-004] [SEC-002] O24 入力検証（SSRF / 安全パース / raw_json スクラブ）
+- **status**: `open`
+- **status 履歴**: 2026-05-26 08:35 open（/flow:secure --phase=design 由来）
+- **観点 ID**: O24_input_validation
+- **severity**: Medium
+- **影響範囲**: docs/_shared/providers/, docs/collection/, §5.1 usage_snapshots.raw_json
+- **検出根拠**: HUB が `services.toml` 由来のサービス URL を ping + プロバイダ API を叩く（外向き fetch）。攻撃面は単一ユーザー + Git 管理 config で小さいが、堅牢性のため実装時対応が望ましい。
+- **詰めるべき問い**:
+  1. 外向き fetch にタイムアウト・リダイレクト追従制限・内部アドレス fetch 抑止を入れるか。
+  2. `raw_json` 保存時に秘密フィールドをスクラブする方式（O25 連動）。
+- **推奨**: 採用。`registry` のスキーマ検証（Zod 等）+ `providers` の fetch 制限 + raw_json スクラブを実装時に組み込む。
+- **判断期限**: docs/_shared/providers/ + docs/collection/ の機能設計/実装時
+- **担当**: seiji
+- **L1 レポート**: `./SECURITY_REVIEW_20260526.md#sec-002`
+
 ## 9. 法務・コンプライアンス書類
 **個人・内部ツール / 非公開のため法務書類不要（2026-05-26 判断）**。エンドユーザーの個人情報を扱わない（seiji 自身のインフラ運用データと read-only プロバイダトークンのみ）。
 
@@ -408,3 +436,4 @@ staging_exclude_paths: []
 |---|---|---|
 | 2026-05-26 | 初版作成（役割/収集方式/スコープ/レジストリ SoT 確定、機能・横断フォルダ設計） | /flow:concept |
 | 2026-05-26 | service-info 契約のクロスサービス波及を追加（§1.2/§6.1/§6/§8 論点-003）。各サービスが標準 service-info エンドポイントを公開し HUB が pull。契約 SoT=service-hub、確定後に hana-memo retrofit + flow 標準化（perspectives O48 / charter §0.2 登録済） | /flow:concept (seiji 追加指示) |
+| 2026-05-26 | /flow:secure L1 設計レビュー反映。§3.X セキュリティ要件 auto-add（O25 トークン集中=最重要、対応済を明文化）+ §8 [論点-004]（O24 入力検証 Medium）。新規 Critical/High なし | /flow:secure --phase=design (auto P3) |
