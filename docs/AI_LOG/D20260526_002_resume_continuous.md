@@ -4,8 +4,8 @@
 **コマンド**: /flow:auto (continuous loop)
 **対象**: PJ next-step ルーティング
 **実行者**: Claude (Opus 4.7)
-**状態**: 進行中
-**含まれる decision**: D20260526-010 〜 (採番中)
+**状態**: 完了 (Phase1.5→2 境界で pause、再開は /flow:auto)
+**含まれる decision**: D20260526-010, 014, 017 (auto loop の反復記録)
 **ファイル**: `D20260526_002_resume_continuous.md`
 
 ---
@@ -51,3 +51,20 @@
     反復1 で secure 完了 → Phase1 gate 充足 (concept/secure/estimate)。Phase1.5 = design。
     P4.4 Design gate (a): design-system.md 不在 → /flow:design dispatch。
     greenfield (scaffold なし) のため SoT 生成 + デザイン方向 Class C 承認まで。承認は loop の 1-decision pause。
+
+- id: D20260526-017
+  timestamp: 2026-05-26T08:50:00+09:00
+  command: /flow:auto
+  phase: Step 3 / 反復3 評価 + phase-boundary pause
+  question: 反復3 の次アクション
+  options:
+    - /flow:feature (_shared/types から、Phase2) (recommended)
+  recommended: /flow:feature
+  chosen: /flow:feature (次回) — Phase1.5→2 境界で loop を意図的に pause
+  chosen_type: auto-recommended
+  depends_on: [D20260526-014]
+  context: |
+    Phase1(concept/estimate/secure) + Phase1.5(design SoT) 完了。次は Phase2 機能設計 (/flow:feature)。
+    foundation ブロック完了の明確な節目。Phase2 は feature×9 → spec-review → tdd(scaffold+実装) → e2e の
+    大ブロックで 1 ターン自動生成は不適切なため、ここで loop を pause しユーザーにペースを委ねる。
+    再開は /flow:auto 再 invoke (Resume Contract、marker クリア済)。
