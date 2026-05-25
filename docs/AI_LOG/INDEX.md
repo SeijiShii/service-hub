@@ -1,8 +1,8 @@
 # AI_LOG インデックス — service-hub
 
-**最終更新**: 2026-05-26 08:40 (+09:00)
-**総セッション数**: 3
-**総 decision 数**: 13
+**最終更新**: 2026-05-26 08:48 (+09:00)
+**総セッション数**: 4
+**総 decision 数**: 16
 
 > セッションごとに 1 ファイル、append-only、過去ファイルは削除・編集禁止。
 > 人間向けサマリは `../concept.md` §7 決定事項ログ を参照。
@@ -12,13 +12,17 @@
 ## セッション一覧（新しい順）
 | ファイル | 実行日 | コマンド | 対象 | decision 範囲 | 状態 |
 |---|---|---|---|---|---|
+| [D20260526_004_design_system.md](./D20260526_004_design_system.md) | 2026-05-26 | /flow:design | system (NEW) | D20260526-015〜016 | 完了 |
 | [D20260526_003_secure_concept.md](./D20260526_003_secure_concept.md) | 2026-05-26 | /flow:secure | concept (design) | D20260526-011〜013 | 完了 |
-| [D20260526_002_resume_continuous.md](./D20260526_002_resume_continuous.md) | 2026-05-26 | /flow:auto | continuous | D20260526-010〜 | 進行中 |
+| [D20260526_002_resume_continuous.md](./D20260526_002_resume_continuous.md) | 2026-05-26 | /flow:auto | continuous | D20260526-010,014〜 | 進行中 |
 | [D20260526_001_concept_initial.md](./D20260526_001_concept_initial.md) | 2026-05-26 | /flow:concept | initial | D20260526-001〜009 | 完了 |
 
 ## decision_id 索引（grep 用、新しい順）
 | ID | command | phase | chosen (短縮) | type | ファイル |
 |---|---|---|---|---|---|
+| D20260526-016 | /flow:design | SoT 生成 | 状態色主役/mono/lucide | auto-recommended | D20260526_004_design_system.md |
+| D20260526-015 | /flow:design | 方向 (Class C) | コックピット (dark 主体) | explicit-choice | D20260526_004_design_system.md |
+| D20260526-014 | /flow:auto | 反復2 auto-pick | /flow:design (Design gate) | auto-recommended | D20260526_002_resume_continuous.md |
 | D20260526-013 | /flow:secure | [SEC-002] O24 | Medium → §8 論点-004 open | auto-recommended | D20260526_003_secure_concept.md |
 | D20260526-012 | /flow:secure | [SEC-001] O25 | accepted-as-requirement (§3.X) | auto-recommended | D20260526_003_secure_concept.md |
 | D20260526-011 | /flow:secure | PJ性質+観点フィルタ | 適用 O24/O25、SKIP O23/26/27/28 | auto-recommended | D20260526_003_secure_concept.md |

@@ -35,3 +35,19 @@
     concept §3 NFR で最重要=複数PaaSトークンの集中リスク(O25)。estimate 1回目は済。
     → Phase1 gate を埋める secure を dispatch。
 ```
+
+- id: D20260526-014
+  timestamp: 2026-05-26T08:42:00+09:00
+  command: /flow:auto
+  phase: Step 3 / 反復2 auto-pick
+  question: 反復2 の次アクション
+  options:
+    - /flow:design (P4.4 Design gate a) (recommended)
+  recommended: /flow:design
+  chosen: /flow:design
+  chosen_type: auto-recommended
+  depends_on: [D20260526-010]
+  context: |
+    反復1 で secure 完了 → Phase1 gate 充足 (concept/secure/estimate)。Phase1.5 = design。
+    P4.4 Design gate (a): design-system.md 不在 → /flow:design dispatch。
+    greenfield (scaffold なし) のため SoT 生成 + デザイン方向 Class C 承認まで。承認は loop の 1-decision pause。

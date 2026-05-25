@@ -52,12 +52,13 @@ flow で連発するマイクロサービス群の稼働/利用/コスト/障害
 ## 5. 現在地カーソル
 
 <!-- AUTO-GENERATED:BEGIN scenario-cursor -->
-- 現在フェーズ: Phase 1 (概念設計)
-- 進行中ターゲット: concept (初版完了)
-- 最終更新セッション: D20260526_001_concept_initial
-- 最終更新時刻: 2026-05-26 07:58
-- 完了フェーズ: [Phase 1 (concept 初版)]
-- 次の推奨コマンド: /flow:estimate（全体見積） → /flow:secure --phase=design（トークン集中リスク） → /flow:feature（_shared/types から）
+- 現在フェーズ: Phase 1.5 (デザインシステム) 完了 → Phase 2 (機能設計) へ
+- 進行中ターゲット: なし (Phase 2 未着手)
+- 最終更新セッション: D20260526_004_design_system
+- 最終更新時刻: 2026-05-26 08:48
+- 完了フェーズ: [Phase 1 (concept/estimate/secure), Phase 1.5 (design SoT)]
+- 次の推奨コマンド: /flow:feature（_shared/types から優先度順） ※ feature 設計後は /flow:spec-review (P3.7) → /flow:tdd。視覚デザインレビュー (/flow:design --review-only) は scaffold 実装後の Design gate で実施
+- 備考: design 視覚レビュー(Step4)は scaffold 生成前のため保留 (Phase 3 で --review-only)
 <!-- AUTO-GENERATED:END scenario-cursor -->
 
 ## 6. 変更履歴

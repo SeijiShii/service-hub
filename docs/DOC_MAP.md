@@ -17,6 +17,7 @@
 | 設計判断の経緯を辿る | `./AI_LOG/INDEX.md` | 該当セッションファイル | decision_id 索引 |
 | 未決論点を見る | `./concept.md §8` | `./AI_LOG/INDEX.md` Open 論点 | 4 件 |
 | 脆弱性レビュー結果を見る | `./SECURITY_REVIEW_20260526.md` | `./concept.md §3.X` | L1 設計レビュー |
+| デザイン方針を見る | `./design/design-system.md` | — | コックピット(dark) SoT |
 | 実装前準備 | `./PREREQUISITES.md` | — | API トークン一覧 |
 
 ## 1. プロダクト全体
