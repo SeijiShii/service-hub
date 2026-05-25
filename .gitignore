@@ -1,0 +1,17 @@
+# secrets (perspectives O25 — 各 PaaS トークンが集中するため厳守)
+.env
+.env.local
+.env*.local
+
+# deps / build
+node_modules/
+dist/
+.vercel/
+.turbo/
+
+# exports / logs
+exports/
+*.log
+
+# OS
+.DS_Store
