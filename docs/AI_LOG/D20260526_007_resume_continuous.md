@@ -41,3 +41,18 @@
   context: |
     _shared/types に 001-003 完成 + 905 不在 + 101 不在 → P3.7 Spec-review gate 発火。
     tdd 着手前の設計妥当性レビュー。greenfield 1番目のため既存コード調査は最小、設計健全性中心。
+
+- id: D20260526-024
+  timestamp: 2026-05-26T09:09:00+09:00
+  command: /flow:auto
+  phase: Step 4.5 / 反復2完了 + 反復3
+  question: 反復3 の次アクション
+  options:
+    - /flow:feature _shared/db (P4 次の優先度1基盤) (recommended)
+  recommended: /flow:feature _shared/db
+  chosen: /flow:feature _shared/db
+  chosen_type: auto-recommended
+  depends_on: [D20260526-023]
+  context: |
+    反復2 で _shared/types の spec-review (905) 完了。P3.7 解消。次の未設計=優先度1の _shared/db
+    (types に依存、Neon スキーマ)。P4 次フェーズ継続。stop 条件未到達のため停止せず継続。

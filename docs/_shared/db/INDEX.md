@@ -1,7 +1,8 @@
 # _shared/db ドキュメントインデックス
 
 **最終更新**: 2026-05-26 07:58
-**生成元**: /flow:concept (初期化)
+**生成元**: /flow:concept → /flow:feature
+**状態**: 設計済 (実装待ち)
 
 <!-- auto-generated-start -->
 
@@ -11,7 +12,10 @@ Neon スキーマ・マイグレーション (usage_snapshots / alert_events / c
 ## ファイル一覧（番号順）
 | 番号 | ファイル | 種別 | 状態 | 最終更新 | 短い説明 |
 |---|---|---|---|---|---|
-| (まだ設計文書なし。`/flow:feature _shared/db` で生成) |
+| 001 | [001_db_SPEC.md](./001_db_SPEC.md) | SPEC | 確定 | 2026-05-26 | Neon スキーマ3表 + クエリ関数 |
+| 002 | [002_db_PLAN.md](./002_db_PLAN.md) | PLAN | 確定 | 2026-05-26 | src/db/ 実装計画 |
+| 003 | [003_db_UNIT_TEST.md](./003_db_UNIT_TEST.md) | UNIT_TEST | 確定 | 2026-05-26 | 結合テスト(実DB) |
+| 004 | (E2E スキップ: cross-cutting) | — | N/A | — | — |
 
 ## サブフォルダ（改修・バグ修正・クレーム判定履歴）
 | パス | 種別 | issue/slug | 状態 | 概要 | INDEX |
@@ -24,7 +28,8 @@ Neon スキーマ・マイグレーション (usage_snapshots / alert_events / c
 - 実装コード: `src/`（§1.4 参照）
 
 ## 機能性質タグ
-- (まだ未確定。`/flow:feature` 実行時に決定)
+- cross-cutting (永続化基盤、被依存=collection/dashboard/service-detail/alerts)
+- Open 論点: [論点-DB1] スナップショット保持期間
 
 <!-- auto-generated-end -->
 
