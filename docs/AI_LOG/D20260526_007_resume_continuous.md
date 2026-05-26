@@ -80,3 +80,12 @@
   context: |
     反復4 で _shared/providers 設計完了、論点-001/003/T1 解決。次の未設計=優先度2 の _shared/auth
     (Clerk 単一ユーザーゲート)。P4 継続、stop 条件未到達。
+
+- id: D20260526-027
+  timestamp: 2026-05-26T09:22:00+09:00
+  command: /flow:auto
+  phase: Step 4.5 / 反復5完了 + 反復6
+  chosen: /flow:feature registry
+  chosen_type: auto-recommended
+  depends_on: [D20260526-026]
+  context: 反復5 で _shared/auth 完了。横断基盤(優先度1-2)が全て設計済。次=機能フォルダ優先度2 の registry(services.toml ローダ)。P4 継続。
