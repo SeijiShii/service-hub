@@ -22,7 +22,7 @@
 ## サブフォルダ（改修・バグ修正・クレーム判定履歴）
 | パス | 種別 | issue/slug | 状態 | 概要 | INDEX |
 |---|---|---|---|---|---|
-| (なし。`/flow:revise` / `/flow:fix` / `/flow:claim` で生成) |
+| [revise_001_20260527_business-observability](./revise_001_20260527_business-observability/) | revise | 001 / business-observability | 設計中 (SPEC 完成) | ビジネス/収益観測 (採算 + 決済離脱率 + コストシミュレーション) を service-info 自己申告で追加 | [INDEX](./revise_001_20260527_business-observability/INDEX.md) |
 
 ## 関連
 - 親 concept: `../concept.md` §1.3.2 _shared/providers 行
