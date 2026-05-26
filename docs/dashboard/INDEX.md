@@ -2,7 +2,7 @@
 
 **最終更新**: 2026-05-26 07:58
 **生成元**: /flow:concept → /flow:feature
-**状態**: コア実装済 (unit GREEN、視覚は E2E/bootstrap)
+**状態**: 実装+E2E GREEN + 視覚レビュー green
 
 <!-- auto-generated-start -->
 
