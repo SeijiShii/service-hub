@@ -2,7 +2,7 @@
 
 **最終更新**: 2026-05-26 08:58
 **生成元**: /flow:concept (初期化) → /flow:feature (設計)
-**状態**: 設計済 (実装待ち)
+**状態**: 実装済 (unit GREEN)
 
 <!-- auto-generated-start -->
 
@@ -16,7 +16,9 @@
 | 002 | [002_types_PLAN.md](./002_types_PLAN.md) | PLAN | 確定 | 2026-05-26 | src/types/ 実装計画 (Phase1-2) |
 | 003 | [003_types_UNIT_TEST.md](./003_types_UNIT_TEST.md) | UNIT_TEST | 確定 | 2026-05-26 | 型ガード + 型レベルテスト |
 | 004 | (E2E スキップ: cross-cutting) | — | N/A | — | — |
-| 905 | [905_types_SPEC_REVIEW.md](./905_types_SPEC_REVIEW.md) | SPEC_REVIEW | 完了 | 2026-05-26 | 設計レビュー(spec-review)、tdd 着手可 |
+| 905 | [905_types_SPEC_REVIEW.md](./905_types_SPEC_REVIEW.md) | SPEC_REVIEW | 完了 | 2026-05-26 | 設計レビュー(spec-review) |
+| 101 | [101_types_IMPL_REPORT.md](./101_types_IMPL_REPORT.md) | IMPL_REPORT | 完了 | 2026-05-26 | src/types/ 実装 + scaffold |
+| 102 | [102_types_UNIT_TEST_REPORT.md](./102_types_UNIT_TEST_REPORT.md) | UNIT_TEST_REPORT | 完了 | 2026-05-26 | vitest 13 passed |
 
 ## サブフォルダ（改修・バグ修正・クレーム判定履歴）
 | パス | 種別 | issue/slug | 状態 | 概要 | INDEX |
