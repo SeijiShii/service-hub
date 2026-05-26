@@ -5,7 +5,8 @@ export type ProviderKind =
   | "neon"
   | "clerk"
   | "cloudflare"
-  | "sentry";
+  | "sentry"
+  | "service-info";
 
 export const PROVIDER_KINDS: readonly ProviderKind[] = [
   "ping",
@@ -14,6 +15,7 @@ export const PROVIDER_KINDS: readonly ProviderKind[] = [
   "clerk",
   "cloudflare",
   "sentry",
+  "service-info",
 ] as const;
 
 /** MVP で収集対象とするプロバイダ (Sentry / Cloudflare は Phase2)。 */
@@ -22,6 +24,7 @@ export const MVP_PROVIDERS: readonly ProviderKind[] = [
   "vercel",
   "neon",
   "clerk",
+  "service-info",
 ] as const;
 
 import type { ServiceDescriptor } from "./service.js";

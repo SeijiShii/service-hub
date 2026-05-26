@@ -2,7 +2,7 @@
 
 **最終更新**: 2026-05-26 07:58
 **生成元**: /flow:concept → /flow:feature
-**状態**: 設計済 (実装待ち)
+**状態**: 実装済 (unit GREEN, mock fetch)
 
 <!-- auto-generated-start -->
 
@@ -16,6 +16,8 @@
 | 002 | [002_providers_PLAN.md](./002_providers_PLAN.md) | PLAN | 確定 | 2026-05-26 | src/providers/ 実装計画(O35 injectable) |
 | 003 | [003_providers_UNIT_TEST.md](./003_providers_UNIT_TEST.md) | UNIT_TEST | 確定 | 2026-05-26 | mock fetch/fixture + SSRF/スクラブ |
 | 004 | (E2E スキップ: cross-cutting) | — | N/A | — | — |
+| 101 | [101_providers_IMPL_REPORT.md](./101_providers_IMPL_REPORT.md) | IMPL_REPORT | 完了 | 2026-05-26 | adapter群+safeFetch 実装 |
+| 102 | [102_providers_UNIT_TEST_REPORT.md](./102_providers_UNIT_TEST_REPORT.md) | UNIT_TEST_REPORT | 完了 | 2026-05-26 | mock 16 passed |
 
 ## サブフォルダ（改修・バグ修正・クレーム判定履歴）
 | パス | 種別 | issue/slug | 状態 | 概要 | INDEX |

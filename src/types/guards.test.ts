@@ -4,7 +4,7 @@ import { PROVIDER_KINDS, MVP_PROVIDERS } from "./provider.js";
 
 describe("isProviderKind", () => {
   it("true for all valid kinds (T-N1)", () => {
-    for (const k of ["ping", "vercel", "neon", "clerk", "cloudflare", "sentry"]) {
+    for (const k of ["ping", "vercel", "neon", "clerk", "cloudflare", "sentry", "service-info"]) {
       expect(isProviderKind(k)).toBe(true);
     }
   });
@@ -36,11 +36,11 @@ describe("isCollectionStatus", () => {
 
 describe("constant arrays", () => {
   it("PROVIDER_KINDS has 6 unique kinds (T-N4)", () => {
-    expect(PROVIDER_KINDS).toHaveLength(6);
-    expect(new Set(PROVIDER_KINDS).size).toBe(6);
+    expect(PROVIDER_KINDS).toHaveLength(7);
+    expect(new Set(PROVIDER_KINDS).size).toBe(7);
   });
   it("MVP_PROVIDERS excludes sentry/cloudflare (T-N5)", () => {
-    expect([...MVP_PROVIDERS]).toEqual(["ping", "vercel", "neon", "clerk"]);
+    expect([...MVP_PROVIDERS]).toEqual(["ping", "vercel", "neon", "clerk", "service-info"]);
     expect(MVP_PROVIDERS).not.toContain("sentry");
     expect(MVP_PROVIDERS).not.toContain("cloudflare");
   });

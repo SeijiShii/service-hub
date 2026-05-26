@@ -30,3 +30,15 @@
   context: |
     src/types/ 6 ファイル + tests 2 ファイル。scaffold(ts+vitest) install 済。
     101/102 レポート生成。秘密は env 参照名のみ(O25)、ServiceInfoResponse([論点-003])実装。
+
+- id: D20260526-035
+  timestamp: 2026-05-26T10:47:00+09:00
+  command: /flow:tdd
+  phase: 反復2 db
+  question: _shared/db 実装結果
+  chosen: GREEN (pglite 8 tests + 全21 passed + typecheck)
+  chosen_type: auto-recommended
+  depends_on: [D20260526-034]
+  context: |
+    Drizzle pg-core schema + queries。冪等upsert は excluded.* で更新（初回バグ修正）。
+    pglite で offline 統合テスト（DDL は client.exec simple protocol）。次=providers。
