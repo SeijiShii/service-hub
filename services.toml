@@ -1,0 +1,21 @@
+# service-hub レジストリ SoT (Git 管理、D20260526-004)
+# 秘密は env キー名のみ記載 (値は .env / Vercel Secrets、O25)。新サービス公開時に1エントリ追記 → commit → redeploy。
+
+[[service]]
+slug = "hana-memo"
+name = "hana-memo"
+url = "https://hana-memo.example.com"
+status = "active"
+[service.providers.vercel]
+projectId = "REPLACE_vercel_project_id"
+[service.providers.neon]
+projectId = "REPLACE_neon_project_id"
+[service.providers.clerk]
+appId = "REPLACE_clerk_app_id"
+secretEnv = "HANAMEMO_CLERK_SECRET"
+[service.serviceInfo]
+endpoint = "https://hana-memo.example.com/api/hub/service-info"
+secretEnv = "HANAMEMO_HUB_SECRET"
+[service.thresholds.db_storage_bytes]
+warnPct = 80
+limit = 536870912

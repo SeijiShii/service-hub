@@ -14,7 +14,7 @@
 ## 機能フォルダ（優先度順）
 | 優先度 | 基盤 | フォルダ | 状態 | 設計完了 | INDEX |
 |---|---|---|---|---|---|
-| 2 | ✅ | [registry](./registry/) | 設計済 | 2026-05-26 | [INDEX](./registry/INDEX.md) |
+| 2 | ✅ | [registry](./registry/) | 実装済 | 2026-05-26 | [INDEX](./registry/INDEX.md) |
 | 3 | ✅ | [collection](./collection/) | 設計済 | 2026-05-26 | [INDEX](./collection/INDEX.md) |
 | 4 | ❌ | [dashboard](./dashboard/) | 設計済 | 2026-05-26 | [INDEX](./dashboard/INDEX.md) |
 | 4 | ❌ | [service-detail](./service-detail/) | 設計済 | 2026-05-26 | [INDEX](./service-detail/INDEX.md) |

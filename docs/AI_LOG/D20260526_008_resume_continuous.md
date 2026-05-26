@@ -52,3 +52,13 @@
   chosen_type: auto-recommended
   depends_on: [D20260526-035]
   context: ProviderKind に service-info 追加(pull源正式化)。safeFetch SSRF/scrub。次=auth。
+
+- id: D20260526-037
+  timestamp: 2026-05-26T10:54:00+09:00
+  command: /flow:tdd
+  phase: 反復4 auth
+  question: _shared/auth 実装結果
+  chosen: コア GREEN (guard 7 + 全44)、glue は bootstrap
+  chosen_type: auto-recommended
+  depends_on: [D20260526-036]
+  context: guard.ts 純ロジック実装+テスト。Clerk/React 結線は dashboard bootstrap。次=registry。
