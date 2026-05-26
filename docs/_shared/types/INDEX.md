@@ -1,7 +1,8 @@
 # _shared/types ドキュメントインデックス
 
-**最終更新**: 2026-05-26 07:58
-**生成元**: /flow:concept (初期化)
+**最終更新**: 2026-05-26 08:58
+**生成元**: /flow:concept (初期化) → /flow:feature (設計)
+**状態**: 設計済 (実装待ち)
 
 <!-- auto-generated-start -->
 
@@ -11,7 +12,10 @@
 ## ファイル一覧（番号順）
 | 番号 | ファイル | 種別 | 状態 | 最終更新 | 短い説明 |
 |---|---|---|---|---|---|
-| (まだ設計文書なし。`/flow:feature _shared/types` で生成) |
+| 001 | [001_types_SPEC.md](./001_types_SPEC.md) | SPEC | 確定 | 2026-05-26 | 共通型の提供インターフェース定義 |
+| 002 | [002_types_PLAN.md](./002_types_PLAN.md) | PLAN | 確定 | 2026-05-26 | src/types/ 実装計画 (Phase1-2) |
+| 003 | [003_types_UNIT_TEST.md](./003_types_UNIT_TEST.md) | UNIT_TEST | 確定 | 2026-05-26 | 型ガード + 型レベルテスト |
+| 004 | (E2E スキップ: cross-cutting、利用側 feature でカバー) | — | N/A | — | — |
 
 ## サブフォルダ（改修・バグ修正・クレーム判定履歴）
 | パス | 種別 | issue/slug | 状態 | 概要 | INDEX |
@@ -24,7 +28,8 @@
 - 実装コード: `src/`（§1.4 参照）
 
 ## 機能性質タグ
-- (まだ未確定。`/flow:feature` 実行時に決定)
+- cross-cutting (横断基盤、UI なし、被依存=全フォルダ)
+- Open 論点: [論点-T1] service-info 契約型 ([論点-003] 連動)
 
 <!-- auto-generated-end -->
 
