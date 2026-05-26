@@ -357,6 +357,7 @@ service-hub が定義する service-info エンドポイント契約（[論点-0
   - 案 A: Vercel Cron（統合が楽）／ 欠点: Hobby は頻度制限あり（要確認）
   - 案 B: GitHub Actions cron が `/api/cron/collect` を叩く ／ 利点: 頻度自由・無料 ／ 欠点: 別系統の管理
 - **推奨**: まず Vercel Cron で日次〜数時間ごとを試し、頻度が足りなければ案 B に切替。内部観測ツールでありリアルタイム性は不要。
+- **status**: ✅ **解決 (2026-05-26, /flow:release)** — Vercel Hobby は cron 日次のみ許可（hourly はデプロイ拒否）。`vercel.json` の cron を `0 * * * *`→`0 0 * * *`（日次 00:00 UTC）に変更し案 A で確定。リアルタイム不要のため日次で十分。より高頻度が要るなら案 B（GitHub Actions cron が `/api/cron/collect` を `CRON_SECRET` 付きで叩く）へ将来移行。
 - **判断期限**: docs/collection/ の機能設計時
 - **担当**: seiji
 

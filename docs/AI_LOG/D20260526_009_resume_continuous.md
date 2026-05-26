@@ -24,3 +24,18 @@
     残り = .env.local 未充足の実キー (Clerk/Neon/provider tokens/CRON_SECRET) を要する
     リリース工程のみ → P4.7 発火。停止せず /flow:release を dispatch (auto.md §4.5.1#0 step4)。
 ```
+
+- id: D20260526-059
+  timestamp: 2026-05-26T00:00:00+09:00
+  command: /flow:auto
+  phase: 反復2 (release Phase2 で blocker → fix → loop 復帰後の再評価)
+  question: fix 完了後の next-step
+  chosen: P4.7 Release gate 再 → /flow:release 再 dispatch
+  chosen_type: auto-recommended
+  depends_on: [D20260526-051, D20260526-057]
+  context: |
+    fix(011) で GAP-1 認可/GAP-2 DB 両 GREEN + commit 済 (29b2a2a, fd0d124)。
+    §4.5.1 条件5「同一 action」判定: 前提が advance (blocker 解消 + .env.local グループA検証済 +
+    Neon 3テーブル + 98 tests) → release は別 action (app が実際に動く状態)。no-progress ではない。
+    no-key Class-A 残: 完全ローカル full-stack 起動 (vercel dev) + ログイン後200確認は実 Clerk
+    browser session 要 = release Phase2 phone smoke (human境界)。→ /flow:release 再 dispatch で継続。
