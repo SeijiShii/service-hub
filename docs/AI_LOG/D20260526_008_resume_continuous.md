@@ -81,3 +81,12 @@
   chosen_type: auto-recommended
   depends_on: [D20260526-038]
   context: runCollection 注入式。alerts hook。次=alerts(logic、UI 前に backend 完結)。
+
+- id: D20260526-040
+  timestamp: 2026-05-26T11:03:00+09:00
+  command: /flow:tdd
+  phase: 反復7 alerts
+  chosen: GREEN (9 + 全69)。backend+alerts ロジック全完了
+  chosen_type: auto-recommended
+  depends_on: [D20260526-039]
+  context: evaluate/notify 注入式。次=dashboard(UI、React/Vite/Tailwind/Recharts install + render テスト)。

@@ -2,7 +2,7 @@
 
 **最終更新**: 2026-05-26 07:58
 **生成元**: /flow:concept → /flow:feature
-**状態**: 設計済 (実装待ち)
+**状態**: コア実装済 (unit GREEN、視覚は E2E/bootstrap)
 
 <!-- auto-generated-start -->
 
@@ -16,6 +16,8 @@
 | 002 | [002_dashboard_PLAN.md](./002_dashboard_PLAN.md) | PLAN | 確定 | 2026-05-26 | UI+データ取得+共通components |
 | 003 | [003_dashboard_UNIT_TEST.md](./003_dashboard_UNIT_TEST.md) | UNIT_TEST | 確定 | 2026-05-26 | summary/行/empty/failed |
 | 004 | [004_dashboard_E2E_TEST.md](./004_dashboard_E2E_TEST.md) | E2E_TEST | 確定 | 2026-05-26 | Playwright + 視覚L1/L2 |
+| 101 | [101_dashboard_IMPL_REPORT.md](./101_dashboard_IMPL_REPORT.md) | IMPL_REPORT | 完了 | 2026-05-26 | summary+UI コンポーネント |
+| 102 | [102_dashboard_UNIT_TEST_REPORT.md](./102_dashboard_UNIT_TEST_REPORT.md) | UNIT_TEST_REPORT | 完了 | 2026-05-26 | 9 passed |
 
 ## サブフォルダ（改修・バグ修正・クレーム判定履歴）
 | パス | 種別 | issue/slug | 状態 | 概要 | INDEX |
