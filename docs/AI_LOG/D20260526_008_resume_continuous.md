@@ -117,3 +117,17 @@
   chosen_type: auto-recommended
   depends_on: [D20260526-041]
   context: detail VM + Recharts。次=app bootstrap(Vite/router/Clerk/Tailwind/loaders/cron handler) で実行可能に。
+
+- id: D20260526-044
+  timestamp: 2026-05-26T11:29:00+09:00
+  command: /flow:tdd
+  phase: 反復10 app bootstrap (Phase3.5)
+  chosen: build GREEN (vite build 815 modules + typecheck + 87 tests)
+  chosen_type: auto-recommended
+  depends_on: [D20260526-043]
+  context: |
+    Vite SPA + router + ClerkProvider + cockpit CSS トークン + API handlers(dashboard/timeseries/cron)
+    + vercel.json。db に serviceSnapshots/resolveAlert/markAlertNotified 追加。@vercel/node 依存回避。
+    = Phase3 実装フェーズ完了 (全9フォルダ unit + app build green)。
+    残: Design gate 視覚レビュー(P4.4b) + E2E(P4.5) は running app + Playwright 要、
+    Release gate(P4.7) は実キー(Clerk/Neon/provider tokens)=seiji。
