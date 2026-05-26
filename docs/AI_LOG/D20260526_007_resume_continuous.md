@@ -68,3 +68,15 @@
   context: |
     反復3 で _shared/db 設計完了。次の未設計=優先度2 の _shared/providers (types に依存、pull の核)。
     [論点-001](使用量API実在性)/[論点-003](service-info契約)/[論点-T1] をここで詰める。P4 継続。
+
+- id: D20260526-026
+  timestamp: 2026-05-26T09:18:00+09:00
+  command: /flow:auto
+  phase: Step 4.5 / 反復4完了 + 反復5
+  question: 反復5 の次アクション
+  chosen: /flow:feature _shared/auth
+  chosen_type: auto-recommended
+  depends_on: [D20260526-025]
+  context: |
+    反復4 で _shared/providers 設計完了、論点-001/003/T1 解決。次の未設計=優先度2 の _shared/auth
+    (Clerk 単一ユーザーゲート)。P4 継続、stop 条件未到達。

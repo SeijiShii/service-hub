@@ -1,7 +1,8 @@
 # _shared/auth ドキュメントインデックス
 
 **最終更新**: 2026-05-26 07:58
-**生成元**: /flow:concept (初期化)
+**生成元**: /flow:concept → /flow:feature
+**状態**: 設計済 (実装待ち)
 
 <!-- auto-generated-start -->
 
@@ -11,7 +12,10 @@ Clerk 単一ユーザーゲート (全ルート保護・seiji のみ許可)
 ## ファイル一覧（番号順）
 | 番号 | ファイル | 種別 | 状態 | 最終更新 | 短い説明 |
 |---|---|---|---|---|---|
-| (まだ設計文書なし。`/flow:feature _shared/auth` で生成) |
+| 001 | [001_auth_SPEC.md](./001_auth_SPEC.md) | SPEC | 確定 | 2026-05-26 | Clerk 単一ユーザーゲート |
+| 002 | [002_auth_PLAN.md](./002_auth_PLAN.md) | PLAN | 確定 | 2026-05-26 | src/auth/ 実装計画 |
+| 003 | [003_auth_UNIT_TEST.md](./003_auth_UNIT_TEST.md) | UNIT_TEST | 確定 | 2026-05-26 | ガード(401/403/フェイルクローズ) |
+| 004 | (E2E スキップ: cross-cutting) | — | N/A | — | — |
 
 ## サブフォルダ（改修・バグ修正・クレーム判定履歴）
 | パス | 種別 | issue/slug | 状態 | 概要 | INDEX |
@@ -24,7 +28,7 @@ Clerk 単一ユーザーゲート (全ルート保護・seiji のみ許可)
 - 実装コード: `src/`（§1.4 参照）
 
 ## 機能性質タグ
-- (まだ未確定。`/flow:feature` 実行時に決定)
+- cross-cutting, auth-required (単一ユーザー、RBAC 不要)
 
 <!-- auto-generated-end -->
 
