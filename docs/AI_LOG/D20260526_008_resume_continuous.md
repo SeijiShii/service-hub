@@ -90,3 +90,21 @@
   chosen_type: auto-recommended
   depends_on: [D20260526-039]
   context: evaluate/notify 注入式。次=dashboard(UI、React/Vite/Tailwind/Recharts install + render テスト)。
+
+- id: D20260526-041
+  timestamp: 2026-05-26T11:14:00+09:00
+  command: /flow:tdd
+  phase: 反復8 dashboard
+  chosen: コア GREEN (9 + 全78)。React 基盤=happy-dom (jsdom CSS-calc 回避)
+  chosen_type: auto-recommended
+  depends_on: [D20260526-040]
+  context: summary 純関数 + UI コンポーネント(design-system 準拠)。app 結線は bootstrap。次=service-detail。
+- id: D20260526-042
+  timestamp: 2026-05-26T11:14:30+09:00
+  command: /flow:auto
+  phase: §設定変更
+  question: max-iterations 既定
+  chosen: 無制限 (seiji 指示、auto.md 既定変更 + memory)
+  chosen_type: explicit-choice
+  depends_on: []
+  context: seiji「10 は適切か、無制限に反復してほしい」→ 回数上限廃止、#5 進捗なし検知が backstop。

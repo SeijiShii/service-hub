@@ -2,7 +2,7 @@
 
 **最終更新**: 2026-05-26 07:58
 **生成元**: /flow:concept → /flow:feature
-**状態**: 設計済 (実装待ち)
+**状態**: コア実装済 (unit GREEN)
 
 <!-- auto-generated-start -->
 
@@ -16,6 +16,8 @@
 | 002 | [002_service-detail_PLAN.md](./002_service-detail_PLAN.md) | PLAN | 確定 | 2026-05-26 | Recharts 折れ線 + 取得 |
 | 003 | [003_service-detail_UNIT_TEST.md](./003_service-detail_UNIT_TEST.md) | UNIT_TEST | 確定 | 2026-05-26 | series/404/empty |
 | 004 | [004_service-detail_E2E_TEST.md](./004_service-detail_E2E_TEST.md) | E2E_TEST | 確定 | 2026-05-26 | Playwright + 視覚L1/L2 |
+| 101 | [101_service-detail_IMPL_REPORT.md](./101_service-detail_IMPL_REPORT.md) | IMPL_REPORT | 完了 | 2026-05-26 | detail VM + chart + view |
+| 102 | [102_service-detail_UNIT_TEST_REPORT.md](./102_service-detail_UNIT_TEST_REPORT.md) | UNIT_TEST_REPORT | 完了 | 2026-05-26 | 8 passed |
 
 ## サブフォルダ（改修・バグ修正・クレーム判定履歴）
 | パス | 種別 | issue/slug | 状態 | 概要 | INDEX |
