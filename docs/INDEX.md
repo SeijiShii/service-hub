@@ -16,7 +16,7 @@
 |---|---|---|---|---|---|
 | 2 | ✅ | [registry](./registry/) | 設計済 | 2026-05-26 | [INDEX](./registry/INDEX.md) |
 | 3 | ✅ | [collection](./collection/) | 設計済 | 2026-05-26 | [INDEX](./collection/INDEX.md) |
-| 4 | ❌ | [dashboard](./dashboard/) | 計画 | ❌ | [INDEX](./dashboard/INDEX.md) |
+| 4 | ❌ | [dashboard](./dashboard/) | 設計済 | 2026-05-26 | [INDEX](./dashboard/INDEX.md) |
 | 4 | ❌ | [service-detail](./service-detail/) | 計画 | ❌ | [INDEX](./service-detail/INDEX.md) |
 | 4 | ❌ | [alerts](./alerts/) | 計画 | ❌ | [INDEX](./alerts/INDEX.md) |
 

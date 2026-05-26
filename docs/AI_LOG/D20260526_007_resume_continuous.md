@@ -98,3 +98,12 @@
   chosen_type: auto-recommended
   depends_on: [D20260526-027]
   context: 反復6 で registry 完了。次=優先度3 の collection(cron + pull オーケストレーション、providers/db/registry に依存、全て設計済)。P4 継続。
+
+- id: D20260526-029
+  timestamp: 2026-05-26T09:31:00+09:00
+  command: /flow:auto
+  phase: Step 4.5 / 反復7完了 + 反復8
+  chosen: /flow:feature dashboard
+  chosen_type: auto-recommended
+  depends_on: [D20260526-028]
+  context: 反復7 で collection 完了。次=優先度4 の dashboard(UI feature、横断サマリ一覧画面、E2E あり)。P4 継続。
