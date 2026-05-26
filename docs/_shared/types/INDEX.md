@@ -15,7 +15,8 @@
 | 001 | [001_types_SPEC.md](./001_types_SPEC.md) | SPEC | 確定 | 2026-05-26 | 共通型の提供インターフェース定義 |
 | 002 | [002_types_PLAN.md](./002_types_PLAN.md) | PLAN | 確定 | 2026-05-26 | src/types/ 実装計画 (Phase1-2) |
 | 003 | [003_types_UNIT_TEST.md](./003_types_UNIT_TEST.md) | UNIT_TEST | 確定 | 2026-05-26 | 型ガード + 型レベルテスト |
-| 004 | (E2E スキップ: cross-cutting、利用側 feature でカバー) | — | N/A | — | — |
+| 004 | (E2E スキップ: cross-cutting) | — | N/A | — | — |
+| 905 | [905_types_SPEC_REVIEW.md](./905_types_SPEC_REVIEW.md) | SPEC_REVIEW | 完了 | 2026-05-26 | 設計レビュー(spec-review)、tdd 着手可 |
 
 ## サブフォルダ（改修・バグ修正・クレーム判定履歴）
 | パス | 種別 | issue/slug | 状態 | 概要 | INDEX |

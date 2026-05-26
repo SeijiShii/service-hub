@@ -137,6 +137,8 @@ interface ProviderAdapter {
 
 ## 3. データモデル
 本フォルダは §5.1 のエンティティを**型として表現**する層。物理スキーマ（テーブル DDL / Drizzle）は `_shared/db` が担う（型は本フォルダを import）。
+- **`id` は DB 生成の string**（UUID/cuid 等）。型層は string で受け、生成は `_shared/db` の責務（905 R1）。
+- **日時は型境界で ISO 8601 string** に統一（Date 変換は利用側、905 R2）。
 
 ## 4. バリデーション + エラーケース
 - 本フォルダは**型ガード**（実行時 narrowing）のみ提供: `isProviderKind(x): x is ProviderKind` 等。

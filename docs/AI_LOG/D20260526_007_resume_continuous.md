@@ -26,3 +26,18 @@
     Step 3.0: 最初の feature (_shared/types) 設計完了 + refined estimate 未生成 → estimate 2回目がトリガー。
     P1-P5 より先に実行。_shared/types の実設計 (6 src files) で rough 見積のファイル数を再校正。
 ```
+
+- id: D20260526-023
+  timestamp: 2026-05-26T09:07:00+09:00
+  command: /flow:auto
+  phase: Step 4.5 / 反復2
+  question: 反復2 の次アクション
+  options:
+    - /flow:spec-review _shared/types (P3.7 Spec-review gate) (recommended)
+  recommended: /flow:spec-review _shared/types
+  chosen: /flow:spec-review _shared/types
+  chosen_type: auto-recommended
+  depends_on: [D20260526-022]
+  context: |
+    _shared/types に 001-003 完成 + 905 不在 + 101 不在 → P3.7 Spec-review gate 発火。
+    tdd 着手前の設計妥当性レビュー。greenfield 1番目のため既存コード調査は最小、設計健全性中心。
