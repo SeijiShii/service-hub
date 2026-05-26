@@ -107,3 +107,12 @@
   chosen_type: auto-recommended
   depends_on: [D20260526-028]
   context: 反復7 で collection 完了。次=優先度4 の dashboard(UI feature、横断サマリ一覧画面、E2E あり)。P4 継続。
+
+- id: D20260526-030
+  timestamp: 2026-05-26T09:38:00+09:00
+  command: /flow:auto
+  phase: Step 4.5 / 反復8完了 + 反復9
+  chosen: /flow:feature service-detail
+  chosen_type: auto-recommended
+  depends_on: [D20260526-029]
+  context: 反復8 で dashboard 完了。次=優先度4 の service-detail(個別サービス時系列画面、UI、E2E あり)。P4 継続。
