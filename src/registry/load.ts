@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import toml from "@iarna/toml";
 import { serviceDescriptorSchema } from "./schema.js";
 import type { ServiceDescriptor } from "../types/index.js";
@@ -49,7 +50,9 @@ export function validateServicesToml(raw: string): {
 export function loadServices(
   opts: { onlyActive?: boolean; path?: string } = {},
 ): ServiceDescriptor[] {
-  const path = opts.path ?? "services.toml";
+  // 既定はプロジェクトルートの services.toml。Vercel Function では cwd=デプロイルート
+  // (/var/task) で、vercel.json functions.includeFiles により services.toml が同梱される。
+  const path = opts.path ?? join(process.cwd(), "services.toml");
   const { services } = validateServicesToml(readFileSync(path, "utf8"));
   return opts.onlyActive
     ? services.filter((s) => s.status === "active")
