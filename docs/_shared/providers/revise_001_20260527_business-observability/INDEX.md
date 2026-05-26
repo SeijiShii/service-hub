@@ -2,7 +2,7 @@
 
 **issue / slug**: 001 / business-observability
 **実施日**: 2026-05-27
-**状態**: 設計中（Phase 1 REVISE_SPEC 完成 / PLAN・テスト計画は次段）
+**状態**: 設計完了（SPEC + PLAN + UNIT_TEST + E2E_TEST）
 
 <!-- auto-generated-start -->
 

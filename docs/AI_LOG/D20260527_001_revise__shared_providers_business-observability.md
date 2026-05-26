@@ -5,7 +5,7 @@
 **対象**: _shared/providers (アンカー) + 横断 (types/dashboard/service-detail/concept/registry)
 **issue/slug**: 001 / business-observability
 **実行者**: Claude (Opus 4.7)
-**状態**: 進行中 (Phase 1 REVISE_SPEC — 設計判断 1問1答中)
+**状態**: 完了 (REVISE_SPEC + PLAN + UNIT_TEST + E2E_TEST 4文書生成)
 **依存**: D20260526 providers SPEC ([論点-003] service-info 契約), dashboard/service-detail feature
 
 ## Decisions
@@ -107,3 +107,16 @@
     sim は pricing.toml を読む。古ければ WebSearch で最新値を拾い SoT 更新 (更新履歴付き)。
     鮮度と信頼性のバランス。「最新を提案」= SoT を refresh して現行価格で格上げ判断を提示。
     → 3次元 (収益性/決済ファネル/コストシミュレーション) の設計判断が全確定。REVISE_SPEC 生成へ。
+
+- id: D20260527-008
+  timestamp: 2026-05-27T00:00:00+09:00
+  command: /flow:revise
+  phase: Phase 2-4 完了 (PLAN + UNIT_TEST + E2E_TEST)
+  question: revise 設計文書一式の完成
+  chosen: 002_PLAN / 003_UNIT_TEST / 004_E2E_TEST 生成完了。実装 Phase A-D + DoD + テスト計画確定
+  chosen_type: auto-recommended
+  depends_on: [D20260527-006]
+  context: |
+    Phase A(採算)/B(離脱率)/C(見込み)/D(コストシミュレーション) に分割。新規: pricing.toml SoT +
+    cost-sim モジュール + projection。完全 additive (DB 変更なし、未申告は「データなし」)。
+    マイグレーション不要 (005 省略)。実装は後続 /flow:tdd。次 loop = P4 tdd (Phase A から)。
