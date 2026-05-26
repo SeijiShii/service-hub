@@ -89,3 +89,12 @@
   chosen_type: auto-recommended
   depends_on: [D20260526-026]
   context: 反復5 で _shared/auth 完了。横断基盤(優先度1-2)が全て設計済。次=機能フォルダ優先度2 の registry(services.toml ローダ)。P4 継続。
+
+- id: D20260526-028
+  timestamp: 2026-05-26T09:26:00+09:00
+  command: /flow:auto
+  phase: Step 4.5 / 反復6完了 + 反復7
+  chosen: /flow:feature collection
+  chosen_type: auto-recommended
+  depends_on: [D20260526-027]
+  context: 反復6 で registry 完了。次=優先度3 の collection(cron + pull オーケストレーション、providers/db/registry に依存、全て設計済)。P4 継続。
