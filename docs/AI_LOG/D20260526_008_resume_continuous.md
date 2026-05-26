@@ -3,7 +3,7 @@
 **実行日時**: 2026-05-26 10:35 〜 (進行中) (+09:00)
 **コマンド**: /flow:auto (continuous loop) — Phase3 /flow:tdd 連続実装
 **実行者**: Claude (Opus 4.7)
-**状態**: 進行中
+**状態**: 完了 (P4.7 Release gate 到達 = 実キー Class C 境界で保留)
 **注記**: stop 条件 5 件まで停止しない (memory: flow-auto-no-pivot-questions)。downstream の Class B も手前停止理由にしない。
 
 ## Decisions
@@ -131,3 +131,29 @@
     = Phase3 実装フェーズ完了 (全9フォルダ unit + app build green)。
     残: Design gate 視覚レビュー(P4.4b) + E2E(P4.5) は running app + Playwright 要、
     Release gate(P4.7) は実キー(Clerk/Neon/provider tokens)=seiji。
+
+- id: D20260526-045
+  timestamp: 2026-05-26T11:40:00+09:00
+  command: /flow:e2e + /flow:design --review-only
+  phase: 反復11 E2E gate(P4.5) + Design gate(P4.4b)
+  chosen: 両 GREEN (Playwright 7 passed + 視覚レビュー design-system §8 全充足)
+  chosen_type: auto-recommended
+  depends_on: [D20260526-044]
+  context: |
+    cached Chromium で no-key E2E (route-mock API + Clerk bare)。dashboard/service-detail の
+    実画面が cockpit/dark を忠実描画 (status 色+形状, mono メトリクス, accent 折れ線)。103+visual-review。
+    残: P4.7 Release gate = 実キー(Clerk/Neon/provider) + デプロイ = seiji (Class C/B)。
+
+- id: D20260526-046
+  timestamp: 2026-05-26T11:42:00+09:00
+  command: /flow:auto
+  phase: §4.5.1#0 no-key 枯渇チェック → P4.7 Release gate
+  question: no-key/Class-A 作業は枯渇したか
+  chosen: 枯渇 (実装/unit/E2E/視覚/build 全 green) → P4.7 Release gate (実キー=seiji)
+  chosen_type: auto-recommended
+  depends_on: [D20260526-045]
+  context: |
+    列挙した no-key 変種: 追加 unit/結合(済 87), ローカル headless E2E(済 7 green), build 検証(済 green),
+    視覚レビュー(済 green)。全て完了。残りは .env.local 未充足の実キー(Clerk/Neon/provider tokens/
+    CRON_SECRET/per-service secrets)を要するリリース工程のみ → P4.7 = /flow:release dispatch。
+    release Phase1 FILL は Class C(値は seiji のみ保持)のため loop は 1-decision で保留しユーザーへ。
