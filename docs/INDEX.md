@@ -26,7 +26,7 @@
 | 1 | [_shared/types](./_shared/types/) | 設計済 | 2026-05-26 | [INDEX](./_shared/types/INDEX.md) |
 | 1 | [_shared/db](./_shared/db/) | 実装済 | 2026-05-26 | [INDEX](./_shared/db/INDEX.md) |
 | 2 | [_shared/providers](./_shared/providers/) | 実装済 | 2026-05-26 | [INDEX](./_shared/providers/INDEX.md) |
-| 2 | [_shared/auth](./_shared/auth/) | 設計済 | 2026-05-26 | [INDEX](./_shared/auth/INDEX.md) |
+| 2 | [_shared/auth](./_shared/auth/) | コア実装済 | 2026-05-26 | [INDEX](./_shared/auth/INDEX.md) |
 
 ## AI アクセスガイド
 - プロジェクト全体 → `concept.md`

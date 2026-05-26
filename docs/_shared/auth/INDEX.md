@@ -2,7 +2,7 @@
 
 **最終更新**: 2026-05-26 07:58
 **生成元**: /flow:concept → /flow:feature
-**状態**: 設計済 (実装待ち)
+**状態**: コア実装済 (guard GREEN、glue は bootstrap)
 
 <!-- auto-generated-start -->
 
@@ -16,6 +16,8 @@ Clerk 単一ユーザーゲート (全ルート保護・seiji のみ許可)
 | 002 | [002_auth_PLAN.md](./002_auth_PLAN.md) | PLAN | 確定 | 2026-05-26 | src/auth/ 実装計画 |
 | 003 | [003_auth_UNIT_TEST.md](./003_auth_UNIT_TEST.md) | UNIT_TEST | 確定 | 2026-05-26 | ガード(401/403/フェイルクローズ) |
 | 004 | (E2E スキップ: cross-cutting) | — | N/A | — | — |
+| 101 | [101_auth_IMPL_REPORT.md](./101_auth_IMPL_REPORT.md) | IMPL_REPORT | 完了 | 2026-05-26 | guard 実装(glue 保留) |
+| 102 | [102_auth_UNIT_TEST_REPORT.md](./102_auth_UNIT_TEST_REPORT.md) | UNIT_TEST_REPORT | 完了 | 2026-05-26 | 7 passed |
 
 ## サブフォルダ（改修・バグ修正・クレーム判定履歴）
 | パス | 種別 | issue/slug | 状態 | 概要 | INDEX |

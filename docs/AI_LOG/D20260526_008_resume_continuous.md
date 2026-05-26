@@ -42,3 +42,13 @@
   context: |
     Drizzle pg-core schema + queries。冪等upsert は excluded.* で更新（初回バグ修正）。
     pglite で offline 統合テスト（DDL は client.exec simple protocol）。次=providers。
+
+- id: D20260526-036
+  timestamp: 2026-05-26T10:52:00+09:00
+  command: /flow:tdd
+  phase: 反復3 providers
+  question: _shared/providers 実装結果
+  chosen: GREEN (mock 16 + 全37 passed + typecheck)
+  chosen_type: auto-recommended
+  depends_on: [D20260526-035]
+  context: ProviderKind に service-info 追加(pull源正式化)。safeFetch SSRF/scrub。次=auth。
