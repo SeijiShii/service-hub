@@ -53,3 +53,19 @@
     残: (1) 認証済みパス(ログイン→200)は seiji の実 Clerk browser smoke、
         (2) inline env は当該デプロイ限定 → 恒久運用は Vercel prod env 永続化推奨 (特に CRON_SECRET),
         (3) 実 pull データは services.toml の hana-memo 実 ID (グループD) + グループB トークン要。
+
+- id: D20260526-063
+  timestamp: 2026-05-26T00:00:00+09:00
+  command: /flow:release
+  phase: Phase 2 smoke (seiji 実機) → GAP-3 検出 → fix → 再デプロイ
+  question: ログイン後も /api/dashboard/summary が 401 (seiji コンソール報告)
+  chosen: GAP-3 = フロントにサインインゲート不在 → main.tsx に SignedIn/SignedOut/SignIn 追加 → prod 再デプロイ
+  chosen_type: explicit-choice
+  depends_on: [D20260526-062]
+  context: |
+    seiji 実機: Clerk dev key warning + /api/dashboard/summary 401。原因=main.tsx が ClerkProvider で
+    包むだけでサインイン UI/ゲート無し → 未ログインで DashboardPage が即 fetch→401、ログイン手段も画面に無い。
+    GAP-1(backend)と同じ根本(auth glue 未完, E2E が route-mock で迂回)の第3。
+    fix: <SignedIn>{app}+UserButton</SignedIn> / <SignedOut><SignIn routing=hash></SignedOut>。
+    typecheck+build green。seiji 承認で prod 再デプロイ (--prod, service-hub-lake.vercel.app)。
+    ログイン後は同一オリジン __session cookie → requireSeiji 通過の想定。seiji 再 smoke 待ち。
