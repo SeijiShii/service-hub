@@ -56,3 +56,15 @@
   context: |
     反復2 で _shared/types の spec-review (905) 完了。P3.7 解消。次の未設計=優先度1の _shared/db
     (types に依存、Neon スキーマ)。P4 次フェーズ継続。stop 条件未到達のため停止せず継続。
+
+- id: D20260526-025
+  timestamp: 2026-05-26T09:12:00+09:00
+  command: /flow:auto
+  phase: Step 4.5 / 反復3完了 + 反復4
+  question: 反復4 の次アクション
+  chosen: /flow:feature _shared/providers
+  chosen_type: auto-recommended
+  depends_on: [D20260526-024]
+  context: |
+    反復3 で _shared/db 設計完了。次の未設計=優先度2 の _shared/providers (types に依存、pull の核)。
+    [論点-001](使用量API実在性)/[論点-003](service-info契約)/[論点-T1] をここで詰める。P4 継続。

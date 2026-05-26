@@ -346,6 +346,7 @@ service-hub が定義する service-info エンドポイント契約（[論点-0
   - 案 A: 各 API の使用量/請求エンドポイントを使う ／ 利点: 正確 ／ 欠点: API 提供状況がプロバイダ依存・要実地検証
   - 案 B: 取得可能なものから段階導入（Phase 2 で adapter 拡充）／ 利点: MVP を止めない ／ 欠点: 初期は表示が部分的
 - **推奨**: 案 B。MVP は確実に取れる指標（ping / Clerk MAU / Vercel deploy）から始め、使用量 API は adapter 実装時に各プロバイダのドキュメントで実在性を検証して順次追加。
+- **status**: ✅ **解決 (2026-05-26)** — providers SPEC §1.2 で段階導入方針確定（MVP=ping/Vercel deploy/Neon storage・compute/Clerk user count、free-tier % は services.toml thresholds と取得値から HUB 側算出、R2/Sentry/帯域/厳密MAU は Phase2[論点-PR1]）。実 API 形状の最終確認は /flow:release Phase2。
 - **判断期限**: docs/_shared/providers/ の機能設計時（/flow:feature）
 - **担当**: seiji
 
@@ -370,8 +371,9 @@ service-hub が定義する service-info エンドポイント契約（[論点-0
   - 案 A: 最小固定スキーマ（必須数項目 + `extra` 自由フィールド）／ 利点: 全サービスが軽く実装、HUB 側の正規化が単純 ／ 欠点: サービス固有指標は `extra` で型が緩い
   - 案 B: リッチな型付きスキーマ（メトリクス配列 + メタ）／ 利点: 表現力 ／ 欠点: 各サービスの実装負担増、連発に逆行
 - **推奨**: 案 A（最小固定 + extra）。連発前提では「各サービスが 5 分で足せる軽い契約」が最重要。
-- **波及（重要）**: 本契約が確定したら **(1) 第一弾マイクロサービス hana-memo（実装中）に retrofit**、**(2) flow 系コマンドに標準として組み込み**、以後の全サービスが新規実装時にこのエンドポイントを備える。詳細は §6.1 を参照。
-- **判断期限**: docs/_shared/providers/ + docs/_shared/types/ の機能設計時（/flow:feature）
+- **status**: ✅ **スキーマ確定 (2026-05-26)** — providers SPEC §1.3 で契約確定（`GET /api/hub/service-info` + 共有シークレット、`{schemaVersion, service, status, metrics?[], version?, extra?}`、案 A 最小固定+extra）。`_shared/types` に `ServiceInfoResponse` 追加済（[論点-T1] 解決）。
+- **波及（重要・残作業）**: 本契約確定により以下が actionable に（**別 PJ/別セッションで実施**）: **(1) hana-memo に retrofit**（`/flow:revise`、第一弾サービス）、**(2) perspectives O48 の標準スキーマを本契約で具体化**。flow 標準化の枠組み（O48 + charter §0.2）は登録済。
+- **判断期限**: docs/_shared/providers/ + docs/_shared/types/ の機能設計時（/flow:feature）→ 設計完了、波及は運用フェーズ
 - **担当**: seiji
 
 ### [論点-004] [SEC-002] O24 入力検証（SSRF / 安全パース / raw_json スクラブ）
