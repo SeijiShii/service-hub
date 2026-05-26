@@ -99,3 +99,16 @@
     alert_events/collection_runs/usage_snapshots の3テーブル確認。
     fix docs (auth/db 各 000-003 + INDEX)、親 INDEX 更新済。Postmortem 不要(pre-deploy)。
     次: loop へ戻り /flow:release を再 dispatch (ブロッカー解消 → デプロイ判断へ)。
+
+- id: D20260526-058
+  timestamp: 2026-05-26T00:00:00+09:00
+  command: /flow:fix
+  phase: 再発防止強化 (§4.5.1#0 教訓の適用)
+  question: mocked E2E が迂回した認可チェーンの runtime カバレッジをどう追加するか
+  chosen: vitest include に api/** を追加 + api/dashboard/summary.test.ts (mock しない結合テスト 3件)
+  chosen_type: auto-recommended
+  depends_on: [D20260526-057]
+  context: |
+    根本原因の一因「E2E が /api/* を route-mock し認可を一度も実行しない」への構造的対策。
+    実 handler を import し no-cookie/不正cookie/ヘッダ偽装→全 401 を確認 (DB 非到達)。
+    handler の import 連鎖が runtime で解決することも担保。全 98 tests / typecheck green。
