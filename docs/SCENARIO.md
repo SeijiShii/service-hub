@@ -52,13 +52,13 @@ flow で連発するマイクロサービス群の稼働/利用/コスト/障害
 ## 5. 現在地カーソル
 
 <!-- AUTO-GENERATED:BEGIN scenario-cursor -->
-- 現在フェーズ: Phase 1.5 (デザインシステム) 完了 → Phase 2 (機能設計) へ
-- 進行中ターゲット: なし (Phase 2 未着手)
-- 最終更新セッション: D20260526_004_design_system
-- 最終更新時刻: 2026-05-26 08:48
-- 完了フェーズ: [Phase 1 (concept/estimate/secure), Phase 1.5 (design SoT)]
-- 次の推奨コマンド: /flow:feature（_shared/types から優先度順） ※ feature 設計後は /flow:spec-review (P3.7) → /flow:tdd。視覚デザインレビュー (/flow:design --review-only) は scaffold 実装後の Design gate で実施
-- 備考: design 視覚レビュー(Step4)は scaffold 生成前のため保留 (Phase 3 で --review-only)
+- 現在フェーズ: Phase 2 (機能設計) **完了** → Phase 3 (実装) へ
+- 進行中ターゲット: なし (Phase 3 未着手)
+- 最終更新セッション: D20260526_007_resume_continuous
+- 最終更新時刻: 2026-05-26 09:48
+- 完了フェーズ: [Phase 1 (concept/estimate/secure), Phase 1.5 (design SoT), Phase 2 (全9フォルダ設計 + types spec-review + refined estimate)]
+- 次の推奨コマンド: /flow:tdd（_shared/types から優先度順に連続実装。greenfield のため types の tdd が scaffold=tsconfig/vitest/vite/tailwind を兼ねる）
+- 備考: (1) 残り feature の spec-review (P3.7) は tdd 前に随時。(2) 画面実装後に /flow:design --review-only (Design gate P4.4b、視覚レビュー)。(3) unit 後に /flow:e2e (P4.5)。(4) 実キー/デプロイは /flow:release (P4.7)。Open 論点: 001✅/003✅/T1✅ 解決、004(SEC O24)/DB1/PR1/CO1/AL1 は実装時
 <!-- AUTO-GENERATED:END scenario-cursor -->
 
 ## 6. 変更履歴

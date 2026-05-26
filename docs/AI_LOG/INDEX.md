@@ -1,8 +1,8 @@
 # AI_LOG インデックス — service-hub
 
-**最終更新**: 2026-05-26 08:58 (+09:00)
-**総セッション数**: 6
-**総 decision 数**: 21
+**最終更新**: 2026-05-26 09:48 (+09:00)
+**総セッション数**: 7
+**総 decision 数**: 32
 
 > セッションごとに 1 ファイル、append-only、過去ファイルは削除・編集禁止。
 > 人間向けサマリは `../concept.md` §7 決定事項ログ を参照。
@@ -12,6 +12,7 @@
 ## セッション一覧（新しい順）
 | ファイル | 実行日 | コマンド | 対象 | decision 範囲 | 状態 |
 |---|---|---|---|---|---|
+| [D20260526_007_resume_continuous.md](./D20260526_007_resume_continuous.md) | 2026-05-26 | /flow:auto | continuous(再開3) | D20260526-022〜032 | 完了(max-iter停止) |
 | [D20260526_006_feature__shared_types.md](./D20260526_006_feature__shared_types.md) | 2026-05-26 | /flow:feature | _shared/types | D20260526-019〜020 | 完了 |
 | [D20260526_005_resume_continuous.md](./D20260526_005_resume_continuous.md) | 2026-05-26 | /flow:auto | continuous(再開) | D20260526-018,021 | 完了(pause) |
 | [D20260526_004_design_system.md](./D20260526_004_design_system.md) | 2026-05-26 | /flow:design | system (NEW) | D20260526-015〜016 | 完了 |
@@ -45,16 +46,19 @@
 ## Open 論点（chosen_type=open、全期間横断）
 | ID | 論点タイトル | 採番セッション | 関連 decision |
 |---|---|---|---|
-| [論点-001] | 無料枠使用量 pull API の実在性・粒度 | D20260526_001 | D20260526-005 |
-| [論点-002] | スケジューラ頻度と Vercel Hobby Cron 制限 | D20260526_001 | D20260526-002 |
-| [論点-003] | service-info エンドポイントの標準契約スキーマ定義（★クロスサービス波及: hana-memo retrofit + flow 標準化） | D20260526_001 | D20260526-009 |
-| [論点-004] | [SEC-002] O24 入力検証（SSRF/安全パース/raw_json スクラブ、Medium） | D20260526_003 | D20260526-013 |
-| [論点-T1] | service-info 契約型 ServiceInfoResponse（types SPEC §8、[論点-003] 連動） | D20260526_006 | D20260526-020 |
+| [論点-002] | スケジューラ頻度と Vercel Hobby Cron 制限（[論点-CO1] と連動） | D20260526_001 | D20260526-002 |
+| [論点-004] | [SEC-002] O24 入力検証（SSRF/安全パース/raw_json スクラブ、Medium、実装時） | D20260526_003 | D20260526-013 |
+| [論点-DB1] | スナップショット保持期間・集約（無料枠 50% 到達時） | D20260526_006(db) | — |
+| [論点-PR1] | Clerk 厳密 MAU 取得（Phase2、実トークン検証時） | D20260526_007(providers) | D20260526-025 |
+| [論点-CO1] | collection 多重起動防止 + 実行時間（Vercel Hobby） | D20260526_007 | D20260526-028 |
+| [論点-AL1] | アラート通知チャネル（Webhook/メール/画面内） | D20260526_007 | D20260526-031 |
 
-## Superseded chain（旧 Open → 新解決）
-| 旧 ID | 新 ID | 解決日 | 解決セッション |
+## Superseded chain（旧 Open → 解決済）
+| 旧 ID | 解決 | 解決日 | 解決セッション |
 |---|---|---|---|
-| (なし) | | | |
+| [論点-001] | ✅ providers SPEC §1.2 で段階導入方針確定（MVP=ping/Vercel/Neon/Clerk、free-tier% は thresholds 算出） | 2026-05-26 | D20260526_007 (D026) |
+| [論点-003] | ✅ providers SPEC §1.3 で契約スキーマ確定（最小固定+extra）。波及(hana-memo retrofit/O48 具体化)は別 PJ | 2026-05-26 | D20260526_007 (D026) |
+| [論点-T1] | ✅ types SPEC §1.2 に ServiceInfoResponse 追加 | 2026-05-26 | D20260526_007 (D026) |
 
 <!-- auto-generated-end -->
 

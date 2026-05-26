@@ -1,7 +1,8 @@
 # alerts ドキュメントインデックス
 
 **最終更新**: 2026-05-26 07:58
-**生成元**: /flow:concept (初期化)
+**生成元**: /flow:concept → /flow:feature
+**状態**: 設計済 (実装待ち)
 
 <!-- auto-generated-start -->
 
@@ -11,7 +12,10 @@
 ## ファイル一覧（番号順）
 | 番号 | ファイル | 種別 | 状態 | 最終更新 | 短い説明 |
 |---|---|---|---|---|---|
-| (まだ設計文書なし。`/flow:feature alerts` で生成) |
+| 001 | [001_alerts_SPEC.md](./001_alerts_SPEC.md) | SPEC | 確定 | 2026-05-26 | 閾値判定 + 通知 |
+| 002 | [002_alerts_PLAN.md](./002_alerts_PLAN.md) | PLAN | 確定 | 2026-05-26 | evaluate + notify(channel注入) |
+| 003 | [003_alerts_UNIT_TEST.md](./003_alerts_UNIT_TEST.md) | UNIT_TEST | 確定 | 2026-05-26 | 発火/抑制/回復/送信 |
+| 004 | (E2E: dashboard AlertBanner でカバー) | — | N/A | — | — |
 
 ## サブフォルダ（改修・バグ修正・クレーム判定履歴）
 | パス | 種別 | issue/slug | 状態 | 概要 | INDEX |
@@ -24,7 +28,8 @@
 - 実装コード: `src/`（§1.4 参照）
 
 ## 機能性質タグ
-- (まだ未確定。`/flow:feature` 実行時に決定)
+- feature, stateful (alert ライフサイクル)
+- Open 論点: [論点-AL1] 通知チャネル
 
 <!-- auto-generated-end -->
 

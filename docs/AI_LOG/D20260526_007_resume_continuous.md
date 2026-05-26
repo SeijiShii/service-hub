@@ -4,8 +4,8 @@
 **コマンド**: /flow:auto (continuous loop)
 **対象**: Phase 2 機能設計の連続実行
 **実行者**: Claude (Opus 4.7)
-**状態**: 進行中
-**含まれる decision**: D20260526-022 〜
+**状態**: 完了 (max-iterations=10 到達で正常停止)
+**含まれる decision**: D20260526-022 〜 032 (estimate/spec-review/feature×8/stop)
 **注記**: 前2回の loop で phase-boundary pause したが §4.5.2b 違反 (memory: flow-auto-no-pivot-questions) と判明。本 loop は stop 条件 (scenario完了/ClassB/max-iter/Esc/同一action×2) まで停止しない。
 
 ## Decisions
@@ -116,3 +116,26 @@
   chosen_type: auto-recommended
   depends_on: [D20260526-029]
   context: 反復8 で dashboard 完了。次=優先度4 の service-detail(個別サービス時系列画面、UI、E2E あり)。P4 継続。
+
+- id: D20260526-031
+  timestamp: 2026-05-26T09:44:00+09:00
+  command: /flow:auto
+  phase: Step 4.5 / 反復9完了 + 反復10
+  chosen: /flow:feature alerts
+  chosen_type: auto-recommended
+  depends_on: [D20260526-030]
+  context: 反復9 で service-detail 完了。次=最後の機能 alerts(閾値判定+通知、db/collection 依存)。反復10=max-iterations。
+
+- id: D20260526-032
+  timestamp: 2026-05-26T09:48:00+09:00
+  command: /flow:auto
+  phase: Step 4.5.1 / 停止条件#3
+  question: loop 継続判定
+  chosen: 停止 (max-iterations=10 到達)
+  chosen_type: auto-recommended
+  depends_on: [D20260526-031]
+  context: |
+    反復10 で alerts 完了 = Phase2 全9フォルダ設計完了。max-iterations=10 到達 → 停止条件#3 (正当な停止)。
+    今回 loop: estimate(refined) → spec-review(types) → feature×8 (db/providers/auth/registry/collection/dashboard/service-detail/alerts)。
+    §4.5.1#0 no-key 枯渇ゲート: 該当せず (まだ tdd/e2e 等の no-key 作業が大量に残る、停止理由は max-iter であって枯渇ではない)。
+    次回 /flow:auto は Phase3 (/flow:tdd 連続実装) から。
