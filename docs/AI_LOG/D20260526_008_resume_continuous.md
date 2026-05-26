@@ -72,3 +72,12 @@
   chosen_type: auto-recommended
   depends_on: [D20260526-037]
   context: Zod 検証(SSRF/秘密直書き)。services.toml(hana-memo)作成。次=collection。
+
+- id: D20260526-039
+  timestamp: 2026-05-26T11:00:00+09:00
+  command: /flow:tdd
+  phase: 反復6 collection
+  chosen: コア GREEN (runner 8 + 全60)、handler は bootstrap
+  chosen_type: auto-recommended
+  depends_on: [D20260526-038]
+  context: runCollection 注入式。alerts hook。次=alerts(logic、UI 前に backend 完結)。

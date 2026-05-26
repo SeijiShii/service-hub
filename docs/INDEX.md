@@ -18,7 +18,7 @@
 | 3 | ✅ | [collection](./collection/) | コア実装済 | 2026-05-26 | [INDEX](./collection/INDEX.md) |
 | 4 | ❌ | [dashboard](./dashboard/) | 設計済 | 2026-05-26 | [INDEX](./dashboard/INDEX.md) |
 | 4 | ❌ | [service-detail](./service-detail/) | 設計済 | 2026-05-26 | [INDEX](./service-detail/INDEX.md) |
-| 4 | ❌ | [alerts](./alerts/) | 設計済 | 2026-05-26 | [INDEX](./alerts/INDEX.md) |
+| 4 | ❌ | [alerts](./alerts/) | 実装済 | 2026-05-26 | [INDEX](./alerts/INDEX.md) |
 
 ## 横断フォルダ（優先度順）
 | 優先度 | フォルダ | 状態 | 設計完了 | INDEX |
