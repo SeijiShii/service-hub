@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { createTestDb } from "./testdb.js";
 import {
-  upsertSnapshots, recordRun, recordAlert, latestPerService, timeseries, openAlerts, recentRuns,
+  upsertSnapshots, recordRun, recordAlert, latestPerService, timeseries, openAlerts, recentRuns, serviceSnapshots,
   type AnyDb,
 } from "./queries.js";
 import type { SnapshotRow, AlertEvent, CollectionRun } from "../types/index.js";
@@ -81,5 +81,18 @@ describe("alerts & runs", () => {
     expect(runs).toHaveLength(1);
     expect(runs[0].id).toBe("r2");
     expect(runs[0].status).toBe("partial");
+  });
+});
+
+describe("serviceSnapshots", () => {
+  it("returns all metrics for a slug since", async () => {
+    await upsertSnapshots(db, [
+      snap({ serviceSlug: "a", metricKey: "up", metricValue: 1 }),
+      snap({ serviceSlug: "a", metricKey: "mau", metricValue: 42, unit: "count" }),
+      snap({ serviceSlug: "b", metricKey: "up", metricValue: 1 }),
+    ]);
+    const rows = await serviceSnapshots(db, "a", "2026-05-01T00:00:00.000Z");
+    expect(rows).toHaveLength(2);
+    expect(rows.every((r) => r.serviceSlug === "a")).toBe(true);
   });
 });

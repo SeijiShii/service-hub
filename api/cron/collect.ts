@@ -1,0 +1,49 @@
+import type { VercelRequest, VercelResponse } from "../../src/lib/vercel.js";
+import {
+  createDb,
+  upsertSnapshots,
+  recordRun,
+  recordAlert,
+  resolveAlert,
+  markAlertNotified,
+  openAlerts,
+} from "../../src/db/index.js";
+import { loadServices } from "../../src/registry/index.js";
+import { getAdapters } from "../../src/providers/index.js";
+import { runCollection } from "../../src/features/collection/index.js";
+import { checkCronSecret } from "../../src/features/collection/index.js";
+import { evaluate, notify } from "../../src/features/alerts/index.js";
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  const auth = req.headers.authorization;
+  if (!checkCronSecret(typeof auth === "string" ? auth : undefined)) {
+    return res.status(401).json({ error: "forbidden" });
+  }
+  const db = createDb();
+  const run = await runCollection({
+    loadServices: () => loadServices({ onlyActive: true }),
+    getAdapters: (s) => getAdapters(s, { env: process.env }),
+    saveSnapshots: (rows) => upsertSnapshots(db, rows),
+    saveRun: (r) => recordRun(db, r),
+    onCollected: async (rows, services) => {
+      const fired = await evaluate(
+        {
+          getOpenAlerts: () => openAlerts(db),
+          recordAlert: (e) => recordAlert(db, e),
+          resolveAlert: (id) => resolveAlert(db, id),
+        },
+        rows,
+        services,
+      );
+      // 通知チャネルは [論点-AL1]。MVP: 画面内(openAlerts)のみ。Webhook は release で env から。
+      await notify(
+        {
+          channel: async () => {},
+          markNotified: (id) => markAlertNotified(db, id),
+        },
+        fired,
+      );
+    },
+  });
+  return res.status(200).json(run);
+}

@@ -108,3 +108,12 @@
   chosen_type: explicit-choice
   depends_on: []
   context: seiji「10 は適切か、無制限に反復してほしい」→ 回数上限廃止、#5 進捗なし検知が backstop。
+
+- id: D20260526-043
+  timestamp: 2026-05-26T11:19:00+09:00
+  command: /flow:tdd
+  phase: 反復9 service-detail
+  chosen: コア GREEN (8 + 全86)。全9フォルダ unit 実装完了
+  chosen_type: auto-recommended
+  depends_on: [D20260526-041]
+  context: detail VM + Recharts。次=app bootstrap(Vite/router/Clerk/Tailwind/loaders/cron handler) で実行可能に。

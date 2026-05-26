@@ -137,6 +137,16 @@ export async function timeseries(
   return rows.map(toSnapshotRow);
 }
 
+
+export async function serviceSnapshots(
+  db: AnyDb, slug: string, sinceIso: string,
+): Promise<SnapshotRow[]> {
+  const rows = await db.select().from(usageSnapshots)
+    .where(and(eq(usageSnapshots.serviceSlug, slug), gte(usageSnapshots.capturedAt, new Date(sinceIso))))
+    .orderBy(usageSnapshots.capturedAt);
+  return rows.map(toSnapshotRow);
+}
+
 export async function openAlerts(db: AnyDb): Promise<AlertEvent[]> {
   const rows = await db
     .select()
@@ -152,6 +162,15 @@ export async function openAlerts(db: AnyDb): Promise<AlertEvent[]> {
     notifiedAt: iso(r.notifiedAt),
     resolvedAt: iso(r.resolvedAt),
   }));
+}
+
+
+export async function resolveAlert(db: AnyDb, id: string): Promise<void> {
+  await db.update(alertEvents).set({ resolvedAt: new Date() }).where(eq(alertEvents.id, id));
+}
+
+export async function markAlertNotified(db: AnyDb, id: string): Promise<void> {
+  await db.update(alertEvents).set({ notifiedAt: new Date() }).where(eq(alertEvents.id, id));
 }
 
 export async function recentRuns(
