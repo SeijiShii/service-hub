@@ -22,7 +22,7 @@ Neon スキーマ・マイグレーション (usage_snapshots / alert_events / c
 ## サブフォルダ（改修・バグ修正・クレーム判定履歴）
 | パス | 種別 | issue/slug | 状態 | 概要 | INDEX |
 |---|---|---|---|---|---|
-| (なし。`/flow:revise` / `/flow:fix` / `/flow:claim` で生成) |
+| [fix_001_20260526_schema-push](./fix_001_20260526_schema-push/) | fix | 001 / schema-push | 修正済 (Neon 適用) | drizzle.config + db:push script、Neon に 3 テーブル適用 | [INDEX](./fix_001_20260526_schema-push/INDEX.md) |
 
 ## 関連
 - 親 concept: `../concept.md` §1.3.2 _shared/db 行

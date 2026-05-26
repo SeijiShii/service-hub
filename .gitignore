@@ -13,6 +13,10 @@ dist/
 exports/
 *.log
 
+# flow 一時マーカー (continuous loop / compact 連携、追跡しない)
+.flow-loop-active
+.flow-needs-compact
+
 # OS
 .DS_Store
 

@@ -2,7 +2,7 @@
 
 **最終更新**: 2026-05-26 07:58
 **生成元**: /flow:concept → /flow:feature
-**状態**: コア実装済 (guard GREEN、glue は bootstrap)
+**状態**: 実装済 (guard + サーバ検証 GREEN、fix_001 で Clerk session 検証実装)
 
 <!-- auto-generated-start -->
 
@@ -22,7 +22,7 @@ Clerk 単一ユーザーゲート (全ルート保護・seiji のみ許可)
 ## サブフォルダ（改修・バグ修正・クレーム判定履歴）
 | パス | 種別 | issue/slug | 状態 | 概要 | INDEX |
 |---|---|---|---|---|---|
-| (なし。`/flow:revise` / `/flow:fix` / `/flow:claim` で生成) |
+| [fix_001_20260526_clerk-session-verify](./fix_001_20260526_clerk-session-verify/) | fix | 001 / clerk-session-verify | 修正済 (GREEN) | Clerk セッションのサーバ側検証 (cookie→verifyToken)。placeholder 撤去 | [INDEX](./fix_001_20260526_clerk-session-verify/INDEX.md) |
 
 ## 関連
 - 親 concept: `../concept.md` §1.3.2 _shared/auth 行
