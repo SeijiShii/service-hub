@@ -62,3 +62,13 @@
   chosen_type: auto-recommended
   depends_on: [D20260526-036]
   context: guard.ts 純ロジック実装+テスト。Clerk/React 結線は dashboard bootstrap。次=registry。
+
+- id: D20260526-038
+  timestamp: 2026-05-26T10:57:00+09:00
+  command: /flow:tdd
+  phase: 反復5 registry
+  question: registry 実装結果
+  chosen: GREEN (8 + 全52)、services.toml SoT 初期版
+  chosen_type: auto-recommended
+  depends_on: [D20260526-037]
+  context: Zod 検証(SSRF/秘密直書き)。services.toml(hana-memo)作成。次=collection。

@@ -2,7 +2,7 @@
 
 **最終更新**: 2026-05-26 07:58
 **生成元**: /flow:concept → /flow:feature
-**状態**: 設計済 (実装待ち)
+**状態**: コア実装済 (runner GREEN、handler は bootstrap)
 
 <!-- auto-generated-start -->
 
@@ -15,7 +15,9 @@
 | 001 | [001_collection_SPEC.md](./001_collection_SPEC.md) | SPEC | 確定 | 2026-05-26 | cron + pull オーケストレーション |
 | 002 | [002_collection_PLAN.md](./002_collection_PLAN.md) | PLAN | 確定 | 2026-05-26 | runner + cron handler |
 | 003 | [003_collection_UNIT_TEST.md](./003_collection_UNIT_TEST.md) | UNIT_TEST | 確定 | 2026-05-26 | ok/partial/failed + 冪等 |
-| 004 | (E2E: cron handler 統合テスト、UI なし) | — | 計画 | — | — |
+| 004 | (E2E: cron handler 統合、bootstrap 後) | — | 計画 | — | — |
+| 101 | [101_collection_IMPL_REPORT.md](./101_collection_IMPL_REPORT.md) | IMPL_REPORT | 完了 | 2026-05-26 | runner 実装(handler 保留) |
+| 102 | [102_collection_UNIT_TEST_REPORT.md](./102_collection_UNIT_TEST_REPORT.md) | UNIT_TEST_REPORT | 完了 | 2026-05-26 | 8 passed |
 
 ## サブフォルダ（改修・バグ修正・クレーム判定履歴）
 | パス | 種別 | issue/slug | 状態 | 概要 | INDEX |
