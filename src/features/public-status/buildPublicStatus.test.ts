@@ -44,6 +44,32 @@ describe("buildPublicStatus (public-status-api Phase 1)", () => {
       buildPublicStatus([svc()], [snap({ metricValue: 0 })])[0]!.status,
     ).toBe("down");
   });
+  it("PS-N2b: up が 0/1 以外 (0.5/NaN) → down と誤表示せず unknown (feedback FB)", () => {
+    expect(
+      buildPublicStatus([svc()], [snap({ metricValue: 0.5 })])[0]!.status,
+    ).toBe("unknown");
+    expect(
+      buildPublicStatus([svc()], [snap({ metricValue: NaN })])[0]!.status,
+    ).toBe("unknown");
+  });
+  it("PS-N2c: lastCheckedAt は up メトリクスの時刻 (他メトリクスの時刻に引っ張られない)", () => {
+    const r = buildPublicStatus(
+      [svc()],
+      [
+        snap({
+          metricKey: "up",
+          metricValue: 1,
+          capturedAt: "2026-05-27T09:00:00.000Z",
+        }),
+        snap({
+          metricKey: "db_storage_bytes",
+          metricValue: 100,
+          capturedAt: "2026-05-27T23:59:00.000Z",
+        }),
+      ],
+    );
+    expect(r[0]!.lastCheckedAt).toBe("2026-05-27T09:00:00.000Z");
+  });
   it("PS-N3: up スナップショット無し → unknown", () => {
     const r = buildPublicStatus([svc()], []);
     expect(r[0]!.status).toBe("unknown");

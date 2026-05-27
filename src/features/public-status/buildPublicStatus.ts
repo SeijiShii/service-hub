@@ -20,23 +20,26 @@ export function buildPublicStatus(
   services: ServiceDescriptor[],
   latest: SnapshotRow[],
 ): PublicServiceStatus[] {
-  const upBySlug = new Map<string, number>();
-  const lastBySlug = new Map<string, string>();
+  // up メトリクスの値と確認時刻を slug ごとに集約 (最新 capturedAt を採用)。
+  // 状態確認日時 = up メトリクスの時刻 (他メトリクスの時刻は status とは無関係)。
+  const upBySlug = new Map<string, { value: number; at: string }>();
   for (const s of latest) {
-    if (s.metricKey === "up") upBySlug.set(s.serviceSlug, s.metricValue);
-    const prev = lastBySlug.get(s.serviceSlug);
-    if (!prev || s.capturedAt > prev) lastBySlug.set(s.serviceSlug, s.capturedAt);
+    if (s.metricKey !== "up") continue;
+    const prev = upBySlug.get(s.serviceSlug);
+    if (!prev || s.capturedAt > prev.at) {
+      upBySlug.set(s.serviceSlug, { value: s.metricValue, at: s.capturedAt });
+    }
   }
   return services
     .filter((svc) => svc.status === "active")
     .map((svc) => {
       const up = upBySlug.get(svc.slug);
+      // up は 0/1 のはず。想定外の値 (NaN/0.5 等) は "down" と誤表示せず "unknown" に。
       const status: PublicServiceStatus["status"] =
-        up == null ? "unknown" : up === 1 ? "up" : "down";
-      const lastCheckedAt = lastBySlug.get(svc.slug);
+        up == null ? "unknown" : up.value === 1 ? "up" : up.value === 0 ? "down" : "unknown";
       // 明示的に安全フィールドのみ構築 (スプレッド等で内部を巻き込まない)
       const out: PublicServiceStatus = { slug: svc.slug, name: svc.name, url: svc.url, status };
-      if (lastCheckedAt) out.lastCheckedAt = lastCheckedAt;
+      if (up) out.lastCheckedAt = up.at;
       return out;
     });
 }

@@ -24,7 +24,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const services = loadServices({ onlyActive: true });
     const latest = await latestPerService(db);
     return res.status(200).json(buildPublicStatus(services, latest));
-  } catch {
+  } catch (e) {
+    // 運用追跡用に stderr へログ (Vercel logs で確認可)。client には詳細を出さない (漏洩防止)。
+    console.error("public/status error:", e);
     return res.status(500).json({ error: "unavailable" });
   }
 }

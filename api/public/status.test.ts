@@ -26,14 +26,14 @@ function mockRes() {
   return { res, out };
 }
 
+const EXPECTED = [{ slug: "a", name: "A", url: "https://a.example.com", status: "up", lastCheckedAt: "2026-05-27T00:00:00.000Z" }];
+
 describe("GET /api/public/status (public-status-api Phase 2)", () => {
   it("PS-H1: 無認証 GET → 200 + PublicServiceStatus[]", async () => {
     const { res, out } = mockRes();
     await handler({ method: "GET", query: {}, headers: {} } as VercelRequest, res);
     expect(out.code).toBe(200);
-    expect(out.body).toEqual([
-      { slug: "a", name: "A", url: "https://a.example.com", status: "up", lastCheckedAt: "2026-05-27T00:00:00.000Z" },
-    ]);
+    expect(out.body).toEqual(EXPECTED);
   });
   it("PS-H2 (セキュリティ): レスポンスに内部指標キーが含まれない", async () => {
     const { res, out } = mockRes();
@@ -58,5 +58,11 @@ describe("GET /api/public/status (public-status-api Phase 2)", () => {
     const { res, out } = mockRes();
     await handler({ method: "POST", query: {}, headers: {} } as VercelRequest, res);
     expect(out.code).toBe(405);
+  });
+  it("PS-H6 (feedback FB): __session cookie 付きでも真に public — 同じ公開データ", async () => {
+    const { res, out } = mockRes();
+    await handler({ method: "GET", query: {}, headers: { cookie: "__session=whatever" } } as VercelRequest, res);
+    expect(out.code).toBe(200);
+    expect(out.body).toEqual(EXPECTED);
   });
 });
