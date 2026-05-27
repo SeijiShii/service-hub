@@ -9,7 +9,15 @@ export type KnownMetricKey =
   | "bandwidth_bytes"
   | "r2_storage_bytes"
   | "error_count"
-  | "last_deploy_at";
+  | "last_deploy_at"
+  // ビジネス/収益観測 (business-observability, revise_001)。service-info 自己申告。
+  | "revenue_month_usd"
+  | "mrr_usd"
+  | "ai_cost_month_usd"
+  | "paid_users"
+  | "checkout_started_month"
+  | "checkout_completed_month"
+  | "checkout_card_failed_month";
 
 /** open union: Phase2 でのメトリクス追加を破壊変更なく許容。 */
 export type MetricKey = KnownMetricKey | (string & {});

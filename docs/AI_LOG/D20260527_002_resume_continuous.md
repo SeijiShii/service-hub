@@ -35,3 +35,19 @@
     revise 設計4文書完成 → P2 in-progress 解消。次は P4 次フェーズ=実装 (/flow:tdd)。
     並行: GAP-4 deploy は Class B (seiji 手動) で loop 前進不可、引き続き並行パーク。
     context heavy (長大セッション) → .flow-needs-compact marker 書込 + 継続 (§4.5.2a)。
+
+- id: D20260527-010
+  timestamp: 2026-05-27T00:00:00+09:00
+  command: /flow:auto → /flow:tdd (inline)
+  phase: 反復2 Phase A/B 純ロジック実装 (TDD GREEN)
+  question: business-observability Phase A/B 実装結果
+  chosen: 採算 (profitability.ts) + 離脱率 (funnel.ts) 純ロジック GREEN
+  chosen_type: auto-recommended
+  depends_on: [D20260527-009]
+  context: |
+    types に標準ビジネスメトリクスキー追加 (_month 窓で BO1 解決)。
+    computeProfitability (revenue−cost → 黒字/薄利/赤字/データなし, thinMarginMax 既定0.15) +
+    computeFunnel (started/completed/card_failed → 全体離脱率 + カード失敗率, ゼロ除算/clamp 安全)。
+    profitability.test 6 + funnel.test 5 = 全 109 tests green / typecheck green。文脈効率のため tdd skill
+    再ロードせず設計文書に沿って inline 実装。残: view 統合 (dashboard 採算列/service-detail ファネル) +
+    Phase C(projection) + Phase D(cost-sim + pricing SoT)。
