@@ -137,3 +137,24 @@
     出て全ルート塞ぐ → playwright.config webServer を VITE_CLERK_PUBLISHABLE_KEY= (bare) に固定。
     e2e 9 passed (新 cost-sim 2 含む) + snapshot 再生成。全 unit green / typecheck。
     P4.4b/P4.5 通過。残: 残デプロイ (GAP-4 + business-observability、Class B=seiji)。
+
+- id: D20260527-017
+  timestamp: 2026-05-27T00:00:00+09:00
+  command: /flow:auto
+  phase: §4.5.1#0 no-key/Class-A 枯渇チェック → Class B 境界
+  question: business-observability の残り no-key Class-A work はあるか
+  chosen: 枯渇 → Class B デプロイ境界 (条件2、1-decision pause、marker 保持)
+  chosen_type: auto-recommended
+  depends_on: [D20260527-016]
+  context: |
+    列挙した no-key 変種と可否:
+    - 追加実装/unit: 完了 (Phase A/B/C/D、business-observability テスト多数 + 全 ~140 green)
+    - ローカル headless E2E: 完了 (e2e 9 green、cost-sim spec 含む、bare-build 回帰も修正)
+    - build 検証: 完了 (vite build green)
+    - 視覚レビュー: 完了 (design --review-only、3 スクショ multimodal PASS、status 色化)
+    - pricing SoT 精緻化: 完了 (WebSearch 更新)
+    → service-hub の no-key Class-A work 枯渇。
+    残り: (1) business-observability + GAP-4 を prod へデプロイ = Class B (classifier が agent prod-deploy
+    を block、seiji の `bash scripts/deploy-prod.sh`)。(2) Group B/D 実キー + services.toml hana-memo
+    実値 = Class C (seiji)。→ Class B 境界の 1-decision pause (歪曲停止ではない: 実際に Class B 操作で
+    seiji の手が必要、no-key 列挙で枯渇を確認済)。marker 保持。
