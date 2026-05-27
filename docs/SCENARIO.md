@@ -52,14 +52,17 @@ flow で連発するマイクロサービス群の稼働/利用/コスト/障害
 ## 5. 現在地カーソル
 
 <!-- AUTO-GENERATED:BEGIN scenario-cursor -->
-- 現在フェーズ: Phase 4 (Release gate) — 実装/unit(87)/E2E(7)/視覚/build 全 GREEN、実キー待ち
-- 進行中ターゲット: なし (実装完了)
-- 最終更新セッション: D20260526_008_resume_continuous
-- 最終更新時刻: 2026-05-26 11:30
-- 完了フェーズ: [Phase1, Phase1.5, Phase2, Phase3 実装(全9フォルダ unit + bootstrap, vite build green, 87 tests)]
-- 次の推奨コマンド: /flow:release (実キー FILL=Clerk/Neon/provider tokens + 実 Clerk backend 検証差し替え + ローカル実機確認 + Vercel デプロイ)。Class C(キー)+Class B(デプロイ)=seiji
-- 備考: (1) 残り feature の spec-review (P3.7) は tdd 前に随時。(2) 画面実装後に /flow:design --review-only (Design gate P4.4b、視覚レビュー)。(3) unit 後に /flow:e2e (P4.5)。(4) 実キー/デプロイは /flow:release (P4.7)。Open 論点: 001✅/003✅/T1✅ 解決、004(SEC O24)/DB1/PR1/CO1/AL1 は実装時
+- 現在フェーズ: Phase 4 (Release gate 進行中) — **本番デプロイ済 (test キー)**、live 化 + 実 pull データ投入が残
+- 進行中ターゲット: なし (全機能 実装完了)
+- 最終更新セッション: D20260527_006_resume_continuous (audit→secure→scenario reconcile)
+- 最終更新時刻: 2026-05-27 21:30
+- 完了フェーズ: [Phase1, Phase1.5, Phase2, Phase3 実装(全9フォルダ unit+E2E green, 視覚レビュー green, vite build green), Phase4 一次デプロイ(service-hub-lake.vercel.app, test/dev Clerk キー)]
+- デプロイ状況: 本番 URL = https://service-hub-lake.vercel.app (Clerk gate で seiji 限定)。post-deploy スモーク green (D20260527-025)。第一弾監視対象 hana-memo (hana-memo.givers.work) を実 URL + provider 座標で配線済 (commit fea80f1/eaa8bb6)。public-status-api 実装+feedback round1 完了。
+- 次の推奨コマンド: /flow:release (test→live 化: 実 Group B provider read-only トークン FILL + Clerk production instance 化 + 実 pull データ疎通確認)。Class C(実キー)+Class B(再デプロイ)=seiji
+- Open 論点: 001✅/002✅/003✅/004✅(SEC O24 実装充足 closed) 解決済。005[SEC-003] @vercel/node devDep High CVE = accepted-risk 推奨 (ユーザー明示確認待ち、本番ランタイム非搭載)。
+- 残ゲート: P4.7 Release (live キー化=production-spec、CF-009 で test 居座り回避) / P4.45 Wording (内部ツールのため低優先、1度も未実行) / P4.8 Promote は §4.7 非公開のため不発火。
 <!-- AUTO-GENERATED:END scenario-cursor -->
 
 ## 6. 変更履歴
 - 2026-05-26: /flow:concept で初回生成
+- 2026-05-27: /flow:scenario --update で §5 カーソルを reconcile (Phase4 デプロイ済 test キーへ、~10 session 分の stale を解消、decision_id=D20260527-032)。/flow:auto §3.0c drift シューティング由来 (AUDIT_20260527_2126 検出)

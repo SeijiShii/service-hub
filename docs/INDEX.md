@@ -1,6 +1,6 @@
 # プロジェクトドキュメントインデックス
 
-**最終更新**: 2026-05-26 07:58
+**最終更新**: 2026-05-27 21:30
 **生成元**: /flow:concept、/flow:feature 等が自動更新
 
 <!-- auto-generated-start -->
@@ -14,19 +14,19 @@
 ## 機能フォルダ（優先度順）
 | 優先度 | 基盤 | フォルダ | 状態 | 設計完了 | INDEX |
 |---|---|---|---|---|---|
-| 2 | ✅ | [registry](./registry/) | 実装済 | 2026-05-26 | [INDEX](./registry/INDEX.md) |
-| 3 | ✅ | [collection](./collection/) | コア実装済 | 2026-05-26 | [INDEX](./collection/INDEX.md) |
-| 4 | ❌ | [dashboard](./dashboard/) | コア実装済 | 2026-05-26 | [INDEX](./dashboard/INDEX.md) |
-| 4 | ❌ | [service-detail](./service-detail/) | コア実装済 | 2026-05-26 | [INDEX](./service-detail/INDEX.md) |
-| 4 | ❌ | [alerts](./alerts/) | 実装済 | 2026-05-26 | [INDEX](./alerts/INDEX.md) |
+| 2 | ✅ | [registry](./registry/) | 実装済+デプロイ済 | 2026-05-26 | [INDEX](./registry/INDEX.md) |
+| 3 | ✅ | [collection](./collection/) | 実装済+デプロイ済 | 2026-05-26 | [INDEX](./collection/INDEX.md) |
+| 4 | ❌ | [dashboard](./dashboard/) | 実装済+デプロイ済 (unit+E2E+視覚 green) | 2026-05-27 | [INDEX](./dashboard/INDEX.md) |
+| 4 | ❌ | [service-detail](./service-detail/) | 実装済+デプロイ済 (unit+E2E+視覚 green) | 2026-05-27 | [INDEX](./service-detail/INDEX.md) |
+| 4 | ❌ | [alerts](./alerts/) | 実装済+デプロイ済 | 2026-05-26 | [INDEX](./alerts/INDEX.md) |
 
 ## 横断フォルダ（優先度順）
 | 優先度 | フォルダ | 状態 | 設計完了 | INDEX |
 |---|---|---|---|---|
 | 1 | [_shared/types](./_shared/types/) | 設計済 | 2026-05-26 | [INDEX](./_shared/types/INDEX.md) |
 | 1 | [_shared/db](./_shared/db/) | 実装済 | 2026-05-26 | [INDEX](./_shared/db/INDEX.md) |
-| 2 | [_shared/providers](./_shared/providers/) | 実装済 | 2026-05-26 | [INDEX](./_shared/providers/INDEX.md) |
-| 2 | [_shared/auth](./_shared/auth/) | コア実装済 | 2026-05-26 | [INDEX](./_shared/auth/INDEX.md) |
+| 2 | [_shared/providers](./_shared/providers/) | 実装済 (+ business-observability revise) | 2026-05-27 | [INDEX](./_shared/providers/INDEX.md) |
+| 2 | [_shared/auth](./_shared/auth/) | 実装済 (+ public-status-api revise) | 2026-05-27 | [INDEX](./_shared/auth/INDEX.md) |
 
 ## AI アクセスガイド
 - プロジェクト全体 → `concept.md`

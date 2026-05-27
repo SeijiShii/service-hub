@@ -3,7 +3,7 @@
 **実行日時**: 2026-05-26 (進行中) (+09:00)
 **コマンド**: /flow:release (retry, blocker 解消後)
 **dispatch 元**: /flow:auto 反復2 (D20260526-059)
-**状態**: 進行中 (Phase 2 — smoke 方式の決定待ち)
+**状態**: 完了 (本番デプロイ確定 = D20260527-025 で service-hub-lake.vercel.app + post-deploy スモーク green。bookkeeping close 2026-05-27 by D20260527_006 §3.0c、AUDIT-ailog-001)
 
 ## Decisions
 ```yaml
