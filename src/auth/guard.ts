@@ -4,7 +4,10 @@ export interface AuthState {
 }
 
 export class AuthError extends Error {
-  constructor(public status: 401 | 403, message: string) {
+  constructor(
+    public status: 401 | 403,
+    message: string,
+  ) {
     super(message);
     this.name = "AuthError";
   }
@@ -24,11 +27,21 @@ export function requireSeiji(
   allowedId: string | undefined = process.env.ALLOWED_USER_ID,
 ): { userId: string } {
   if (!auth || !auth.userId) throw new AuthError(401, "unauthenticated");
-  if (!isAllowedUser(auth.userId, allowedId)) throw new AuthError(403, "forbidden");
+  if (!isAllowedUser(auth.userId, allowedId))
+    throw new AuthError(403, "forbidden");
   return { userId: auth.userId };
 }
 
 /** ユーザーゲート対象外パス (cron は Cron secret で別途保護)。 */
 export function isPublicCronPath(path: string): boolean {
   return /^\/api\/cron\//.test(path);
+}
+
+/**
+ * 公開ルート (ユーザーゲート対象外、認証不要)。`/api/public/*` のみ。
+ * 全ルート fail-close の唯一の意図的例外 (cron と同列)。公開するのは安全サブセットのみ
+ * (public-status-api、buildPublicStatus が投影)。新ルートを安易にここへ足さないこと。
+ */
+export function isPublicPath(path: string): boolean {
+  return /^\/api\/public\//.test(path);
 }

@@ -35,7 +35,7 @@ isAllowedUser(userId: string): boolean;          // 許可ユーザー ID 照合
 ### 5.1 NFR（concept §3.X 由来）
 | 項目 | 目標 | 根拠 |
 |---|---|---|
-| 全ルート保護 | 例外なく全ページ/API を gate | O23/authn（pull データ・トークンを公開しない） |
+| 全ルート保護 | **2 つの明示例外 (`/api/cron/*`, `/api/public/*`) 以外**は全ページ/API を gate | O23/authn（pull データ・トークンを公開しない） |
 | 単一ユーザー | seiji のみ | 内部ツール |
 | フェイルクローズ | 不確実時は拒否 | 安全側 |
 
@@ -43,9 +43,10 @@ isAllowedUser(userId: string): boolean;          // 許可ユーザー ID 照合
 | 連携先 | 種別 | 内容 |
 |---|---|---|
 | dashboard / service-detail / alerts | ルート保護 | ガード適用 |
-| 全 API（cron 除く） | 保護 | requireSeiji |
+| 全 API（cron / public 除く） | 保護 | requireSeiji |
 
 > 注: `/api/cron/collect` は Clerk ユーザーセッションでなく **Vercel Cron の secret/署名**で保護（collection SPEC で定義）。ユーザーゲートとは別経路。
+> 注: `/api/public/*`（現状 `/api/public/status` のみ）は **認証なしの公開ルート**（`isPublicPath`、revise_001_public-status-api）。別サービスの公開ショーケースが消費。**公開安全サブセットのみ**を返し（`buildPublicStatus`、収益/コスト/利用数/トークン等は構造的に非公開）、これが全ルート gate の唯一の公開例外。新ルートを安易に `/api/public/` 下へ足さないこと（fail-close 維持）。
 
 ## 6. タグ別追加項目
 ### auth-required

@@ -2,7 +2,7 @@
 
 **issue / slug**: 001 / public-status-api
 **実施日**: 2026-05-27
-**状態**: 設計完了（SPEC + PLAN + UNIT_TEST + E2E_TEST）
+**状態**: 実装完了（unit GREEN, 全 150 tests / 新規 13）。E2E は /flow:e2e 待ち
 
 <!-- auto-generated-start -->
 
@@ -13,6 +13,8 @@
 | 002 | [002_REVISE_PLAN.md](./002_REVISE_PLAN.md) | 変更計画 |
 | 003 | [003_REVISE_UNIT_TEST.md](./003_REVISE_UNIT_TEST.md) | 単体テスト計画 |
 | 004 | [004_REVISE_E2E_TEST.md](./004_REVISE_E2E_TEST.md) | E2E テスト計画 |
+| 101 | [101_REVISE_IMPL_REPORT.md](./101_REVISE_IMPL_REPORT.md) | 実装レポート |
+| 102 | [102_REVISE_UNIT_TEST_REPORT.md](./102_REVISE_UNIT_TEST_REPORT.md) | 単体テストレポート |
 
 ## 改修サマリ
 `GET /api/public/status`（無認証・公開）を追加。auth の「全ルート gate」への唯一の公開例外。

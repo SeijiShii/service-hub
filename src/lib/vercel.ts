@@ -8,4 +8,8 @@ export interface VercelRequest {
 export interface VercelResponse {
   status(code: number): VercelResponse;
   json(body: unknown): VercelResponse;
+  /** ヘッダ設定 (CORS / Cache-Control 等)。実行時は Vercel が供給。 */
+  setHeader(name: string, value: string): VercelResponse;
+  /** ボディ無しレスポンス終端 (OPTIONS 204 等)。 */
+  end(): VercelResponse;
 }
