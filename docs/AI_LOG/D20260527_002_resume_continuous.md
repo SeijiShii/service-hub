@@ -51,3 +51,16 @@
     profitability.test 6 + funnel.test 5 = 全 109 tests green / typecheck green。文脈効率のため tdd skill
     再ロードせず設計文書に沿って inline 実装。残: view 統合 (dashboard 採算列/service-detail ファネル) +
     Phase C(projection) + Phase D(cost-sim + pricing SoT)。
+
+- id: D20260527-011
+  timestamp: 2026-05-27T00:00:00+09:00
+  command: /flow:auto → tdd (inline)
+  phase: 反復2 Phase A view 完成
+  question: dashboard 採算/離脱率 表示
+  chosen: ServiceRow + DashboardView に 採算($profit, state 属性) + 離脱率(%) 列を追加
+  chosen_type: auto-recommended
+  depends_on: [D20260527-010]
+  context: |
+    Phase A 完了 (純ロジック→VM→view)。data-profit-state / data-abandon 属性で E2E 検証可能に。
+    全 dashboard tests green / typecheck / build green。残: Phase B(service-detail ファネル表示) +
+    Phase C(projection) + Phase D(cost-sim + pricing SoT)。context 大 → §4.5.2a marker 継続中。
