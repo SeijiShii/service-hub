@@ -64,3 +64,16 @@
     Phase A 完了 (純ロジック→VM→view)。data-profit-state / data-abandon 属性で E2E 検証可能に。
     全 dashboard tests green / typecheck / build green。残: Phase B(service-detail ファネル表示) +
     Phase C(projection) + Phase D(cost-sim + pricing SoT)。context 大 → §4.5.2a marker 継続中。
+
+- id: D20260527-012
+  timestamp: 2026-05-27T00:00:00+09:00
+  command: /flow:auto → tdd (inline)
+  phase: 反復2 Phase B 完成 (service-detail 決済ファネル)
+  question: service-detail に離脱率表示
+  chosen: detail VM に funnel (直近値から computeFunnel) + ServiceDetailView に決済ファネル section
+  chosen_type: auto-recommended
+  depends_on: [D20260527-011]
+  context: |
+    detail VM の series は generic に revenue/ai_cost も含む (Phase C 収益/コスト時系列は実質充足)。
+    funnel=直近値 (各 series 最終点) から算出。view に 到達/離脱率/カード失敗率 表示 + テスト2追加。
+    Phase A+B 完了。残: Phase C(projection 明示の見込み数値) + Phase D(cost-sim + pricing SoT)。

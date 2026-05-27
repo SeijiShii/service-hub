@@ -1,7 +1,20 @@
-import type { ServiceDescriptor, SnapshotRow, AlertEvent, MetricKey } from "../../types/index.js";
+import type {
+  ServiceDescriptor,
+  SnapshotRow,
+  AlertEvent,
+  MetricKey,
+} from "../../types/index.js";
+import { computeFunnel, type FunnelRates } from "./funnel.js";
 
-export interface SeriesPoint { capturedAt: string; value: number }
-export interface MetricSeries { metricKey: MetricKey; unit: string; points: SeriesPoint[] }
+export interface SeriesPoint {
+  capturedAt: string;
+  value: number;
+}
+export interface MetricSeries {
+  metricKey: MetricKey;
+  unit: string;
+  points: SeriesPoint[];
+}
 export interface ServiceDetailVM {
   slug: string;
   name: string;
@@ -9,6 +22,8 @@ export interface ServiceDetailVM {
   status: ServiceDescriptor["status"];
   series: MetricSeries[];
   alerts: AlertEvent[];
+  /** 直近の決済ファネル離脱率 (business-observability)。未申告は null。 */
+  funnel: FunnelRates;
 }
 
 /** descriptor + メトリクス別 timeseries + alerts を詳細 VM に。service が無ければ null (=404)。 */
@@ -28,9 +43,19 @@ export function buildServiceDetail(
     }
     ser.points.push({ capturedAt: s.capturedAt, value: s.metricValue });
   }
+  // 直近値 (各メトリクスの最終点) からファネル離脱率を算出
+  const latest: Partial<Record<MetricKey, number>> = {};
+  for (const [k, ser] of byMetric) {
+    const last = ser.points.at(-1);
+    if (last) latest[k] = last.value;
+  }
   return {
-    slug: service.slug, name: service.name, url: service.url, status: service.status,
+    slug: service.slug,
+    name: service.name,
+    url: service.url,
+    status: service.status,
     series: [...byMetric.values()],
     alerts: alerts.filter((a) => a.serviceSlug === service.slug),
+    funnel: computeFunnel(latest),
   };
 }
