@@ -30,3 +30,28 @@
     Class A (read-only 分析 + レポート生成) のため無確認 dispatch。
     audit 後: drift シューティング → /flow:secure (新 endpoint+lockfile) → P1-P5 再評価。
 ```
+
+## 反復ログ
+```yaml
+- id: D20260527-033
+  question: 連続実行 反復1-3 (§3.0c 鮮度ゲート + drift シューティング)
+  chosen: |
+    反復1 /flow:audit (standard, 初回) → Critical0/High0/Med1/Low4 全 bookkeeping drift。
+    反復2 /flow:secure --phase=deps → High6/Mod11 全 dev tooling (本番ランタイム非搭載)、論点-004 closed、論点-005[SEC-003] open=accepted-risk 推奨。
+    反復3 /flow:scenario --update → drift 5 件 reconcile (§5 カーソル/AI_LOG INDEX 7→21/INDEX 状態/進行中放置3件 close)。
+  chosen_type: auto-recommended
+  context: §3.0c 鮮度トリガ (audit 初回 + secure 新endpoint/lockfile) → シューティング全完了、fresh 化。
+
+- id: D20260527-034
+  question: 反復4 §4.5.1#0 no-key/Class-A fallback 枯渇チェック
+  chosen: jump to P4.7 Release gate (/flow:release を dispatch、停止しない)
+  chosen_type: auto-recommended
+  context: |
+    no-key 変種を列挙し全滅を確認: ローカル headless E2E=既 green(7) / build=green / mock 結合=済 /
+    unit=150+ green / 検証バグ=なし / Phase2 providers(Sentry/CF)=[論点-PR1] 別フェーズ。
+    app は MVP feature-complete + デプロイ済 (test キー)。残作業は全て実キー必須:
+    .env.local 空 = VERCEL_API_TOKEN / NEON_API_KEY / HANAMEMO_CLERK_SECRET / HANAMEMO_HUB_SECRET (実 pull データ)
+    + Clerk TEST→production instance (live化、CF-009)。論点-005[SEC-003] accepted-risk 確認も Class C。
+    → §4.5.1#0 step4「.env.local 不足あり = P4.7 該当 → 停止せず /flow:release dispatch」に該当。
+```
+
