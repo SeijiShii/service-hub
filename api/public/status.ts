@@ -21,7 +21,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
   try {
     const db = createDb();
-    const services = loadServices({ onlyActive: true });
+    const services = await loadServices(db, { onlyActive: true });
     const latest = await latestPerService(db);
     return res.status(200).json(buildPublicStatus(services, latest));
   } catch (e) {

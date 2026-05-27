@@ -21,7 +21,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
   const db = createDb();
   const run = await runCollection({
-    loadServices: () => loadServices({ onlyActive: true }),
+    loadServices: () => loadServices(db, { onlyActive: true }),
     getAdapters: (s) => getAdapters(s, { env: process.env }),
     saveSnapshots: (rows) => upsertSnapshots(db, rows),
     saveRun: (r) => recordRun(db, r),

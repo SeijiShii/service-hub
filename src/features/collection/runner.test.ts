@@ -33,7 +33,7 @@ const errAdapter = (
 ): ProviderAdapter => ({ kind, collect: async () => ({ metrics: [], error }) });
 
 const baseDeps = (over: Partial<RunnerDeps>): RunnerDeps => ({
-  loadServices: () => [svc("a")],
+  loadServices: async () => [svc("a")],
   getAdapters: () => [okAdapter("ping")],
   saveSnapshots: vi.fn(async () => {}),
   saveRun: vi.fn(async () => {}),
@@ -50,7 +50,7 @@ describe("runCollection", () => {
     const saveSnapshots = vi.fn(async (_rows: SnapshotRow[]) => {});
     const run = await runCollection(
       baseDeps({
-        loadServices: () => [svc("a"), svc("b")],
+        loadServices: async () => [svc("a"), svc("b")],
         getAdapters: () => [okAdapter("ping"), okAdapter("neon")],
         saveSnapshots,
       }),
@@ -97,7 +97,7 @@ describe("runCollection", () => {
   });
 
   it("CO-B1: 0 active → ok, servicesCount=0", async () => {
-    const run = await runCollection(baseDeps({ loadServices: () => [] }));
+    const run = await runCollection(baseDeps({ loadServices: async () => [] }));
     expect(run.status).toBe("ok");
     expect(run.servicesCount).toBe(0);
   });

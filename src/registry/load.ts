@@ -1,7 +1,5 @@
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
-import toml from "@iarna/toml";
-import { serviceDescriptorSchema } from "./schema.js";
+import type { AnyDb } from "../db/index.js";
+import { listServices } from "../db/index.js";
 import type { ServiceDescriptor } from "../types/index.js";
 
 export interface ValidationError {
@@ -9,52 +7,14 @@ export interface ValidationError {
   message: string;
 }
 
-/** services.toml 文字列を検証。不正 service は除外し errors に集約 (全体は止めない)。 */
-export function validateServicesToml(raw: string): {
-  services: ServiceDescriptor[];
-  errors: ValidationError[];
-} {
-  let parsed: unknown;
-  try {
-    parsed = toml.parse(raw);
-  } catch (e) {
-    throw new Error(
-      `TOML パースエラー: ${e instanceof Error ? e.message : String(e)}`,
-    );
-  }
-  const arr = (parsed as { service?: unknown[] })?.service ?? [];
-  const services: ServiceDescriptor[] = [];
-  const errors: ValidationError[] = [];
-  const seen = new Set<string>();
-  for (const item of Array.isArray(arr) ? arr : []) {
-    const r = serviceDescriptorSchema.safeParse(item);
-    if (!r.success) {
-      errors.push({
-        slug: (item as { slug?: string })?.slug,
-        message: r.error.issues
-          .map((i: { message: string }) => i.message)
-          .join("; "),
-      });
-      continue;
-    }
-    if (seen.has(r.data.slug)) {
-      errors.push({ slug: r.data.slug, message: "slug 重複" });
-      continue;
-    }
-    seen.add(r.data.slug);
-    services.push(r.data as ServiceDescriptor);
-  }
-  return { services, errors };
-}
-
-export function loadServices(
-  opts: { onlyActive?: boolean; path?: string } = {},
-): ServiceDescriptor[] {
-  // 既定はプロジェクトルートの services.toml。Vercel Function では cwd=デプロイルート
-  // (/var/task) で、vercel.json functions.includeFiles により services.toml が同梱される。
-  const path = opts.path ?? join(process.cwd(), "services.toml");
-  const { services } = validateServicesToml(readFileSync(path, "utf8"));
-  return opts.onlyActive
-    ? services.filter((s) => s.status === "active")
-    : services;
+/**
+ * レジストリ SoT (Neon `services` テーブル、D20260528-001) からサービス一覧を取得する。
+ * 旧 services.toml + toml パース (validateServicesToml) は退役 (DB 一本化, D20260528-005)。
+ * 書き込み経路の検証は serviceDescriptorSchema (schema.ts) を直接使う (admin write, Phase 3)。
+ */
+export async function loadServices(
+  db: AnyDb,
+  opts: { onlyActive?: boolean } = {},
+): Promise<ServiceDescriptor[]> {
+  return listServices(db, opts);
 }

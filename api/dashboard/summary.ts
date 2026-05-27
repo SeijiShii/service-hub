@@ -22,7 +22,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .json({ error: "unauthorized" });
   }
   const db = createDb();
-  const services = loadServices({ onlyActive: true });
+  const services = await loadServices(db, { onlyActive: true });
   const [latest, alerts, runs] = await Promise.all([
     latestPerService(db),
     openAlerts(db),

@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "functions": { "api/**/*.ts": { "includeFiles": "{services.toml,docs/pricing.toml}" } },
+  "functions": { "api/**/*.ts": { "includeFiles": "docs/pricing.toml" } },
   "crons": [{ "path": "/api/cron/collect", "schedule": "0 0 * * *" }],
   "rewrites": [{ "source": "/((?!api/).*)", "destination": "/index.html" }]
 }

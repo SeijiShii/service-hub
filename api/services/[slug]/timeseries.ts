@@ -21,9 +21,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .json({ error: "unauthorized" });
   }
   const slug = String(req.query.slug ?? "");
-  const svc = loadServices().find((s) => s.slug === slug);
-  if (!svc) return res.status(404).json(null);
   const db = createDb();
+  const svc = (await loadServices(db, {})).find((s) => s.slug === slug);
+  if (!svc) return res.status(404).json(null);
   const since = new Date(Date.now() - 30 * 864e5).toISOString();
   const [rows, alerts] = await Promise.all([
     serviceSnapshots(db, slug, since),
