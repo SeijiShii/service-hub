@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import toml from "@iarna/toml";
 import { z } from "zod";
 import type { MetricKey } from "../../types/index.js";
@@ -35,7 +37,9 @@ export function validatePricing(raw: string): PricingTable {
   try {
     parsed = toml.parse(raw);
   } catch (e) {
-    throw new Error(`pricing TOML パースエラー: ${e instanceof Error ? e.message : String(e)}`);
+    throw new Error(
+      `pricing TOML パースエラー: ${e instanceof Error ? e.message : String(e)}`,
+    );
   }
   const r = tableSchema.parse(parsed);
   return {
@@ -50,8 +54,22 @@ export function validatePricing(raw: string): PricingTable {
   };
 }
 
+/**
+ * pricing.toml をファイルから読み込んで検証 (Vercel Function では cwd=/var/task、
+ * vercel.json functions.includeFiles で docs/pricing.toml を同梱)。
+ */
+export function loadPricing(
+  path = join(process.cwd(), "docs/pricing.toml"),
+): PricingTable {
+  return validatePricing(readFileSync(path, "utf8"));
+}
+
 /** updated が now から maxDays 超なら stale (= WebSearch 更新を提案する根拠)。 */
-export function isStale(table: PricingTable, now: Date, maxDays: number): boolean {
+export function isStale(
+  table: PricingTable,
+  now: Date,
+  maxDays: number,
+): boolean {
   const updated = new Date(table.updated);
   const days = (now.getTime() - updated.getTime()) / 86400000;
   return days > maxDays;

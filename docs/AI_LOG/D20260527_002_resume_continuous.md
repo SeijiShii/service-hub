@@ -92,3 +92,17 @@
     keep/upgrade/consolidate/sunset 提案 (BO2 既定=provider単位単一アカウント)。
     aggregateByAccount: (provider,account)単位で使用量/収益合算。pricing3+simulate7+aggregate3=13 tests green。
     残: cost-sim API + view (最終 wiring)。歪曲停止防止策を auto.md/memory に反映後、loop 継続中。
+
+- id: D20260527-014
+  timestamp: 2026-05-27T00:00:00+09:00
+  command: /flow:auto → tdd (inline)
+  phase: 反復2 Phase D wiring (orchestrate + API)
+  question: コストシミュレーションの集約 + API
+  chosen: runCostSim (合算→pricing照合→simulate) + loadPricing(cwd) + buildServiceUsages + api/cost-sim/summary + 認可結合テスト
+  chosen_type: auto-recommended
+  depends_on: [D20260527-013]
+  context: |
+    orchestrate.runCostSim + pricing.loadPricing(cwd, vercel.json includeFiles に docs/pricing.toml 追加) +
+    aggregate.buildServiceUsages (snapshots→ServiceUsage、service-info/ping 除外、収益付与)。
+    api/cost-sim/summary (requireSeiji ゲート + DB latest + pricing + runCostSim、認可結合テスト2)。
+    cost-sim 計18 + handler。全テスト green / typecheck / build。残: cost-sim view (最終)。
