@@ -5,6 +5,7 @@ import type {
   MetricKey,
 } from "../../types/index.js";
 import { computeFunnel, type FunnelRates } from "./funnel.js";
+import { projectAhead } from "../../lib/projection.js";
 
 export interface SeriesPoint {
   capturedAt: string;
@@ -24,6 +25,8 @@ export interface ServiceDetailVM {
   alerts: AlertEvent[];
   /** 直近の決済ファネル離脱率 (business-observability)。未申告は null。 */
   funnel: FunnelRates;
+  /** 収益 (revenue_month_usd) 時系列からの 1/2/3ヶ月後 見込み。データ不足は null。 */
+  revenueProjection: (number | null)[];
 }
 
 /** descriptor + メトリクス別 timeseries + alerts を詳細 VM に。service が無ければ null (=404)。 */
@@ -49,6 +52,9 @@ export function buildServiceDetail(
     const last = ser.points.at(-1);
     if (last) latest[k] = last.value;
   }
+  // 収益時系列から 1/2/3ヶ月後を外挿
+  const revenueValues =
+    byMetric.get("revenue_month_usd")?.points.map((p) => p.value) ?? [];
   return {
     slug: service.slug,
     name: service.name,
@@ -57,5 +63,6 @@ export function buildServiceDetail(
     series: [...byMetric.values()],
     alerts: alerts.filter((a) => a.serviceSlug === service.slug),
     funnel: computeFunnel(latest),
+    revenueProjection: projectAhead(revenueValues, [1, 2, 3]),
   };
 }

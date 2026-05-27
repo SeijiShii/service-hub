@@ -11,6 +11,7 @@ const vm = (over: Partial<ServiceDetailVM> = {}): ServiceDetailVM => ({
   series: [],
   alerts: [],
   funnel: { started: null, abandonmentRate: null, cardFailureRate: null },
+  revenueProjection: [null, null, null],
   ...over,
 });
 

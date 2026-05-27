@@ -37,6 +37,23 @@ export function ServiceDetailView({ vm }: { vm: ServiceDetailVM | null }) {
           vm.series.map((s) => <MetricChart key={s.metricKey} series={s} />)
         )}
       </section>
+      <section data-testid="revenue-projection">
+        <h2>収益見込み</h2>
+        {vm.revenueProjection.every((v) => v == null) ? (
+          <p>データ不足</p>
+        ) : (
+          <dl style={{ fontFamily: "ui-monospace, monospace" }}>
+            {vm.revenueProjection.map((v, i) => (
+              <span key={i}>
+                <dt>{i + 1}ヶ月後</dt>
+                <dd data-proj={i + 1}>
+                  {v == null ? "—" : `$${v.toFixed(2)}`}
+                </dd>
+              </span>
+            ))}
+          </dl>
+        )}
+      </section>
       <section data-testid="funnel">
         <h2>決済ファネル</h2>
         {vm.funnel.started == null ? (
