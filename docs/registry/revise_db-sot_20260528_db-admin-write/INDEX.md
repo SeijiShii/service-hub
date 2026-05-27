@@ -2,7 +2,7 @@
 
 **issue / slug**: db-sot / db-admin-write
 **実施日**: 2026-05-28
-**状態**: 設計完了（実装前）
+**状態**: 実装完了（unit green 176、E2E は /flow:e2e 未実施）
 
 <!-- auto-generated-start -->
 
@@ -14,6 +14,8 @@
 | 002 | 002_REVISE_PLAN.md | 変更計画 | 2026-05-28 |
 | 003 | 003_REVISE_UNIT_TEST.md | 単体テスト計画 | 2026-05-28 |
 | 004 | 004_REVISE_E2E_TEST.md | E2E テスト計画 | 2026-05-28 |
+| 101 | 101_REVISE_IMPL_REPORT.md | 実装レポート | 2026-05-28 |
+| 102 | 102_REVISE_UNIT_TEST_REPORT.md | 単体テストレポート | 2026-05-28 |
 
 ## 関連
 - 親機能 INDEX: `../INDEX.md`

@@ -112,4 +112,23 @@ src/registry/{load,schema,index}.ts, src/db/{schema,client,queries,index}.ts, ap
     adapters.ts:119-142 が clerk.secretEnv(MAU)/serviceInfo.secretEnv を消費。即撤去すると providers がビルド不能。
     step 3(① MAU を service-info 自己申告 + 共通鍵)で adapters を切替えてから撤去するのが安全。本 revise は schema/types に
     optional 残置、admin フォームは収集しない（秘密ゼロ化の実体は満たす）。
+
+- id: D20260528-007
+  timestamp: 2026-05-28T00:00:00+09:00
+  command: /flow:revise
+  phase: orchestration / command-feedback
+  question: registry 設計完了後に「A/B/C(C=一旦止める)」の停止オプション付きメニューを出したのは適切か
+  options:
+    - 不適切（Class A 継続を停止選択肢化＝人為的 pause の捏造）
+    - 適切
+  recommended: 不適切
+  chosen: 不適切
+  chosen_type: auto-recommended
+  type: command-feedback
+  depends_on: []
+  context: |
+    ユーザー [flow] 指摘「ここで停止するのは適切か」。command-feedback-loop §0.5 (即時適用パス) に従い
+    triage=(b) flow コマンド表現不足と判定。CF-20260528-001 を inbox に捕捉し、resume-contract §0.1.1 を
+    その場で新設 (Class A 継続は提示して進める/停止を選択肢に並べない)。flow-suite 編集は Class B のため
+    commit はユーザー確認待ち。本 PJ では停止せず次の Class A (registry 実装) へ進む。
 ```

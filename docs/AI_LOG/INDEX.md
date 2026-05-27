@@ -1,8 +1,8 @@
 # AI_LOG インデックス — service-hub
 
 **最終更新**: 2026-05-28 (+09:00)
-**総セッション数**: 23
-**総 decision 数**: 37 (D20260528-001〜006、D20260527-001〜031、+ D20260526 系)
+**総セッション数**: 24
+**総 decision 数**: 40 (D20260528-001〜009、D20260527-001〜031、+ D20260526 系)
 
 > セッションごとに 1 ファイル、append-only、過去ファイルは削除・編集禁止。
 > 人間向けサマリは `../concept.md` §7 決定事項ログ を参照。
@@ -12,7 +12,8 @@
 ## セッション一覧（新しい順）
 | ファイル | 実行日 | コマンド | 対象 | decision 範囲 | 状態 |
 |---|---|---|---|---|---|
-| [D20260528_002_revise_registry_db-sot.md](./D20260528_002_revise_registry_db-sot.md) | 2026-05-28 | /flow:revise | registry (DB SoT + admin write) | D20260528-003〜006 | 設計完了 |
+| [D20260528_003_tdd_registry_revise_db-sot.md](./D20260528_003_tdd_registry_revise_db-sot.md) | 2026-05-28 | /flow:tdd | registry revise (DB SoT 実装) | D20260528-008〜009 | 完了 |
+| [D20260528_002_revise_registry_db-sot.md](./D20260528_002_revise_registry_db-sot.md) | 2026-05-28 | /flow:revise | registry (DB SoT + admin write) | D20260528-003〜007 | 設計完了 |
 | [D20260528_001_concept_update_20260528.md](./D20260528_001_concept_update_20260528.md) | 2026-05-28 | /flow:concept | update (レジストリ DB 化 + 秘密ゼロ化) | D20260528-001〜002 | 完了 |
 | [D20260527_008_secure_deps.md](./D20260527_008_secure_deps.md) | 2026-05-27 | /flow:secure | deps (L4) | D20260527-029〜031 | 完了 |
 | [D20260527_007_audit_standard.md](./D20260527_007_audit_standard.md) | 2026-05-27 | /flow:audit | standard (初回) | D20260527-027〜028 | 完了 |
@@ -38,6 +39,9 @@
 ## decision_id 索引（grep 用、新しい順）
 | ID | command | phase | chosen (短縮) | type | ファイル |
 |---|---|---|---|---|---|
+| D20260528-009 | /flow:tdd | 全テスト + feedback | 176 passed / feedback skip(推奨提示) | auto-recommended | D20260528_003_tdd_registry_revise_db-sot.md |
+| D20260528-008 | /flow:tdd | Phase 軽重判定 | 全 4 Phase メイン直接実装 | auto-recommended | D20260528_003_tdd_registry_revise_db-sot.md |
+| D20260528-007 | /flow:revise | orchestration / command-feedback | 停止メニューは不適切（CF-20260528-001） | auto-recommended | D20260528_002_revise_registry_db-sot.md |
 | D20260528-006 | /flow:revise | providers secretEnv sequencing | step 3 まで optional 残置（build green） | auto-recommended | D20260528_002_revise_registry_db-sot.md |
 | D20260528-005 | /flow:revise | services.toml | 削除して DB 一本化 | explicit-choice | D20260528_002_revise_registry_db-sot.md |
 | D20260528-004 | /flow:revise | 移行方式 | import 不要（未運用＝移行なし） | explicit-choice | D20260528_002_revise_registry_db-sot.md |

@@ -14,7 +14,7 @@
 ## 機能フォルダ（優先度順）
 | 優先度 | 基盤 | フォルダ | 状態 | 設計完了 | INDEX |
 |---|---|---|---|---|---|
-| 2 | ✅ | [registry](./registry/) | 実装済+デプロイ済 / 改修1件設計完了（DB SoT 化, db-sot） | 2026-05-28 | [INDEX](./registry/INDEX.md) |
+| 2 | ✅ | [registry](./registry/) | 実装済+デプロイ済 / 改修1件 実装完了（DB SoT 化, db-sot, unit 176 green） | 2026-05-28 | [INDEX](./registry/INDEX.md) |
 | 3 | ✅ | [collection](./collection/) | 実装済+デプロイ済 | 2026-05-26 | [INDEX](./collection/INDEX.md) |
 | 4 | ❌ | [dashboard](./dashboard/) | 実装済+デプロイ済 (unit+E2E+視覚 green) | 2026-05-27 | [INDEX](./dashboard/INDEX.md) |
 | 4 | ❌ | [service-detail](./service-detail/) | 実装済+デプロイ済 (unit+E2E+視覚 green) | 2026-05-27 | [INDEX](./service-detail/INDEX.md) |

@@ -22,7 +22,7 @@
 ## サブフォルダ（改修・バグ修正・クレーム判定履歴）
 | パス | 種別 | issue/slug | 状態 | 概要 | INDEX |
 |---|---|---|---|---|---|
-| [revise_db-sot_20260528_db-admin-write/](./revise_db-sot_20260528_db-admin-write/) | revise | db-sot | 設計完了（実装前） | レジストリ SoT を Git services.toml → Neon services テーブル + Clerk ゲート内 admin write。未運用ゆえ移行なし・toml 削除（[D20260528-001/002]） | [INDEX](./revise_db-sot_20260528_db-admin-write/INDEX.md) |
+| [revise_db-sot_20260528_db-admin-write/](./revise_db-sot_20260528_db-admin-write/) | revise | db-sot | 実装完了（unit 176 green、E2E 未） | レジストリ SoT を Git services.toml → Neon services テーブル + Clerk ゲート内 admin write。未運用ゆえ移行なし・toml 削除（[D20260528-001/002]） | [INDEX](./revise_db-sot_20260528_db-admin-write/INDEX.md) |
 
 ## 関連
 - 親 concept: `../concept.md` §1.3.1 registry 行
