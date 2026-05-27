@@ -23,6 +23,7 @@ Clerk 単一ユーザーゲート (全ルート保護・seiji のみ許可)
 | パス | 種別 | issue/slug | 状態 | 概要 | INDEX |
 |---|---|---|---|---|---|
 | [fix_001_20260526_clerk-session-verify](./fix_001_20260526_clerk-session-verify/) | fix | 001 / clerk-session-verify | 修正済 (GREEN) | Clerk セッションのサーバ側検証 (cookie→verifyToken)。placeholder 撤去 | [INDEX](./fix_001_20260526_clerk-session-verify/INDEX.md) |
+| [revise_001_20260527_public-status-api](./revise_001_20260527_public-status-api/) | revise | 001 / public-status-api | 設計完了 | `GET /api/public/status`(無認証) を追加。全ルート gate の唯一の公開例外、安全サブセット投影 (内部指標非公開)。公開ショーケースが消費 | [INDEX](./revise_001_20260527_public-status-api/INDEX.md) |
 
 ## 関連
 - 親 concept: `../concept.md` §1.3.2 _shared/auth 行
