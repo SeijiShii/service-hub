@@ -1,29 +1,30 @@
 # 料金参照 SoT (business-observability コストシミュレーション)。
 # provider 別の「無料枠上限 (アカウント単位で全 project が共有)」+ 「有料プラン月額」。
 # 値は時間で変わるため WebSearch で随時更新し updated を更新する ([論点-BO3])。
-# ⚠️ 下記は初期 seed (要 WebSearch 検証)。freeLimits のキーは usage_snapshots の metric_key に揃える。
+# WebSearch 2026-05-27 確認済 (free-tier/価格は変動するため、ダッシュボードでの最終確認は継続)。
+# freeLimits のキーは usage_snapshots の metric_key に揃える。
 updated = "2026-05-27"
 
 [[provider]]
 provider = "vercel"
 plan = "Hobby"
 paidPlan = "Pro"
-paidPriceMonthUsd = 20
+paidPriceMonthUsd = 20              # Pro $20/月/seat
 [provider.freeLimits]
-bandwidth_bytes = 107374182400      # 約 100 GB/月 (要検証)
+bandwidth_bytes = 100000000000      # 100 GB/月 (Hobby、超過で一時停止・従量不可)
 
 [[provider]]
 provider = "neon"
 plan = "Free"
-paidPlan = "Launch"
-paidPriceMonthUsd = 19
+paidPlan = "Launch (usage-based, $5/月 min)"
+paidPriceMonthUsd = 5              # Launch は従量課金 ($5/月 min + $0.14/CU-h)。最小額を格上げコスト下限に採用
 [provider.freeLimits]
-db_storage_bytes = 536870912        # 0.5 GB (要検証)
+db_storage_bytes = 5000000000       # 5 GB アカウント合算 (Free、0.5 GB/project × 最大10 project)
 
 [[provider]]
 provider = "clerk"
 plan = "Free"
 paidPlan = "Pro"
-paidPriceMonthUsd = 25
+paidPriceMonthUsd = 25              # Pro $25/月 base (+ $0.02/MAU 超過分)
 [provider.freeLimits]
-mau = 10000                         # 月間アクティブユーザー (要検証)
+mau = 50000                         # 月間アクティブユーザー (Free、2026-02 に 10K→50K へ拡大)
