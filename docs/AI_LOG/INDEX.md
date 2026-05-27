@@ -1,8 +1,8 @@
 # AI_LOG インデックス — service-hub
 
-**最終更新**: 2026-05-27 21:30 (+09:00)
-**総セッション数**: 21
-**総 decision 数**: 31 (D20260527-001〜031、+ D20260526 系)
+**最終更新**: 2026-05-28 (+09:00)
+**総セッション数**: 22
+**総 decision 数**: 33 (D20260528-001〜002、D20260527-001〜031、+ D20260526 系)
 
 > セッションごとに 1 ファイル、append-only、過去ファイルは削除・編集禁止。
 > 人間向けサマリは `../concept.md` §7 決定事項ログ を参照。
@@ -12,6 +12,7 @@
 ## セッション一覧（新しい順）
 | ファイル | 実行日 | コマンド | 対象 | decision 範囲 | 状態 |
 |---|---|---|---|---|---|
+| [D20260528_001_concept_update_20260528.md](./D20260528_001_concept_update_20260528.md) | 2026-05-28 | /flow:concept | update (レジストリ DB 化 + 秘密ゼロ化) | D20260528-001〜002 | 完了 |
 | [D20260527_008_secure_deps.md](./D20260527_008_secure_deps.md) | 2026-05-27 | /flow:secure | deps (L4) | D20260527-029〜031 | 完了 |
 | [D20260527_007_audit_standard.md](./D20260527_007_audit_standard.md) | 2026-05-27 | /flow:audit | standard (初回) | D20260527-027〜028 | 完了 |
 | [D20260527_006_resume_continuous.md](./D20260527_006_resume_continuous.md) | 2026-05-27 | /flow:auto | continuous(audit→secure→scenario) | D20260527-026,032 | 完了 |
@@ -36,6 +37,8 @@
 ## decision_id 索引（grep 用、新しい順）
 | ID | command | phase | chosen (短縮) | type | ファイル |
 |---|---|---|---|---|---|
+| D20260528-002 | /flow:concept | 秘密ゼロ化 | Clerk MAU を service-info 自己申告 + service-info 秘密 共通1本 | explicit-choice | D20260528_001_concept_update_20260528.md |
+| D20260528-001 | /flow:concept | レジストリ SoT/登録方式 | Neon services テーブル + Clerk ゲート内 admin write (公開POST/共通鍵 不採用、D-004 反転) | explicit-choice | D20260528_001_concept_update_20260528.md |
 | D20260526-020 | /flow:feature | 型契約設計 | concept §5.1 型一式 + ProviderAdapter IF | auto-recommended | D20260526_006_feature__shared_types.md |
 | D20260526-019 | /flow:feature | target タグ | cross-cutting (E2E スキップ) | auto-recommended | D20260526_006_feature__shared_types.md |
 | D20260526-018 | /flow:auto | 反復1(新loop) | /flow:feature _shared/types | auto-recommended | D20260526_005_resume_continuous.md |
@@ -68,6 +71,7 @@
 ## Superseded chain（旧 Open → 解決済）
 | 旧 ID | 解決 | 解決日 | 解決セッション |
 |---|---|---|---|
+| [D20260526-004] (decision) | 🔄 レジストリ SoT = Git services.toml → **[D20260528-001] DB SoT + Clerk ゲート内 admin write** に反転（再デプロイ不要、公開POST/共通鍵 不採用）。メトリクス pull(D20260526-002) は維持 | 2026-05-28 | D20260528_001 |
 | [論点-004] | ✅ [SEC-002] O24 入力検証 = 実装充足で closed（fetch.ts safeFetch: INTERNAL_HOST block+timeout+redirect:manual+scrubSecrets / registry Zod） | 2026-05-27 | D20260527_008 (D031) |
 | [論点-002] | ✅ Vercel Hobby cron 日次のみ → vercel.json `0 0 * * *` で確定（案A daily） | 2026-05-26 | D20260526_012 (D061) |
 | [論点-001] | ✅ providers SPEC §1.2 で段階導入方針確定（MVP=ping/Vercel/Neon/Clerk、free-tier% は thresholds 算出） | 2026-05-26 | D20260526_007 (D026) |
