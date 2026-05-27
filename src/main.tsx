@@ -1,14 +1,22 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { ClerkProvider, SignedIn, SignedOut, SignIn, UserButton } from "@clerk/clerk-react";
+import {
+  ClerkProvider,
+  SignedIn,
+  SignedOut,
+  SignIn,
+  UserButton,
+} from "@clerk/clerk-react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { DashboardPage } from "./features/dashboard/DashboardPage.js";
 import { ServiceDetailPage } from "./features/service-detail/ServiceDetailPage.js";
+import { CostSimPage } from "./features/cost-sim/CostSimPage.js";
 import "./index.css";
 
 const router = createBrowserRouter([
   { path: "/", element: <DashboardPage /> },
   { path: "/services/:slug", element: <ServiceDetailPage /> },
+  { path: "/cost-sim", element: <CostSimPage /> },
 ]);
 
 const pubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ?? "";
@@ -30,7 +38,9 @@ const gated = (
       {app}
     </SignedIn>
     <SignedOut>
-      <main style={{ display: "grid", placeItems: "center", minHeight: "100dvh" }}>
+      <main
+        style={{ display: "grid", placeItems: "center", minHeight: "100dvh" }}
+      >
         <SignIn routing="hash" />
       </main>
     </SignedOut>
@@ -39,6 +49,10 @@ const gated = (
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    {pubKey ? <ClerkProvider publishableKey={pubKey}>{gated}</ClerkProvider> : app}
+    {pubKey ? (
+      <ClerkProvider publishableKey={pubKey}>{gated}</ClerkProvider>
+    ) : (
+      app
+    )}
   </StrictMode>,
 );

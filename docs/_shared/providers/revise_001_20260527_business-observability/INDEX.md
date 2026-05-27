@@ -2,7 +2,7 @@
 
 **issue / slug**: 001 / business-observability
 **実施日**: 2026-05-27
-**状態**: 設計完了（SPEC + PLAN + UNIT_TEST + E2E_TEST）
+**状態**: 実装完了（Phase A/B/C/D unit GREEN, 137 tests）
 
 <!-- auto-generated-start -->
 

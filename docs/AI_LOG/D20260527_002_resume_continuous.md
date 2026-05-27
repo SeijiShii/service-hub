@@ -106,3 +106,17 @@
     aggregate.buildServiceUsages (snapshots→ServiceUsage、service-info/ping 除外、収益付与)。
     api/cost-sim/summary (requireSeiji ゲート + DB latest + pricing + runCostSim、認可結合テスト2)。
     cost-sim 計18 + handler。全テスト green / typecheck / build。残: cost-sim view (最終)。
+
+- id: D20260527-015
+  timestamp: 2026-05-27T00:00:00+09:00
+  command: /flow:auto → tdd (inline)
+  phase: 反復2 Phase D view 完成 → business-observability 実装完了
+  question: cost-sim ビュー
+  chosen: CostSimView + CostSimPage + /cost-sim ルート。Phase A/B/C/D 全実装完了
+  chosen_type: auto-recommended
+  depends_on: [D20260527-014]
+  context: |
+    CostSimView (account別 無料枠%/上限到達/格上げ額vs合算収益/提案 + stale警告) + CostSimPage(useFetch) +
+    main.tsx /cost-sim ルート。CostSimView 3 tests。全 137 tests green / typecheck / build。
+    business-observability 4次元 (採算/離脱率/見込み/コストシミュレーション) 実装完了。
+    次 loop: P4.4b Design gate (新UI視覚レビュー) → P4.5 E2E gate (BO-E シナリオ) → 残デプロイ(GAP-4+, Class B=seiji)。
