@@ -379,8 +379,9 @@ service-hub が定義する service-info エンドポイント契約（[論点-0
 - **担当**: seiji
 
 ### [論点-004] [SEC-002] O24 入力検証（SSRF / 安全パース / raw_json スクラブ）
-- **status**: `open`
-- **status 履歴**: 2026-05-26 08:35 open（/flow:secure --phase=design 由来）
+- **status**: `closed` ✅ **(2026-05-27 解決、実装充足を /flow:audit + /flow:secure で確認)**
+- **status 履歴**: 2026-05-26 08:35 open（/flow:secure --phase=design 由来） → 2026-05-27 21:30 closed（実装で全推奨対策を充足）
+- **解決根拠 (実装)**: `src/providers/fetch.ts` の `safeFetch()` が (1) `INTERNAL_HOST` 正規表現で内部アドレス (localhost/127./10./192.168./169.254./172.16-31./::1/fc00:/fe80:) を block (SSRF 抑止)、(2) `timeoutMs=10_000` + AbortController でタイムアウト、(3) `redirect:"manual"` でリダイレクト追従抑止。`scrubSecrets()` (同 fetch.ts:34-) が raw_json 保存前に秘密フィールドをスクラブ (O25 連動)。`src/registry/schema.ts` が Zod で services.toml を検証。→ §8 から §7 決定事項ログ相当へ移動済 (本エントリは closed として保全)。
 - **観点 ID**: O24_input_validation
 - **severity**: Medium
 - **影響範囲**: docs/_shared/providers/, docs/collection/, §5.1 usage_snapshots.raw_json
@@ -392,6 +393,24 @@ service-hub が定義する service-info エンドポイント契約（[論点-0
 - **判断期限**: docs/_shared/providers/ + docs/collection/ の機能設計/実装時
 - **担当**: seiji
 - **L1 レポート**: `./SECURITY_REVIEW_20260526.md#sec-002`
+
+### [論点-005] [SEC-003] @vercel/node devDependency チェーンの High CVE 6 件 (ReDoS / undici): High (in-context Low)
+- **status**: `open` — **推奨=accepted-risk、ユーザー明示確認待ち** (secure 契約: High に accepted-risk を auto では選ばない)
+- **status 履歴**: 2026-05-27 21:30 open（/flow:secure --phase=deps、npm audit 由来）
+- **観点 ID**: O28_dependency_vulnerability
+- **severity**: High (npm audit CVSS ベース) / **in-context Low** (devDep build-tooling・本番ランタイム非搭載)
+- **影響範囲**: `package.json` devDependencies (`@vercel/node@5.8.4`)、build/dev/test ツールチェーンのみ
+- **検出根拠**: `npm audit` で 6 High (minimatch/path-to-regexp ReDoS, undici 複数, @vercel/build-utils, @vercel/python-analysis) + 11 Moderate (esbuild/vite/vitest/ajv/drizzle-kit 等)。**全て dev/build/test tooling の推移的依存**。本番ランタイム依存 (@clerk/backend / @neondatabase/serverless / drizzle-orm / react / zod) は脆弱性ゼロ。詳細: `./SECURITY_DEPS_20260527.md`
+- **詰めるべき問い**:
+  1. accepted-risk として受容するか (推奨)。理由: devDep build-tooling / 本番リクエスト処理経路に非搭載 / 内部単一ユーザー Clerk gate でビルド工程に外部入力なし / npm 提示の fix は major **downgrade** (4.0.0) で forward fix 不在 (5.8.4 は最新系、upstream Vercel ツール側に残存)。
+  2. 代替として @vercel/node メジャー追従を試すか (forward fix が出るまで効果なし)。
+- **候補案**:
+  - 案 A (推奨): **accepted-risk**。CI に `npm audit --omit=dev --audit-level=high` (本番依存のみ、現状 0 件) を入れて健全性を継続確認。upstream fix を定期再スキャンで追跡。
+  - 案 B: @vercel/node を別ランタイム型に置換 (過剰、内部ツールに不要)。
+- **推奨**: 案 A 採用 (accepted-risk)。ただし **High のため受容はユーザー明示判断が必要**。
+- **判断期限**: 次回 release / ユーザー確認時
+- **担当**: seiji
+- **L4 レポート**: `./SECURITY_DEPS_20260527.md`
 
 ## 9. 法務・コンプライアンス書類
 **個人・内部ツール / 非公開のため法務書類不要（2026-05-26 判断）**。エンドユーザーの個人情報を扱わない（seiji 自身のインフラ運用データと read-only プロバイダトークンのみ）。
