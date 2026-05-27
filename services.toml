@@ -4,7 +4,7 @@
 [[service]]
 slug = "hana-memo"
 name = "hana-memo"
-url = "https://hana-memo.example.com"
+url = "https://hana-memo.givers.work"
 status = "active"
 [service.providers.vercel]
 projectId = "REPLACE_vercel_project_id"
@@ -14,7 +14,7 @@ projectId = "REPLACE_neon_project_id"
 appId = "REPLACE_clerk_app_id"
 secretEnv = "HANAMEMO_CLERK_SECRET"
 [service.serviceInfo]
-endpoint = "https://hana-memo.example.com/api/hub/service-info"
+endpoint = "https://hana-memo.givers.work/api/hub/service-info"
 secretEnv = "HANAMEMO_HUB_SECRET"
 [service.thresholds.db_storage_bytes]
 warnPct = 80
