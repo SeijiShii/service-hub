@@ -11,12 +11,14 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { DashboardPage } from "./features/dashboard/DashboardPage.js";
 import { ServiceDetailPage } from "./features/service-detail/ServiceDetailPage.js";
 import { CostSimPage } from "./features/cost-sim/CostSimPage.js";
+import { ServicesAdminPage } from "./features/admin/ServicesAdminPage.js";
 import "./index.css";
 
 const router = createBrowserRouter([
   { path: "/", element: <DashboardPage /> },
   { path: "/services/:slug", element: <ServiceDetailPage /> },
   { path: "/cost-sim", element: <CostSimPage /> },
+  { path: "/admin", element: <ServicesAdminPage /> },
 ]);
 
 const pubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ?? "";
