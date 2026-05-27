@@ -4,6 +4,11 @@ import { schema } from "./schema.js";
 import type { AnyDb } from "./queries.js";
 
 const DDL = `
+  CREATE TABLE services (
+    slug text PRIMARY KEY, name text NOT NULL, url text NOT NULL, subdomain text,
+    status text NOT NULL DEFAULT 'active', providers jsonb, service_info jsonb, thresholds jsonb,
+    created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
+  );
   CREATE TABLE usage_snapshots (
     id text PRIMARY KEY, service_slug text NOT NULL, provider text NOT NULL,
     metric_key text NOT NULL, metric_value double precision NOT NULL, unit text NOT NULL,

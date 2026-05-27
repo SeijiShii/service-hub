@@ -1,6 +1,37 @@
 import {
-  pgTable, text, doublePrecision, timestamp, jsonb, integer, index, uniqueIndex,
+  pgTable,
+  text,
+  doublePrecision,
+  timestamp,
+  jsonb,
+  integer,
+  index,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
+import type {
+  ProviderRefs,
+  ServiceInfoRef,
+  Thresholds,
+} from "../types/index.js";
+
+// レジストリ SoT (D20260528-001、旧 services.toml から移行)。
+// シークレットは保持しない (D20260528-002)。providers/serviceInfo/thresholds は jsonb。
+export const services = pgTable("services", {
+  slug: text("slug").primaryKey(),
+  name: text("name").notNull(),
+  url: text("url").notNull(),
+  subdomain: text("subdomain"),
+  status: text("status").notNull().default("active"),
+  providers: jsonb("providers").$type<ProviderRefs>(),
+  serviceInfo: jsonb("service_info").$type<ServiceInfoRef>(),
+  thresholds: jsonb("thresholds").$type<Thresholds>(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
 
 export const usageSnapshots = pgTable(
   "usage_snapshots",
@@ -17,11 +48,15 @@ export const usageSnapshots = pgTable(
   (t) => ({
     // 個別サービスの時系列クエリ用
     byServiceMetricTime: index("idx_snap_svc_metric_time").on(
-      t.serviceSlug, t.metricKey, t.capturedAt,
+      t.serviceSlug,
+      t.metricKey,
+      t.capturedAt,
     ),
     // upsert 冪等キー
     uniqSnap: uniqueIndex("uniq_snap_svc_metric_time").on(
-      t.serviceSlug, t.metricKey, t.capturedAt,
+      t.serviceSlug,
+      t.metricKey,
+      t.capturedAt,
     ),
   }),
 );
@@ -50,5 +85,5 @@ export const collectionRuns = pgTable("collection_runs", {
   errorsJson: jsonb("errors_json"),
 });
 
-export const schema = { usageSnapshots, alertEvents, collectionRuns };
+export const schema = { services, usageSnapshots, alertEvents, collectionRuns };
 export type Schema = typeof schema;
