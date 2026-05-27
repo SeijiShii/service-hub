@@ -120,3 +120,20 @@
     main.tsx /cost-sim ルート。CostSimView 3 tests。全 137 tests green / typecheck / build。
     business-observability 4次元 (採算/離脱率/見込み/コストシミュレーション) 実装完了。
     次 loop: P4.4b Design gate (新UI視覚レビュー) → P4.5 E2E gate (BO-E シナリオ) → 残デプロイ(GAP-4+, Class B=seiji)。
+
+- id: D20260527-016
+  timestamp: 2026-05-27T00:00:00+09:00
+  command: /flow:auto → design --review-only + e2e (inline)
+  phase: 反復3-4 Design gate(P4.4b) + E2E gate(P4.5)
+  question: business-observability の視覚レビュー + E2E
+  chosen: 採算/離脱率/提案を status 色化 (原則1) + e2e fixtures/cost-sim spec 追加 + playwright bare-build 修正 → 全 green
+  chosen_type: auto-recommended
+  depends_on: [D20260527-015]
+  context: |
+    Design gate: ServiceRow 採算/離脱率 + CostSimView 提案を STATUS_COLOR/SHAPE で色分け (原則1 status-first)。
+    headless スクショ 3 枚を multimodal レビュー → design-system 適合 PASS (visual-review-20260527.md)。
+    E2E gate: fixtures に business-observability データ + cost-sim.spec 追加。
+    回帰発見: .env.local の VITE_CLERK_PUBLISHABLE_KEY がビルドに焼き込まれ GAP-3 ゲートが E2E でも
+    出て全ルート塞ぐ → playwright.config webServer を VITE_CLERK_PUBLISHABLE_KEY= (bare) に固定。
+    e2e 9 passed (新 cost-sim 2 含む) + snapshot 再生成。全 unit green / typecheck。
+    P4.4b/P4.5 通過。残: 残デプロイ (GAP-4 + business-observability、Class B=seiji)。

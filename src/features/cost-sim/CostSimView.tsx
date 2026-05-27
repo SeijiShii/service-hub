@@ -1,3 +1,8 @@
+import {
+  STATUS_COLOR,
+  STATUS_SHAPE,
+  type StatusKind,
+} from "../../components/tokens.js";
 import type { AccountSim } from "./simulate.js";
 
 export interface CostSimResponse {
@@ -13,22 +18,39 @@ const REC_LABEL: Record<AccountSim["recommendation"], string> = {
   sunset: "撤退（収益が見合わない）",
 };
 
+/** 提案を状態色にマップ (design-system 原則1: status-first)。 */
+const REC_KIND: Record<AccountSim["recommendation"], StatusKind> = {
+  keep: "up",
+  upgrade: "warn",
+  consolidate: "warn",
+  sunset: "down",
+};
+
 const pct = (v: number) => `${Math.round(v * 100)}%`;
 const usd = (v: number) => `$${v.toFixed(2)}`;
 
 /** 無料枠コストシミュレーション + 格上げ提案ビュー (business-observability Phase D)。 */
 export function CostSimView({ data }: { data: CostSimResponse }) {
   return (
-    <main style={{ background: "var(--bg, #0b0e14)", color: "var(--text, #e6e9ef)" }}>
+    <main
+      style={{
+        background: "var(--bg, #0b0e14)",
+        color: "var(--text, #e6e9ef)",
+      }}
+    >
       <header>
         <h1>コストシミュレーション</h1>
         <p data-pricing-updated>
           料金データ更新日: {data.pricingUpdated}
-          {data.stale && <strong data-stale>（古い可能性 — 最新料金で再確認を推奨）</strong>}
+          {data.stale && (
+            <strong data-stale>（古い可能性 — 最新料金で再確認を推奨）</strong>
+          )}
         </p>
       </header>
       {data.accounts.length === 0 ? (
-        <p data-testid="empty-state">対象アカウントの使用量データがありません</p>
+        <p data-testid="empty-state">
+          対象アカウントの使用量データがありません
+        </p>
       ) : (
         <table>
           <thead>
@@ -43,17 +65,31 @@ export function CostSimView({ data }: { data: CostSimResponse }) {
           </thead>
           <tbody>
             {data.accounts.map((a) => (
-              <tr key={`${a.provider} ${a.account}`} data-account={a.account} data-rec={a.recommendation}>
-                <td style={{ fontFamily: "ui-monospace, monospace" }}>{a.provider} / {a.account}</td>
+              <tr
+                key={`${a.provider} ${a.account}`}
+                data-account={a.account}
+                data-rec={a.recommendation}
+              >
+                <td style={{ fontFamily: "ui-monospace, monospace" }}>
+                  {a.provider} / {a.account}
+                </td>
                 <td style={{ textAlign: "right" }}>{a.serviceCount}</td>
-                <td style={{ textAlign: "right" }} data-usage-pct>{pct(a.maxUsagePct)}</td>
+                <td style={{ textAlign: "right" }} data-usage-pct>
+                  {pct(a.maxUsagePct)}
+                </td>
                 <td style={{ textAlign: "right" }}>
                   {a.daysToCeiling == null ? "—" : `${a.daysToCeiling}日`}
                 </td>
                 <td style={{ textAlign: "right" }}>
                   {usd(a.upgradeCostUsd)} / {usd(a.aggregateRevenueUsd)}
                 </td>
-                <td data-rec-label>{REC_LABEL[a.recommendation]}</td>
+                <td
+                  data-rec-label
+                  style={{ color: STATUS_COLOR[REC_KIND[a.recommendation]] }}
+                >
+                  {STATUS_SHAPE[REC_KIND[a.recommendation]]}{" "}
+                  {REC_LABEL[a.recommendation]}
+                </td>
               </tr>
             ))}
           </tbody>
