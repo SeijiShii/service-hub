@@ -1,8 +1,8 @@
 # AI_LOG インデックス — service-hub
 
 **最終更新**: 2026-05-28 (+09:00)
-**総セッション数**: 22
-**総 decision 数**: 33 (D20260528-001〜002、D20260527-001〜031、+ D20260526 系)
+**総セッション数**: 23
+**総 decision 数**: 37 (D20260528-001〜006、D20260527-001〜031、+ D20260526 系)
 
 > セッションごとに 1 ファイル、append-only、過去ファイルは削除・編集禁止。
 > 人間向けサマリは `../concept.md` §7 決定事項ログ を参照。
@@ -12,6 +12,7 @@
 ## セッション一覧（新しい順）
 | ファイル | 実行日 | コマンド | 対象 | decision 範囲 | 状態 |
 |---|---|---|---|---|---|
+| [D20260528_002_revise_registry_db-sot.md](./D20260528_002_revise_registry_db-sot.md) | 2026-05-28 | /flow:revise | registry (DB SoT + admin write) | D20260528-003〜006 | 設計完了 |
 | [D20260528_001_concept_update_20260528.md](./D20260528_001_concept_update_20260528.md) | 2026-05-28 | /flow:concept | update (レジストリ DB 化 + 秘密ゼロ化) | D20260528-001〜002 | 完了 |
 | [D20260527_008_secure_deps.md](./D20260527_008_secure_deps.md) | 2026-05-27 | /flow:secure | deps (L4) | D20260527-029〜031 | 完了 |
 | [D20260527_007_audit_standard.md](./D20260527_007_audit_standard.md) | 2026-05-27 | /flow:audit | standard (初回) | D20260527-027〜028 | 完了 |
@@ -37,6 +38,10 @@
 ## decision_id 索引（grep 用、新しい順）
 | ID | command | phase | chosen (短縮) | type | ファイル |
 |---|---|---|---|---|---|
+| D20260528-006 | /flow:revise | providers secretEnv sequencing | step 3 まで optional 残置（build green） | auto-recommended | D20260528_002_revise_registry_db-sot.md |
+| D20260528-005 | /flow:revise | services.toml | 削除して DB 一本化 | explicit-choice | D20260528_002_revise_registry_db-sot.md |
+| D20260528-004 | /flow:revise | 移行方式 | import 不要（未運用＝移行なし） | explicit-choice | D20260528_002_revise_registry_db-sot.md |
+| D20260528-003 | /flow:revise | admin write 範囲 | A. 最小フォーム + Clerk ゲート内 API | explicit-choice | D20260528_002_revise_registry_db-sot.md |
 | D20260528-002 | /flow:concept | 秘密ゼロ化 | Clerk MAU を service-info 自己申告 + service-info 秘密 共通1本 | explicit-choice | D20260528_001_concept_update_20260528.md |
 | D20260528-001 | /flow:concept | レジストリ SoT/登録方式 | Neon services テーブル + Clerk ゲート内 admin write (公開POST/共通鍵 不採用、D-004 反転) | explicit-choice | D20260528_001_concept_update_20260528.md |
 | D20260526-020 | /flow:feature | 型契約設計 | concept §5.1 型一式 + ProviderAdapter IF | auto-recommended | D20260526_006_feature__shared_types.md |
