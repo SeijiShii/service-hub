@@ -1,8 +1,8 @@
 # AI_LOG インデックス — service-hub
 
 **最終更新**: 2026-05-28 (+09:00)
-**総セッション数**: 31 (D20260528_013 release post-deploy 追加で再計上)
-**総 decision 数**: 53 (D20260528-001〜021、D20260527-001〜035、+ D20260526 系)
+**総セッション数**: 32 (D20260528_014 revise dashboard nav-and-pull 追加で再計上)
+**総 decision 数**: 57 (D20260528-001〜025、D20260527-001〜035、+ D20260526 系)
 
 > セッションごとに 1 ファイル、append-only、過去ファイルは削除・編集禁止。
 > 人間向けサマリは `../concept.md` §7 決定事項ログ を参照。
@@ -12,6 +12,7 @@
 ## セッション一覧（新しい順）
 | ファイル | 実行日 | コマンド | 対象 | decision 範囲 | 状態 |
 |---|---|---|---|---|---|
+| [D20260528_014_revise_dashboard_nav-and-pull.md](./D20260528_014_revise_dashboard_nav-and-pull.md) | 2026-05-28 | /flow:revise | dashboard nav-and-pull (back-link + force-pull relocation) | D20260528-022〜025 | 設計完了 |
 | [D20260528_013_release_post-deploy.md](./D20260528_013_release_post-deploy.md) | 2026-05-28 | /flow:release | post-deploy 2nd (3 revise + 新 endpoint 反映 + smoke) | D20260528-021 | 完了 |
 | [D20260528_012_audit_standard.md](./D20260528_012_audit_standard.md) | 2026-05-28 | /flow:audit | standard 2回目 (鮮度 + bookkeeping reconcile) | D20260528-020 | 完了 |
 | [D20260528_011_tdd_collection_force-pull.md](./D20260528_011_tdd_collection_force-pull.md) | 2026-05-28 | /flow:tdd | collection force-pull (admin ボタン + endpoint) | D20260528-019 | 完了 |
@@ -51,6 +52,10 @@
 ## decision_id 索引（grep 用、新しい順）
 | ID | command | phase | chosen (短縮) | type | ファイル |
 |---|---|---|---|---|---|
+| D20260528-025 | /flow:revise | Phase 軽重 + 共通型配置 | A. 両 Phase 軽メイン + ForcePullState は src/features/dashboard/forcePull.ts 新設 | auto-recommended | D20260528_014_revise_dashboard_nav-and-pull.md |
+| D20260528-024 | /flow:revise | Q3 force-pull スタイル | B. dashboard CSS 変数で控えめ section (admin より小ぶり) | auto-recommended | D20260528_014_revise_dashboard_nav-and-pull.md |
+| D20260528-023 | /flow:revise | Q2 force-pull 配置 | B. summary 直下別ブロック (alert-banner と並列・独立) | auto-recommended | D20260528_014_revise_dashboard_nav-and-pull.md |
+| D20260528-022 | /flow:revise | Q1 ServicesAdminView Props | A. 除去 (dead code 化、Page 同時更新で typecheck red 回避) | auto-recommended | D20260528_014_revise_dashboard_nav-and-pull.md |
 | D20260528-021 | /flow:release | post-deploy 2nd + smoke | A. 全 gate 期待値通り → Release gate 通過扱い + D-010 セッション close | auto-recommended | D20260528_013_release_post-deploy.md |
 | D20260528-020 | /flow:audit | §3.0c シューティング + 結果総括 | A. Low 2 件即 reconcile + Medium 1 件 (論点-005) は release Phase 1 まで pause | auto-recommended | D20260528_012_audit_standard.md |
 | D20260528-019 | /flow:tdd | Phase 軽重 + View props 後方互換 | A. メイン直接 + Props オプショナル + ForcePullState 型を View export | auto-recommended | D20260528_011_tdd_collection_force-pull.md |
