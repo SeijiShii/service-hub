@@ -122,13 +122,16 @@ export function MetricChart({
               labelStyle={{ color: "var(--text, #e5e7eb)" }}
               itemStyle={{ color: "var(--text, #e5e7eb)" }}
               labelFormatter={(v) => {
+                if (v === undefined || v === null || v === "") return "";
                 if (metricKey === "last_deploy_at") {
                   const d = new Date(Number(v));
-                  return new Intl.DateTimeFormat("ja-JP", {
-                    year: "numeric",
-                    month: "numeric",
-                    day: "numeric",
-                  }).format(d);
+                  return Number.isNaN(d.getTime())
+                    ? String(v)
+                    : new Intl.DateTimeFormat("ja-JP", {
+                        year: "numeric",
+                        month: "numeric",
+                        day: "numeric",
+                      }).format(d);
                 }
                 const d = new Date(String(v));
                 return Number.isNaN(d.getTime())
