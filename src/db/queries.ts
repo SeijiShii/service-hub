@@ -16,6 +16,7 @@ import type {
   CollectionStatus,
   ServiceDescriptor,
   ServiceStatus,
+  ServiceMeta,
 } from "../types/index.js";
 
 /** neon-http / pglite いずれの drizzle インスタンスも受ける。 */
@@ -203,6 +204,8 @@ function toServiceDescriptor(
     providers: r.providers ?? {},
     serviceInfo: r.serviceInfo ?? undefined,
     thresholds: r.thresholds ?? undefined,
+    // favicon-projection: producer 自己申告の favicon URL (service-info adapter 経由のみ更新)
+    iconUrl: r.iconUrl ?? undefined,
   };
 }
 
@@ -277,6 +280,27 @@ export async function setServiceStatus(
 /** 物理削除 (admin の ?hard=1 用)。既定は setServiceStatus(retired) を使う。 */
 export async function deleteService(db: AnyDb, slug: string): Promise<void> {
   await db.delete(services).where(eq(services.slug, slug));
+}
+
+/**
+ * service-info adapter 専用: `services.icon_url` のみを更新する (favicon-projection、spec-review R1)。
+ * - meta.iconUrl が string なら update + updatedAt 更新
+ * - meta.iconUrl が undefined / key 無し → no-op (既存値保持、[論点-FP2] 保持セマンティクス)
+ * - 存在しない slug → no-op (update 0 行、throw しない)
+ *
+ * **admin write 経路 (upsertService) では iconUrl を含めない** (SoT 一貫性、spec-review R2 三重防御の一つ)。
+ * format check (https/internal/length) は呼び出し側 (adapters.ts) の責務、本関数は format 既通過前提。
+ */
+export async function updateServiceMeta(
+  db: AnyDb,
+  slug: string,
+  meta: ServiceMeta,
+): Promise<void> {
+  if (meta.iconUrl === undefined) return; // no-op (保持セマンティクス)
+  await db
+    .update(services)
+    .set({ iconUrl: meta.iconUrl, updatedAt: new Date() })
+    .where(eq(services.slug, slug));
 }
 
 export async function recentRuns(

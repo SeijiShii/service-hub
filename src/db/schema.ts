@@ -25,6 +25,9 @@ export const services = pgTable("services", {
   providers: jsonb("providers").$type<ProviderRefs>(),
   serviceInfo: jsonb("service_info").$type<ServiceInfoRef>(),
   thresholds: jsonb("thresholds").$type<Thresholds>(),
+  // favicon-projection (revise_favicon-projection_20260528): producer 自己申告の favicon 絶対 URL。
+  // 書き込みは service-info adapter 経由のみ (admin write 不可、SoT 一貫性、spec-review R2)。
+  iconUrl: text("icon_url"),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

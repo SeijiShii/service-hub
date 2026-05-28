@@ -23,7 +23,7 @@
 ## サブフォルダ（改修・バグ修正・クレーム判定履歴）
 | パス | 種別 | issue/slug | 状態 | 概要 | INDEX |
 |---|---|---|---|---|---|
-| [revise_favicon-projection_20260528/](./revise_favicon-projection_20260528/) | revise | favicon-projection | 設計済 + spec-review 通過 (tdd 待ち) | service-info contract v1→v2 (iconUrl 追加) + services.icon_url + public-status DTO 投影 + safeUrl 共通化 + ProviderAdapter 拡張 (R1-R9 反映) | [INDEX](./revise_favicon-projection_20260528/INDEX.md) |
+| [revise_favicon-projection_20260528/](./revise_favicon-projection_20260528/) | revise | favicon-projection | 実装中 (2026-05-28 16:55、Phase 1/4 完了 unit 239 green) | service-info contract v1→v2 (iconUrl 追加) + services.icon_url + public-status DTO 投影 + safeUrl 共通化 + ProviderAdapter 拡張 (R1-R9 反映) | [INDEX](./revise_favicon-projection_20260528/INDEX.md) |
 
 ## 関連
 - 親 concept: `../concept.md` §1.3.2 _shared/types 行

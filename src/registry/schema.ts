@@ -1,8 +1,7 @@
 import { z } from "zod";
+import { isSafePublicUrl } from "../lib/safeUrl.js";
 
 const SECRET_LITERAL = /^(sk_|pk_|rk_|Bearer\s|ey[A-Za-z0-9_-]{10,})/; // 直書き秘密の疑い
-const INTERNAL =
-  /^(localhost|127\.|10\.|192\.168\.|169\.254\.|0\.0\.0\.0|172\.(1[6-9]|2\d|3[01])\.)/i;
 
 // 識別子フィールドに秘密 (sk_/pk_/Bearer/JWT) を直書きさせないガード (O25、秘密ゼロ化)。
 // レジストリは秘密を一切持たない ([D20260528-002])。
@@ -14,19 +13,12 @@ const idStr = (label: string) =>
       message: `${label} に秘密を直書きしないこと (識別子のみ, O25)`,
     });
 
-const publicUrl = z
-  .string()
-  .url()
-  .refine(
-    (u) => {
-      try {
-        return !INTERNAL.test(new URL(u).hostname);
-      } catch {
-        return false;
-      }
-    },
-    { message: "内部アドレスは不可 (SSRF 予防, [論点-004])" },
-  );
+// 公開安全 URL (SSRF 予防 + https 必須 + 長さ制限) を共通 SoT (src/lib/safeUrl.ts) で判定。
+// spec-review R3 / P19 違反回避: registry と adapters.ts (iconUrl format check) で同ロジック共有。
+const publicUrl = z.string().refine((u) => isSafePublicUrl(u), {
+  message:
+    "公開可能な URL (https + 公開ホスト + 1024 chars 以内) のみ許可 (SSRF 予防, [論点-004])",
+});
 
 export const providerRefsSchema = z
   .object({

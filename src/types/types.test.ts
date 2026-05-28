@@ -1,6 +1,11 @@
 import { describe, it, expect } from "vitest";
-import type { ServiceDescriptor, ServiceInfoResponse } from "./service.js";
+import type {
+  ServiceDescriptor,
+  ServiceInfoResponse,
+  ServiceMeta,
+} from "./service.js";
 import type { SnapshotRow, MetricKey } from "./metric.js";
+import type { ProviderAdapter } from "./provider.js";
 
 describe("structural types compile & hold shape", () => {
   it("ServiceDescriptor は識別子のみ・秘密を持たない (T-N, [D20260528-002])", () => {
@@ -47,5 +52,52 @@ describe("structural types compile & hold shape", () => {
       extra: { note: "ok" },
     };
     expect(r.schemaVersion).toBe(1);
+  });
+
+  // ── favicon-projection (revise_favicon-projection_20260528) ──────
+  it("FP-U-01: ServiceInfoResponse v2 (iconUrl 含む)", () => {
+    const r: ServiceInfoResponse = {
+      schemaVersion: 2,
+      service: "x",
+      status: "ok",
+      iconUrl: "https://x.example/favicon.svg",
+    };
+    expect(r.iconUrl).toBe("https://x.example/favicon.svg");
+  });
+
+  it("FP-U-02: ServiceInfoResponse v1 後方互換 (iconUrl 無し許容)", () => {
+    const r: ServiceInfoResponse = {
+      schemaVersion: 1,
+      service: "x",
+      status: "ok",
+    };
+    expect(r.iconUrl).toBeUndefined();
+  });
+
+  it("FP-U-03: ServiceDescriptor に iconUrl optional 追加", () => {
+    const s: ServiceDescriptor = {
+      slug: "x",
+      name: "x",
+      url: "https://x.example/",
+      status: "active",
+      providers: {},
+      iconUrl: "https://x.example/favicon.svg",
+    };
+    expect(s.iconUrl).toBe("https://x.example/favicon.svg");
+  });
+
+  it("FP-U-37: ProviderAdapter 戻り値型に meta?: ServiceMeta 拡張 (ping/vercel/neon は meta 無しで互換)", () => {
+    // ping adapter 風 (meta 返さない、optional のため compile OK)
+    const pingLike: ProviderAdapter["collect"] = async () => ({
+      metrics: [],
+    });
+    // service-info adapter 風 (meta 返す)
+    const meta: ServiceMeta = { iconUrl: "https://x.example/favicon.svg" };
+    const serviceInfoLike: ProviderAdapter["collect"] = async () => ({
+      metrics: [],
+      meta,
+    });
+    expect(typeof pingLike).toBe("function");
+    expect(typeof serviceInfoLike).toBe("function");
   });
 });
