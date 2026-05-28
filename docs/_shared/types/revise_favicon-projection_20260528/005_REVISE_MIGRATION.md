@@ -14,37 +14,36 @@
 
 ## 2. 移行手順
 
-### Step 1: drizzle migration ファイル生成
-- **内容**:
-  - `src/db/schema.ts` に `iconUrl: text("icon_url")` 追加後、`scripts/with-env.sh drizzle-kit generate` で `drizzle/<NNNN>_<auto_name>.sql` を生成
-  - 生成 SQL を目視確認: `ALTER TABLE "services" ADD COLUMN "icon_url" text;` のみであること (他テーブル変更が紛れ込まないこと)
-- **検証**:
-  ```bash
-  $ cat drizzle/<NNNN>_*.sql
-  # 期待: ALTER TABLE "services" ADD COLUMN "icon_url" text; のみ
-  ```
-- **想定所要時間**: 1 分
+> **本 PJ 運用上の補正 (2026-05-28、Phase 1 TDD で判明)**: 本 PJ は `drizzle-kit push` 運用 (`drizzle/` migration ファイル未管理)。migration generate は skip し、schema.ts 直接編集 → `npm run db:push` で本番 sync する。手順を以下に整合。
 
-### Step 2: DEV 環境で migration apply (動作確認)
+### Step 1: schema.ts + testdb.ts DDL 編集 (Phase 1 で実施済)
 - **内容**:
-  - DEV (devbranch、もしあれば) または preview deploy で `scripts/with-env.sh drizzle-kit migrate` 実行
+  - `src/db/schema.ts` に `iconUrl: text("icon_url")` 追加 ✅ (commit a025cb3)
+  - `src/db/testdb.ts` インライン DDL に `icon_url text` 追加 ✅ (commit a025cb3)
+- **検証**: vitest 全 GREEN (pglite ベースのテスト DB で実証済)
+- **所要時間**: 完了済
+
+### Step 2: DEV/preview 環境で `db:push` 適用 (動作確認)
+- **内容**:
+  - DEV env で `bash scripts/with-env.sh npm run db:push` 実行 (or DEV branch がなければ skip)
   - 既存 services 行が完全保持されていることを確認
 - **検証**:
   ```bash
-  $ scripts/with-env.sh psql -c "\d services"
+  $ bash scripts/with-env.sh psql "$DATABASE_URL" -c "\d services"
   # 期待: icon_url | text |  | |  (nullable, default NULL)
-  $ scripts/with-env.sh psql -c "select slug, icon_url from services"
+  $ bash scripts/with-env.sh psql "$DATABASE_URL" -c "select slug, icon_url from services"
   # 期待: 全行 icon_url = NULL
   ```
-- **想定所要時間**: 2 分
+- **想定所要時間**: 1 分
 
-### Step 3: 本番 (Neon main branch) で migration apply
+### Step 3: 本番 (Neon main branch) で `db:push` 適用
 - **内容**:
-  - 本番 DB に migration 適用 (`scripts/with-env.sh drizzle-kit migrate` を production env で実行 — `release.md` の標準フロー §3 参照)
-  - 既存 services テーブルにロックがかかる時間は ms オーダー (`ADD COLUMN` で default NULL は metadata-only operation、PostgreSQL 11+ で fast path)
+  - 本番 DB に schema sync 適用: `DATABASE_URL=<production-neon-url> npm run db:push` (or `release.md` の標準フロー §3 経由)
+  - drizzle-kit push は schema 差分から `ALTER TABLE services ADD COLUMN icon_url text;` を生成して apply (metadata-only operation、ms オーダー)
+  - 既存 services テーブルにロックがかかる時間は ms オーダー (`ADD COLUMN` で default NULL は PostgreSQL 11+ fast path)
 - **検証**:
   ```bash
-  $ scripts/with-env.sh psql -c "\d services"  # production
+  $ DATABASE_URL=<prod> psql -c "\d services"
   # 期待: icon_url 列存在
   ```
 - **想定所要時間**: < 1 分 (本番 apply)
@@ -76,16 +75,16 @@
 
 ## 3. ロールバック手順
 
-drizzle-kit には `migrate:rollback` コマンドがないため、rollback は**forward migration として手動 SQL ファイルを作成して再 apply** する形を取る (詳細手順): <!-- spec-review R8: 具体的手順明示 -->
+本 PJ は `drizzle-kit push` 運用のため、rollback は **schema.ts を戻して push 再実行** か **手動 SQL を直接 apply** の 2 ルート (詳細手順): <!-- spec-review R8: db:push 運用に整合更新 (Phase 1 TDD 補正、2026-05-28) -->
 
-### 3.1 DB rollback (forward migration として apply)
-1. `drizzle/<NNNN+1>_revert_add_services_icon_url.sql` を手動作成、内容:
-   ```sql
-   ALTER TABLE "services" DROP COLUMN "icon_url";
-   ```
-2. drizzle migration journal (`drizzle/meta/_journal.json`) に新 migration を追記 (drizzle-kit が自動で取り込まない場合は手動編集)
-3. `bash scripts/with-env.sh drizzle-kit migrate` で再 apply (production env)
-4. 検証: `bash scripts/with-env.sh psql -c "\d services"` で icon_url 列消失、`select count(*) from services` で既存行数完全保持を確認
+### 3.1 DB rollback (db:push 経由)
+1. git revert で `src/db/schema.ts` から `iconUrl: text("icon_url")` 行を削除 (Phase 1 commit a025cb3 を revert)
+2. `DATABASE_URL=<production-neon-url> npm run db:push` で本番 sync (drizzle-kit が diff を検出して `DROP COLUMN icon_url` を生成 + 確認 prompt → 承認)
+3. 検証: `psql -c "\d services"` で icon_url 列消失、`select count(*) from services` で既存行数完全保持を確認
+
+### 3.1b DB rollback (手動 SQL、緊急時)
+- 上記が時間を要する場合の代替: `DATABASE_URL=<production-neon-url> psql -c 'ALTER TABLE services DROP COLUMN icon_url;'` を直接実行
+- schema.ts の revert は別途必要 (deploy 時の diff 不一致回避)
 
 ### 3.2 アプリコード rollback
 | 元 Step | 逆操作 | 検証 |

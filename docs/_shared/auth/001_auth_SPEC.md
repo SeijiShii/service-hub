@@ -47,6 +47,7 @@ isAllowedUser(userId: string): boolean;          // 許可ユーザー ID 照合
 
 > 注: `/api/cron/collect` は Clerk ユーザーセッションでなく **Vercel Cron の secret/署名**で保護（collection SPEC で定義）。ユーザーゲートとは別経路。
 > 注: `/api/public/*`（現状 `/api/public/status` のみ）は **認証なしの公開ルート**（`isPublicPath`、revise_001_public-status-api）。別サービスの公開ショーケースが消費。**公開安全サブセットのみ**を返し（`buildPublicStatus`、収益/コスト/利用数/トークン等は構造的に非公開）、これが全ルート gate の唯一の公開例外。新ルートを安易に `/api/public/` 下へ足さないこと（fail-close 維持）。
+> **favicon-projection (2026-05-28、`_shared/types/revise_favicon-projection_20260528`)**: `PublicServiceStatus` に `iconUrl?: string` を additive 追加 (producer 自己申告の favicon 絶対 URL を投影)。**公開安全フィールド** (元々 web で公開されている favicon URL)、漏洩リスクなし。財務情報の allowlist 排除は引き続き維持。
 
 ## 6. タグ別追加項目
 ### auth-required
