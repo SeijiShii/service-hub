@@ -22,7 +22,7 @@
 ## サブフォルダ（改修・バグ修正・クレーム判定履歴）
 | パス | 種別 | issue/slug | 状態 | 概要 | INDEX |
 |---|---|---|---|---|---|
-| (なし。`/flow:revise` / `/flow:fix` / `/flow:claim` で生成) |
+| [revise_force-pull_20260528_admin-button/](./revise_force-pull_20260528_admin-button/) | revise | force-pull | 設計完了（実装前） | アプリ内強制プルボタン（/admin に「今すぐ pull」、新 `api/admin/collect.ts` Clerk ゲート、cron 経路は無変更） | [INDEX](./revise_force-pull_20260528_admin-button/INDEX.md) |
 
 ## 関連
 - 親 concept: `../concept.md` §1.3.1 collection 行
