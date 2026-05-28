@@ -1,4 +1,12 @@
-import { LineChart, Line, XAxis, YAxis, Tooltip, Legend } from "recharts";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 import type { MetricKey } from "../types/index.js";
 import { chartSeriesColor } from "./tokens.js";
 
@@ -17,7 +25,6 @@ export interface MetricChartProps {
   metricKey: MetricKey;
   unit: string;
   series: MetricSeriesItem[];
-  width?: number;
   height?: number;
 }
 
@@ -25,9 +32,14 @@ export interface MetricChartProps {
  * last_deploy_at (epoch_ms) は M/D 表示、他は数値そのまま (spec-review R3)。
  * 日本語 PJ で直感的、Intl.DateTimeFormat 標準 API。
  */
-function tickFormatterForMetric(metricKey: MetricKey): ((v: number) => string) | undefined {
+function tickFormatterForMetric(
+  metricKey: MetricKey,
+): ((v: number) => string) | undefined {
   if (metricKey === "last_deploy_at") {
-    const fmt = new Intl.DateTimeFormat("ja-JP", { month: "numeric", day: "numeric" });
+    const fmt = new Intl.DateTimeFormat("ja-JP", {
+      month: "numeric",
+      day: "numeric",
+    });
     return (v: number) => fmt.format(new Date(v));
   }
   return undefined; // recharts default
@@ -65,7 +77,6 @@ export function MetricChart({
   metricKey,
   unit,
   series,
-  width = 480,
   height = 160,
 }: MetricChartProps) {
   const empty = !hasAnyPoints(series);
@@ -84,35 +95,37 @@ export function MetricChart({
       {empty ? (
         <p data-testid={`chart-empty-${metricKey}`}>データなし</p>
       ) : (
-        <LineChart width={width} height={height} data={merged}>
-          <XAxis
-            dataKey="capturedAt"
-            tick={{
-              fontFamily: "ui-monospace, monospace",
-              fontSize: 10,
-            }}
-          />
-          <YAxis
-            tick={{
-              fontFamily: "ui-monospace, monospace",
-              fontSize: 10,
-            }}
-            tickFormatter={yTickFormatter}
-          />
-          <Tooltip />
-          <Legend />
-          {series.map((s, idx) => (
-            <Line
-              key={s.slug}
-              type="monotone"
-              dataKey={s.slug}
-              name={s.name}
-              stroke={chartSeriesColor(idx)}
-              dot={false}
-              isAnimationActive={false}
+        <ResponsiveContainer width="100%" height={height}>
+          <LineChart data={merged}>
+            <XAxis
+              dataKey="capturedAt"
+              tick={{
+                fontFamily: "ui-monospace, monospace",
+                fontSize: 10,
+              }}
             />
-          ))}
-        </LineChart>
+            <YAxis
+              tick={{
+                fontFamily: "ui-monospace, monospace",
+                fontSize: 10,
+              }}
+              tickFormatter={yTickFormatter}
+            />
+            <Tooltip />
+            <Legend />
+            {series.map((s, idx) => (
+              <Line
+                key={s.slug}
+                type="monotone"
+                dataKey={s.slug}
+                name={s.name}
+                stroke={chartSeriesColor(idx)}
+                dot={false}
+                isAnimationActive={false}
+              />
+            ))}
+          </LineChart>
+        </ResponsiveContainer>
       )}
     </figure>
   );
