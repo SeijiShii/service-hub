@@ -1,8 +1,8 @@
 # AI_LOG インデックス — service-hub
 
 **最終更新**: 2026-05-28 (+09:00)
-**総セッション数**: 36 (D20260528_018 tdd registry admin-form 追加)
-**総 decision 数**: 65 (D20260528-001〜033、D20260527-001〜035、+ D20260526 系)
+**総セッション数**: 37 (D20260528_019 revise _shared/types favicon-projection 追加)
+**総 decision 数**: 77 (D20260528-001〜045、D20260527-001〜035、+ D20260526 系)
 
 > セッションごとに 1 ファイル、append-only、過去ファイルは削除・編集禁止。
 > 人間向けサマリは `../concept.md` §7 決定事項ログ を参照。
@@ -12,6 +12,7 @@
 ## セッション一覧（新しい順）
 | ファイル | 実行日 | コマンド | 対象 | decision 範囲 | 状態 |
 |---|---|---|---|---|---|
+| [D20260528_019_revise__shared_types_favicon-projection.md](./D20260528_019_revise__shared_types_favicon-projection.md) | 2026-05-28 | /flow:revise | _shared/types favicon-projection (service-info contract v2 + icon_url + DTO 投影) | D20260528-034〜045 | 完了 (設計、tdd 待ち、連動 PJ bousai-bag-checker dispatch 推奨) |
 | [D20260528_018_tdd_registry_admin-form.md](./D20260528_018_tdd_registry_admin-form.md) | 2026-05-28 | /flow:tdd | registry admin-form-bug-and-ux (Phase 1+2 実装、unit 203 passed) | D20260528-033 | 完了 |
 | [D20260528_017_fix_registry_admin-form.md](./D20260528_017_fix_registry_admin-form.md) | 2026-05-28 | /flow:fix | registry admin-form-bug-and-ux (High 1+Low 3) | D20260528-029〜032 | 修正計画完了 → tdd 待ち |
 | [D20260528_016_release_post-deploy.md](./D20260528_016_release_post-deploy.md) | 2026-05-28 | /flow:release | post-deploy 3rd (nav-and-pull) + 4th (favicon 反映) | D20260528-027〜028 | 完了 |
