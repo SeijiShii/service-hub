@@ -3,6 +3,7 @@ import type { ServiceDescriptor, SnapshotRow } from "../../types/index.js";
 /**
  * 公開ステータス DTO (公開安全サブセット)。これ以外のフィールドは絶対に増やさない。
  * 収益・コスト・採算・離脱率・利用数・raw_json・トークン・閾値・provider 識別子は含めない。
+ * **iconUrl は公開安全フィールド** (favicon-projection、2026-05-28): 元々 web で公開されている favicon の URL、漏洩リスクなし。
  */
 export interface PublicServiceStatus {
   slug: string;
@@ -10,6 +11,7 @@ export interface PublicServiceStatus {
   url: string;
   status: "up" | "down" | "unknown";
   lastCheckedAt?: string;
+  iconUrl?: string;
 }
 
 /**
@@ -36,10 +38,23 @@ export function buildPublicStatus(
       const up = upBySlug.get(svc.slug);
       // up は 0/1 のはず。想定外の値 (NaN/0.5 等) は "down" と誤表示せず "unknown" に。
       const status: PublicServiceStatus["status"] =
-        up == null ? "unknown" : up.value === 1 ? "up" : up.value === 0 ? "down" : "unknown";
+        up == null
+          ? "unknown"
+          : up.value === 1
+            ? "up"
+            : up.value === 0
+              ? "down"
+              : "unknown";
       // 明示的に安全フィールドのみ構築 (スプレッド等で内部を巻き込まない)
-      const out: PublicServiceStatus = { slug: svc.slug, name: svc.name, url: svc.url, status };
+      const out: PublicServiceStatus = {
+        slug: svc.slug,
+        name: svc.name,
+        url: svc.url,
+        status,
+      };
       if (up) out.lastCheckedAt = up.at;
+      // favicon-projection (2026-05-28): services.icon_url を公開 DTO に投影 (有 → 含む / 無 → キー含有しない)
+      if (svc.iconUrl) out.iconUrl = svc.iconUrl;
       return out;
     });
 }

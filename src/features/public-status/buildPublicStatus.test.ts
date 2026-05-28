@@ -111,13 +111,60 @@ describe("buildPublicStatus (public-status-api Phase 1)", () => {
     ]) {
       expect(json).not.toContain(leak);
     }
-    // 公開キーのみ
+    // 公開キーのみ (FP-M-01: iconUrl を allowlist に追加、財務情報は引き続き禁止)
     expect(JSON.parse(json)[0]).toEqual({
       slug: "hana-memo",
       name: "hana-memo",
       url: "https://hana-memo.example.com",
       status: "up",
       lastCheckedAt: "2026-05-27T00:00:00.000Z",
+    });
+  });
+
+  // ── favicon-projection (revise_favicon-projection_20260528) ──────
+  it("FP-U-10: services に iconUrl 有 + up=1 → DTO に iconUrl 含む", () => {
+    const r = buildPublicStatus(
+      [svc({ iconUrl: "https://hana-memo.example.com/favicon.svg" })],
+      [snap({ metricKey: "up", metricValue: 1 })],
+    );
+    expect(r[0]!.iconUrl).toBe("https://hana-memo.example.com/favicon.svg");
+    expect(r[0]!.status).toBe("up");
+  });
+
+  it("FP-U-11: services に iconUrl 無し → DTO に iconUrl キー含有しない", () => {
+    const r = buildPublicStatus(
+      [svc({ iconUrl: undefined })],
+      [snap({ metricKey: "up", metricValue: 1 })],
+    );
+    expect(r[0]!.iconUrl).toBeUndefined();
+    expect(Object.keys(r[0]!)).not.toContain("iconUrl");
+  });
+
+  it("FP-M-01: 内部キー allowlist 更新 — iconUrl は公開、財務情報は引き続き禁止", () => {
+    const dirty: SnapshotRow[] = [
+      snap({ metricKey: "up", metricValue: 1 }),
+      snap({ metricKey: "revenue_month_usd", metricValue: 9999 }),
+    ];
+    const r = buildPublicStatus(
+      [svc({ iconUrl: "https://hana-memo.example.com/favicon.svg" })],
+      dirty,
+    );
+    const json = JSON.stringify(r);
+    // iconUrl は公開
+    expect(json).toContain("iconUrl");
+    expect(json).toContain("favicon.svg");
+    // 財務情報は引き続き禁止
+    for (const leak of ["revenue", "9999"]) {
+      expect(json).not.toContain(leak);
+    }
+    // shape 厳密一致 (iconUrl + 既存 5 キーのみ)
+    expect(JSON.parse(json)[0]).toEqual({
+      slug: "hana-memo",
+      name: "hana-memo",
+      url: "https://hana-memo.example.com",
+      status: "up",
+      lastCheckedAt: "2026-05-27T00:00:00.000Z",
+      iconUrl: "https://hana-memo.example.com/favicon.svg",
     });
   });
   it("PS-B1: active 0 件 → []", () => {
