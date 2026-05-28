@@ -7,6 +7,7 @@ import {
   resolveAlert,
   markAlertNotified,
   openAlerts,
+  updateServiceMeta,
 } from "../../src/db/index.js";
 import { loadServices } from "../../src/registry/index.js";
 import { getAdapters } from "../../src/providers/index.js";
@@ -43,6 +44,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       getAdapters: (s) => getAdapters(s, { env: process.env }),
       saveSnapshots: (rows) => upsertSnapshots(db, rows),
       saveRun: (r) => recordRun(db, r),
+      // favicon-projection: service-info adapter からの iconUrl を services.icon_url へ永続化
+      // (cron 版 api/cron/collect.ts と対称、本配線漏れが「今すぐ pull で iconUrl が DB 更新されない」原因だった、2026-05-28 hot-fix)
+      updateServiceMeta: (slug, meta) => updateServiceMeta(db, slug, meta),
       onCollected: async (rows, services) => {
         const fired = await evaluate(
           {
