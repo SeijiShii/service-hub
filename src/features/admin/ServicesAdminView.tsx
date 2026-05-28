@@ -1,12 +1,16 @@
 import { useState, type CSSProperties } from "react";
 import type { ServiceDescriptor, ServiceStatus } from "../../types/index.js";
+import type { SaveState } from "./saveState.js";
 
 const STATUSES: ServiceStatus[] = ["active", "paused", "retired"];
 
 interface Props {
   services: ServiceDescriptor[];
-  onSave: (d: ServiceDescriptor) => void;
+  /** 成功は true、失敗は false を返す。失敗時 View は form 値を保持する。 */
+  onSave: (d: ServiceDescriptor) => Promise<boolean>;
   onRetire: (slug: string) => void;
+  /** 親が管理する保存進捗。idle 時は表示なし。 */
+  saveState?: SaveState;
 }
 
 const empty = {
@@ -36,6 +40,11 @@ const labelStyle: CSSProperties = {
   gap: 4,
   color: "var(--text-muted, #9aa4b2)",
   fontSize: 13,
+};
+const helpStyle: CSSProperties = {
+  color: "var(--text-faint, #6b7280)",
+  fontSize: 11,
+  marginTop: -2,
 };
 const fieldsetStyle: CSSProperties = {
   display: "flex",
@@ -88,13 +97,28 @@ const statusBadge = (status: ServiceStatus): CSSProperties => {
     border: `1px solid ${color}`,
   };
 };
+const saveStatusStyle = (kind: "success" | "error"): CSSProperties => ({
+  color:
+    kind === "success"
+      ? "var(--status-up, #34d399)"
+      : "var(--status-down, #f87171)",
+  fontSize: 13,
+  marginLeft: 12,
+});
 
-/** 最小 admin フォーム (D20260528-001、admin-ux Phase 2 で styling 適用)。
- * Clerk ゲート内で seiji がサービス座標を登録/編集/退役。HTML 構造を保持しつつ
- * design-system テーマを適用 (縦並び・ラベル上・3 セクション fieldset・登録ボタン accent・テーブル装飾)。 */
-export function ServicesAdminView({ services, onSave, onRetire }: Props) {
+/** 最小 admin フォーム (D20260528-001、admin-ux Phase 2 で styling 適用、
+ * nav-and-pull で back-link 追加、admin-form-bug-and-ux で async UX 4 状態化)。
+ * Clerk ゲート内で seiji がサービス座標を登録/編集/削除。 */
+export function ServicesAdminView({
+  services,
+  onSave,
+  onRetire,
+  saveState,
+}: Props) {
   const [f, setF] = useState({ ...empty });
   const [editing, setEditing] = useState(false);
+
+  const saving = saveState?.kind === "saving";
 
   const set =
     (k: keyof typeof empty) =>
@@ -115,7 +139,7 @@ export function ServicesAdminView({ services, onSave, onRetire }: Props) {
     });
   };
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const providers: ServiceDescriptor["providers"] = {};
     if (f.vercelProjectId) providers.vercel = { projectId: f.vercelProjectId };
@@ -129,10 +153,15 @@ export function ServicesAdminView({ services, onSave, onRetire }: Props) {
       providers,
       serviceInfo: f.endpoint ? { endpoint: f.endpoint } : undefined,
     };
-    onSave(d);
-    setF({ ...empty });
-    setEditing(false);
+    const ok = await onSave(d);
+    if (ok) {
+      // 成功時のみ form clear + editing 終了。失敗時は値を保持し再試行可能に。
+      setF({ ...empty });
+      setEditing(false);
+    }
   };
+
+  const submitLabel = saving ? "保存中…" : editing ? "更新" : "登録";
 
   return (
     <main>
@@ -194,8 +223,9 @@ export function ServicesAdminView({ services, onSave, onRetire }: Props) {
                     type="button"
                     style={secondaryBtn}
                     onClick={() => onRetire(s.slug)}
+                    aria-label={`${s.slug} を削除`}
                   >
-                    退役
+                    削除
                   </button>
                 </td>
               </tr>
@@ -236,6 +266,7 @@ export function ServicesAdminView({ services, onSave, onRetire }: Props) {
               style={inputStyle}
               value={f.url}
               onChange={set("url")}
+              placeholder="https://example.com"
               required
             />
           </label>
@@ -245,7 +276,11 @@ export function ServicesAdminView({ services, onSave, onRetire }: Props) {
               style={inputStyle}
               value={f.subdomain}
               onChange={set("subdomain")}
+              placeholder="(任意・現状未使用)"
             />
+            <span data-testid="subdomain-help" style={helpStyle}>
+              将来の公開 URL 表記用予約 field。現状ビジネス logic から未参照。
+            </span>
           </label>
           <label style={labelStyle}>
             状態
@@ -271,6 +306,7 @@ export function ServicesAdminView({ services, onSave, onRetire }: Props) {
               style={inputStyle}
               value={f.vercelProjectId}
               onChange={set("vercelProjectId")}
+              placeholder="prj_xxx"
             />
           </label>
           <label style={labelStyle}>
@@ -291,13 +327,40 @@ export function ServicesAdminView({ services, onSave, onRetire }: Props) {
               style={inputStyle}
               value={f.endpoint}
               onChange={set("endpoint")}
+              placeholder="https://example.com/api/hub/service-info"
             />
+            <span data-testid="endpoint-help" style={helpStyle}>
+              フル URL を指定 (例: https://&lt;service&gt;.example.com/api/hub/service-info)。
+              path のみは不可。
+            </span>
           </label>
         </fieldset>
 
-        <button type="submit" style={primaryBtn}>
-          {editing ? "更新" : "登録"}
-        </button>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <button type="submit" style={primaryBtn} disabled={saving}>
+            {submitLabel}
+          </button>
+          {saveState?.kind === "success" && (
+            <span
+              data-testid="save-status"
+              data-status="success"
+              style={saveStatusStyle("success")}
+              role="status"
+            >
+              ✓ 保存しました
+            </span>
+          )}
+          {saveState?.kind === "error" && (
+            <span
+              data-testid="save-status"
+              data-status="error"
+              style={saveStatusStyle("error")}
+              role="alert"
+            >
+              保存に失敗しました ({saveState.message})
+            </span>
+          )}
+        </div>
       </form>
     </main>
   );
