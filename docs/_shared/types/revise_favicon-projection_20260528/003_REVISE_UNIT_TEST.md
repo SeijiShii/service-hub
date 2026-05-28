@@ -40,6 +40,11 @@
 | FP-U-30 | `adapters.test.ts` — iconUrl 1024 chars ちょうど | `'https://' + 'a'.repeat(1015) + '/x'` (合計 1024) | 受理 |
 | FP-U-31 | `adapters.test.ts` — iconUrl 1025 chars | 同上 +1 char | 拒否 |
 | FP-U-32 | `serviceMeta.test.ts` — services 行が存在しない slug | `updateServiceMeta(db, 'nonexistent', {iconUrl})` | no-op (update 0 行) — エラー throw しない |
+| **FP-U-33** | `adapters.test.ts` — format check fail 時の stderr 警告ログ | `{iconUrl:'http://x.example/...'}` で v2 ServiceInfoResponse を fetch + `vi.spyOn(console, 'warn')` | console.warn が `'service-info iconUrl rejected: slug=X reason=protocol rawType=string'` パターンで呼ばれる、値はログされない <!-- spec-review R6: 運用可視性 --> |
+| **FP-U-34** | `safeUrl.test.ts` — `isSafePublicUrl` 全パターン 100% カバレッジ | https / http / data: / javascript: / internal (10.x/127./192.168./172.16-31./169.254./0.0.0.0) / 1024 chars 境界 / 空文字 / non-string / undefined | 各々の expected boolean が一致 <!-- spec-review R3: SSRF 予防 SoT 単一化 --> |
+| **FP-U-35** | `runner.test.ts` — adapter meta 経路で updateServiceMeta が呼ばれる | adapter mock が `{metrics:[], meta:{iconUrl:'https://x/icon'}}` 返却、`deps.updateServiceMeta` = vi.fn() | updateServiceMeta が `(svc.slug, {iconUrl:'https://x/icon'})` で 1 回呼ばれる <!-- spec-review R1: runner で副作用集約 --> |
+| **FP-U-36** | `runner.test.ts` — adapter meta 無しは updateServiceMeta 呼ばれない | adapter mock が `{metrics:[]}` (meta 無し) 返却 | updateServiceMeta が呼ばれない (no-op 分岐) <!-- spec-review R1 --> |
+| **FP-U-37** | `runner.test.ts` — ping/vercel/neon adapter は meta 返却なしで互換 | 既存 adapter wrap helper の戻り値型に meta?: 追加後の compile + runtime green | 既存テスト全て破壊なし、ping/vercel/neon の collect 戻り値が `meta:undefined` で TS optional 互換 <!-- spec-review R1: 互換性検証 --> |
 
 ## 2. 修正テストケース
 

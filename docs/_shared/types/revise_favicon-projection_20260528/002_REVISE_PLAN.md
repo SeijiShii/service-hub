@@ -9,18 +9,19 @@
 
 | ファイル | 変更内容（概要） | リスク | 関連 SPEC § |
 |---|---|---|---|
-| `src/types/service.ts` | `ServiceInfoResponse` に `iconUrl?: string` 追加 (JSDoc に v2 schemaVersion bump 説明)、`ServiceDescriptor` に `iconUrl?: string` 追加 | 低 (additive 型) | §7.2 |
+| `src/types/service.ts` | (1) `ServiceInfoResponse` に `iconUrl?: string` 追加 (JSDoc に v2 schemaVersion bump 説明) (2) `ServiceDescriptor` に `iconUrl?: string` 追加 (3) **`ServiceMeta` 型を新設**: `interface ServiceMeta { iconUrl?: string }` (将来 last_deploy_at 等の他 producer 申告メタ用に拡張可能) (4) **`ProviderAdapter` 戻り値型を拡張**: `collect: (svc) => Promise<{metrics: UsageMetric[]; error?: string; meta?: ServiceMeta}>` (meta?: optional のため ping/vercel/neon 既存 adapter は変更不要) | 低 (additive 型 + ProviderAdapter optional 拡張) | §7.2, §7.3 <!-- spec-review R1: ProviderAdapter 拡張 (a) 案 --> |
 | `src/types/index.ts` | re-export 変更なし (既に service.ts 全 export) | 無 | - |
 | `src/db/schema.ts` | `services` テーブルに `iconUrl: text("icon_url")` カラム追加 (nullable) | 低 (DB schema 追加、migration で適用) | §7.3 |
 | `src/db/queries.ts` | (1) `toServiceDescriptor` に `iconUrl: r.iconUrl ?? undefined` 追加 (2) `upsertService` は iconUrl 経路を**意図的に追加しない** (admin write からは設定不可、SoT 衝突防止) — `serviceInfo` と同列に追加してしまわないよう注意 (3) 新規 `updateServiceMeta(db, slug, {iconUrl})` 関数追加 — `services.icon_url` のみを update | 中 (admin 経路で誤って iconUrl を上書きしないことを test で担保) | §7.3, §7.4 |
-| `src/providers/adapters.ts` | `createServiceInfoAdapter` 戻り値型を `{metrics: UsageMetric[]; meta?: {iconUrl?: string}}` に拡張 — 既存の wrap ヘルパが metrics のみ扱う構造のため、wrap の戻り値型を `CollectResult & {meta?: ServiceMeta}` に拡張するか、別関数で meta を返す。具体実装は §5 Phase 1 で決定 | **中** (型拡張が runner.ts まで波及) | §7.1 SI-UC2 |
-| `src/registry/schema.ts` | **変更なし** — `serviceDescriptorSchema` に iconUrl は追加しない (admin write 経路では受け付けない、SoT 一貫性) | 無 | §3 影響範囲 |
+| `src/providers/adapters.ts` | (1) `createServiceInfoAdapter` で ServiceInfoResponse から iconUrl 抽出 + format check (新 `isSafePublicUrl` で SSRF 予防) + 失敗時 `console.warn('service-info iconUrl rejected: slug=X reason=Y')` (rejection 理由のメタ情報のみ、値はログしない) (2) wrap ヘルパの戻り値型 `CollectResult` に `meta?: ServiceMeta` 追加 (3) service-info adapter のみ meta を返却、ping/vercel/neon は meta 返さず undefined のまま (TS optional で互換) | **中** (CollectResult 型に meta?: 追加で ping/vercel/neon の wrap 戻り値型も変わるが、optional のため実装変更不要。runner.ts 1 行追加) | §7.1 SI-UC2 <!-- spec-review R1: ProviderAdapter 拡張 (a) 案 + R6: stderr 警告ログ --> |
+| `src/registry/schema.ts` | (1) `serviceDescriptorSchema` に iconUrl は**追加しない** (admin write 経路では受け付けない、SoT 一貫性 — stripUnknown で req.body.iconUrl は除去される) (2) internal const `publicUrl` を `src/lib/safeUrl.ts` の `isSafePublicUrl` 経由に置換 (zod refinement 内で `(u) => isSafePublicUrl(u)`) — SSRF 予防ロジックの単一 SoT 化 | 低 (refactor、挙動同等) | §3 影響範囲 + 002 §2 新規 <!-- spec-review R2 (zod 不含維持) + R3 (publicUrl 共通化) --> |
+| `src/registry/validate.ts` | **変更なし** — `r.data as ServiceDescriptor` キャストの挙動 (iconUrl=undefined を許容) を JSDoc に明示する 1 行のみ追記推奨 | 無 | §3 + 001 §7.3 <!-- spec-review R2: キャスト挙動明示 --> |
 | `src/features/public-status/buildPublicStatus.ts` | DTO build 部の `out: PublicServiceStatus = {slug, name, url, status}` に `if (svc.iconUrl) out.iconUrl = svc.iconUrl;` 追加 | 低 (1 行追加) | §7.2 |
 | `src/features/public-status/buildPublicStatus.test.ts` | iconUrl 投影テスト追加 + 内部キー非含有テストの allowlist に iconUrl 追加 | 低 | 003_UNIT_TEST §1.1 |
 | `src/types/types.test.ts` | ServiceInfoResponse v2 型テストに iconUrl 含むケース追加 (v1 互換も維持) | 低 | 003_UNIT_TEST §1.1 |
 | `src/db/services.test.ts` | services テーブル round-trip テストに iconUrl 含むケース追加 + admin write 経路で iconUrl を渡しても無視される (or schema 検証で拒否される) ことを assert | 中 | 003_UNIT_TEST §1.3 |
 | `src/providers/adapters.test.ts` | service-info adapter テストに iconUrl 抽出ケース + format check (https / 1024 / 内部アドレス) ケース追加 | 中 | 003_UNIT_TEST §1.1, §1.2 |
-| `src/features/collection/runner.ts` | adapter 戻り値の `meta` を受け取って `updateServiceMeta` を呼ぶ経路追加 (具体は §5 Phase 1 で実装方式確定) | **中** (runner 型変更) | §7.1 SI-UC2 |
+| `src/features/collection/runner.ts` | adapter.collect の戻り値 `res.meta` を確認し、`res.meta?.iconUrl` があれば `await deps.updateServiceMeta(svc.slug, {iconUrl: res.meta.iconUrl})` を呼び出す 1 行追加。RunnerDeps に `updateServiceMeta?: (slug: string, meta: ServiceMeta) => Promise<void>` を optional として追加 (テストでは mock 注入、本番では api/cron/collect.ts で渡す) | 低 (1 行追加 + Deps interface optional 拡張) | §7.1 SI-UC2 <!-- spec-review R1: runner で副作用集約、adapter は純粋 --> |
 | `src/features/collection/*.test.ts` | runner テストに meta 経路追加 | 低 | 003_UNIT_TEST §4 |
 | `api/public/status.ts` | **変更なし** (DTO 拡張は型レベルで吸収、handler ロジック不変) | 無 | §3 影響範囲 |
 | `api/cron/collect.ts` | **変更なし** (既存 cron path で service-info adapter が自動的に iconUrl 更新) | 無 | §3 影響範囲 |
@@ -31,9 +32,11 @@
 
 | ファイル | 責務 | 依存 | LOC 見積 |
 |---|---|---|---|
-| `drizzle/<NNNN>_add_services_icon_url.sql` (migration) | `ALTER TABLE services ADD COLUMN icon_url text;` (rollback: DROP COLUMN) | drizzle-kit migration system | ~5 |
-| `src/db/serviceMeta.ts` (or queries.ts に追記) | `updateServiceMeta(db, slug, {iconUrl})` 純関数 — `services.icon_url` のみ update、updatedAt 更新、null/undefined 引数は no-op (保持セマンティクス, [論点-FP2]) | drizzle | ~30 |
-| `src/db/serviceMeta.test.ts` (or queries.test.ts に追記) | updateServiceMeta テスト (set / no-op / format invalid → adapter 側で reject 済前提) | testdb | ~50 |
+| `drizzle/<NNNN>_add_services_icon_url.sql` (migration) | `ALTER TABLE services ADD COLUMN icon_url text;` (rollback は forward migration として `DROP COLUMN icon_url;` を別 SQL で apply、詳細 005 §3) | drizzle-kit migration system | ~5 |
+| **`src/lib/safeUrl.ts`** (新規) | `isSafePublicUrl(s: unknown, opts?: {maxLength?: number}): boolean` 純関数 — URL parse + https only + internal アドレス拒否 (registry/schema.ts の publicUrl ロジックを export 形で共通化) | (なし、純粋関数) | ~30 <!-- spec-review R3: P19/P3 違反回避、SSRF 予防 SoT 単一化 --> |
+| **`src/lib/safeUrl.test.ts`** (新規) | isSafePublicUrl テスト (URL/https/internal/protocol/length/non-string/empty を 100% カバー、registry 既存テストと adapter 新規テストの両方が参照する SoT) | vitest | ~80 <!-- spec-review R3 --> |
+| `src/db/serviceMeta.ts` (or queries.ts に追記) | `updateServiceMeta(db, slug, meta: ServiceMeta)` 純関数 — meta.iconUrl があれば `services.icon_url` を update + updatedAt 更新、iconUrl=undefined or no key なら no-op (保持セマンティクス, [論点-FP2]) | drizzle | ~30 |
+| `src/db/serviceMeta.test.ts` (or queries.test.ts に追記) | updateServiceMeta テスト (set / no-op / 存在しない slug → no-op / 既存値保持) | testdb | ~50 |
 
 ## 3. 削除ファイル一覧
 
@@ -50,22 +53,27 @@
 
 ## 5. 実装 Phase 分割（`/flow:tdd-phase` 連携）
 
-### Phase 1: DB schema + 型拡張 (RED→GREEN→IMPROVE)
-- **対象**: `src/types/service.ts` + `src/db/schema.ts` + drizzle migration + `src/db/queries.ts` (`toServiceDescriptor` 拡張 + `updateServiceMeta` 新設)
+### Phase 1: safeUrl 共通化 + DB schema + 型拡張 (RED→GREEN→IMPROVE) <!-- spec-review R3: safeUrl 先行 + R1: ServiceMeta/ProviderAdapter 拡張 -->
+- **対象**: **`src/lib/safeUrl.ts` (新規)** + `src/types/service.ts` (+ ServiceMeta 型 + ProviderAdapter 拡張) + `src/db/schema.ts` + drizzle migration + `src/db/queries.ts` (`toServiceDescriptor` 拡張 + `updateServiceMeta` 新設) + `src/registry/schema.ts` (publicUrl を safeUrl に置換)
 - **ゴール**:
-  - ServiceInfoResponse + ServiceDescriptor 型に iconUrl 追加 (型テスト green)
+  - `isSafePublicUrl` 実装 + テスト 100% カバレッジ (https/internal/protocol/length/non-string/empty)
+  - registry/schema.ts の publicUrl を safeUrl 経由に置換 (既存テスト green 維持で挙動同等を保証)
+  - ServiceInfoResponse + ServiceDescriptor 型に iconUrl 追加、**ServiceMeta 型新設**、**ProviderAdapter 戻り値型に meta?: ServiceMeta 追加** (型テスト green、ping/vercel/neon は変更不要で互換確認)
   - services テーブル + drizzle migration 追加 (migration apply → カラム存在確認)
-  - `updateServiceMeta(db, slug, {iconUrl})` 実装 + テスト (set / no-op / 既存値保持)
+  - `updateServiceMeta(db, slug, {iconUrl})` 実装 + テスト (set / no-op / 既存値保持 / 存在しない slug = no-op)
   - `toServiceDescriptor` に iconUrl 反映 (round-trip テスト green)
-  - **admin write 経路 (`upsertService`) では iconUrl を受け付けない** ことを test で assert (SoT 一貫性)
+  - **admin write 経路 (`upsertService`) では iconUrl を受け付けない** ことを test で assert (SoT 一貫性、FP-U-26)
 
-### Phase 2: service-info adapter で iconUrl 抽出 + format check (RED→GREEN→IMPROVE)
-- **対象**: `src/providers/adapters.ts` + `src/providers/adapters.test.ts` + runner 連携の最小骨格
+### Phase 2: service-info adapter で iconUrl 抽出 + runner 連携 (RED→GREEN→IMPROVE) <!-- spec-review R1, R3, R6 -->
+- **対象**: `src/providers/adapters.ts` + `src/providers/adapters.test.ts` + `src/features/collection/runner.ts` + `api/cron/collect.ts` (RunnerDeps.updateServiceMeta 配線)
 - **ゴール**:
   - `createServiceInfoAdapter` が ServiceInfoResponse から iconUrl 抽出 (v1/v2 両対応、optional)
-  - format check: URL parse + https + 1024 chars + internal アドレス拒否 (publicUrl 相当ロジック、registry/schema.ts の `publicUrl` を共通化 or 同等ロジックを adapter に書く)
-  - adapter 戻り値型拡張 (`{metrics, meta?: {iconUrl?}}`) + runner で meta を受け取って `updateServiceMeta` 呼び出し
-  - テスト: 正常 / iconUrl 無し / http / 内部アドレス / 1024 超 / 空文字 / non-string
+  - format check: **Phase 1 で共通化済 `isSafePublicUrl` を呼び出す** (再実装しない、R3 違反防止)
+  - **format check fail 時に `console.warn('service-info iconUrl rejected: slug=<slug> reason=<protocol|length|internal|parse|empty> rawType=<typeof>')` を出力** (値はログしない、rejection 理由のメタ情報のみ、R6)
+  - adapter 戻り値に `meta?: ServiceMeta` を含める (CollectResult 型拡張、ping/vercel/neon は影響なし)
+  - runner.ts で `res.meta?.iconUrl` があれば `await deps.updateServiceMeta(svc.slug, res.meta)` 呼び出し (1 行追加、副作用集約)
+  - api/cron/collect.ts で `RunnerDeps.updateServiceMeta` に `(slug, meta) => updateServiceMeta(db, slug, meta)` を渡す
+  - テスト: adapter 正常 / iconUrl 無し / http / 内部アドレス / 1024 超 / 空文字 / non-string + **stderr 警告ログ出力** (vi.spyOn(console, 'warn')) + runner meta 経路 (mock updateServiceMeta が iconUrl 受信時のみ呼ばれる)
 
 ### Phase 3: public-status DTO 投影 (RED→GREEN→IMPROVE)
 - **対象**: `src/features/public-status/buildPublicStatus.ts` + `buildPublicStatus.test.ts`
@@ -106,11 +114,11 @@ Phase 2 と Phase 3 は型 (Phase 1) 完了後に並行可能。ただし `/flow
 
 ## 8. リスク・注意点
 
-- **runner 型変更の波及**: adapter 戻り値型を `{metrics, meta?}` に拡張するため、`src/features/collection/runner.ts` の型シグネチャ変更が必要。既存 adapter (ping/vercel/neon) は meta を返さない → runner で `meta == null` の場合は updateServiceMeta を呼ばない分岐
-- **SoT 衝突防止**: `services.icon_url` を admin write からも update できる状態にすると、producer 申告と admin 編集が衝突する。本 PLAN では admin write 経路に iconUrl を**意図的に追加しない**。テストで `upsertService(svc with iconUrl)` を呼んでも iconUrl が無視されることを assert
-- **format check の SSRF 予防**: producer 自己申告 URL がそのまま shipyard に渡って `<img src>` で fetch される。internal アドレス (`10.x.x.x` 等) や `javascript:` プロトコルが入ると shipyard ユーザーに影響 → adapter 側で `publicUrl` 相当ロジックで弾く。registry/schema.ts の `publicUrl` を共通モジュール化することを Phase 2 で検討
-- **migration rollback の安全性**: `DROP COLUMN icon_url` は受信値を失うが、producer から再取得可能なため**永続損失なし**
-- **連動 PJ タイミング**: bousai-bag-checker 側の revise を忘れると一時的に iconUrl 空のままだが、後方互換のため UI は fallback で動く (リスク小)
+- **runner 型変更の波及** (spec-review R1 で解決): adapter 戻り値型 `{metrics, meta?}` 拡張で `src/features/collection/runner.ts` の型シグネチャに optional `meta?: ServiceMeta` 追加。ping/vercel/neon は meta 返却なしで undefined のまま (TS optional で互換) → runner で `if (res.meta?.iconUrl) await deps.updateServiceMeta(...)` の 1 行分岐で集約。RunnerDeps に `updateServiceMeta?` optional 追加、テストでは mock 注入
+- **SoT 衝突防止** (spec-review R2 で二重防御化): `services.icon_url` を admin write からも update できる状態にすると、producer 申告と admin 編集が衝突する。本 PLAN では admin write 経路に iconUrl を**意図的に追加しない** + **`upsertService` SET 句に iconUrl を含めない** + **テストで `upsertService(svc with iconUrl)` を呼んでも iconUrl が無視されることを assert (FP-U-26)** の 3 層防御
+- **format check の SSRF 予防** (spec-review R3 で解決): Phase 1 で `src/lib/safeUrl.ts` を新設し registry/schema.ts と adapters.ts の両方が `isSafePublicUrl` を import (SoT 単一化)。再実装ゼロ
+- **migration rollback の安全性**: `DROP COLUMN icon_url` は受信値を失うが、producer から再取得可能なため**永続損失なし**。drizzle-kit の rollback は forward migration として手動 SQL ファイル作成 (詳細 005 §3、spec-review R8)
+- **連動 PJ タイミング** (spec-review R5 で P52 観点追加): bousai-bag-checker 側の revise を忘れると一時的に iconUrl 空のままだが、後方互換のため UI は fallback で動く (リスク小)。**ただし producer 既存テストで `schemaVersion === 1` を assert している箇所 (P52 観点) を `grep schemaVersion.*1` で全列挙必須** (連動 revise SPEC 段階で)
 - **CF-20260528-016 (本 PJ 検知)**: flow:revise §Step 3.1 に「対外契約変更フラグ」項目化が未済。本 PJ では人為的に補完運用、flow-suite 側 commit はユーザー手動
 
 ## 9. 完了の定義 (DoD)

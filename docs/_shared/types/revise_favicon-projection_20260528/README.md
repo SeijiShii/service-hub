@@ -5,6 +5,7 @@
 - **対象機能**: ../README.md (_shared/types)
 - **基準 SPEC**: ../001_types_SPEC.md
 - **改修要望**: shipyard で公開サービス一覧を表示するにあたり、各サービスのアイコン (favicon) も並べたい。直接 `${url}/favicon.ico` は SPA rewrite で HTML が返るケース (例: hana-memo) があり脆い。各マイクロサービスは自分の favicon パスを把握しているので、**`service-info` contract で `iconUrl` を申告**してもらい、service-hub が DB に保存して `/api/public/status` で公開、shipyard はそのまま `<img src>` で使う。取得不可時は shipyard 側でデフォルトアイコンへフォールバック。
+- **slug の意味** (spec-review R7): `favicon-projection` は **technical な投影パイプライン** (producer → service-info contract → service-hub DB → public-status DTO → consumer) を表現する slug。主担当は **contract 拡張** (`ServiceInfoResponse` v1→v2)、投影は最終段。3 段 (contract / DB / DTO) すべて本 revise の対象。
 - **対外契約変更フラグ**: **yes** — `ServiceInfoResponse` (service-hub ←→ 各マイクロサービス間 contract) を v1 → v2 に bump
 - **連動改修対象 PJ**: **bousai-bag-checker** (現状唯一の service-info producer) — 同 slug で `/flow:revise <root> favicon-projection-producer` 起動推奨。将来登録される全マイクロサービスも同様
 - **状態**: 設計中

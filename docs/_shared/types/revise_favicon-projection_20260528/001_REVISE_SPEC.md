@@ -42,6 +42,8 @@
 | `ServiceDescriptor` 型 | `iconUrl?: string` フィールド追加 | 型変更のみ |
 | `ServiceInfoResponse` 型 | `iconUrl?: string` フィールド追加 + JSDoc に v2 schemaVersion bump 説明 | 型変更のみ |
 | `PublicServiceStatus` 型 | `iconUrl?: string` フィールド追加 | 型変更のみ |
+| **`ServiceMeta` 型 (新規)** | `interface ServiceMeta { iconUrl?: string }` 新設 (将来 last_deploy_at 等の他 producer 申告メタ用に拡張可能) | 型新規 <!-- spec-review R1: ProviderAdapter 拡張 (a) 案採用、ServiceMeta 型を新設して全 adapter 戻り値に meta?: ServiceMeta を統一 --> |
+| **`ProviderAdapter` インターフェース** | `collect()` 戻り値型を `{metrics: UsageMetric[]; error?: string; meta?: ServiceMeta}` に拡張 (ping/vercel/neon は meta 返却なし= undefined のまま、service-info adapter のみ meta 返却) | 型拡張のみ、optional のため既存 3 adapter 影響なし <!-- spec-review R1 --> |
 
 ### 2.4 バリデーション・エラー変更
 | 対象 | 変更前 | 変更後 |
@@ -61,7 +63,7 @@
 | `api/public/status.ts` | 低 | ロジック変更なし (DTO 拡張は内部で完結) |
 | `api/cron/collect.ts` | 低 | 既存 cron path で service-info adapter が自動的に iconUrl 更新するため変更なし |
 | `registry` admin write 経路 | **無し** | iconUrl は producer 自己申告 SoT、admin UI から手動編集しない方針 (誤上書き防止) |
-| 連動 PJ: bousai-bag-checker | **高** | `ServiceInfoResponse` 型を v2 に上げ、`iconUrl: 'https://bousai-bag-checker.givers.work/favicon.svg'` (実値は確認) を返却。本セッション後に同 slug で連動 revise 起動 |
+| 連動 PJ: bousai-bag-checker | **高** | `ServiceInfoResponse` 型を v2 に上げ、`iconUrl: 'https://bousai-bag-checker.givers.work/favicon.svg'` (実値は確認) を返却。本セッション後に同 slug で連動 revise 起動。**P52 観点必須**: producer 既存テストで `schemaVersion === 1` を assert している箇所を `grep schemaVersion.*1` で全列挙してテスト更新計画を立てる <!-- spec-review R5: P52 観点リマインダ --> |
 | 連動 PJ: shipyard (consumer) | 中 | `<img src={status.iconUrl ?? fallback}>` で表示、onError でフォールバック (shipyard 側の改修であり本 PJ の責務外) |
 | 将来登録される全 producer PJ | 中 | v2 contract に iconUrl 必須対応 — concept §1.4 or perspectives に登録時の要件として追記推奨 |
 
@@ -167,6 +169,14 @@ interface ServiceDescriptor {
 - `services` テーブル: `icon_url text` カラム追加 (nullable、default NULL)
 - `usage_snapshots` テーブル: 変更なし
 - **更新経路の SoT 制約**: `services.icon_url` の書き込みは **service-info adapter (producer 自己申告) のみ** とする。admin write 経路 (`serviceDescriptorSchema` / admin API) では iconUrl を受け付けない (誤上書き / SoT 衝突を防ぐ)。
+- **admin 経路 INSERT/UPDATE の挙動明示** (admin 経由で iconUrl は書き込めないが、INSERT vs UPDATE で挙動が分岐): <!-- spec-review R4: INSERT 時の icon_url 挙動明示 -->
+  - **admin POST (新規 INSERT)**: 新規行作成時、icon_url=**NULL** (services.icon_url のデフォルト)。その後の cron collect で producer 申告に基づき更新される
+  - **admin PATCH (UPDATE)**: `upsertService` SET 句に icon_url を**含めない**ため、既存 services.icon_url は**保持** (上書きされない)
+  - **service-info adapter の更新**: 専用関数 `updateServiceMeta(db, slug, {iconUrl})` で services.icon_url のみを update (updatedAt も更新)。format check 通過時のみ呼び出し、未送信/fail 時は no-op (既存値保持、[論点-FP2] 推奨)
+- **型と zod schema 出力型の整合性** (admin write の SoT 一貫性): <!-- spec-review R2: stripUnknown + 二重防御 -->
+  - **意図的な型不整合**: `ServiceDescriptor` 型は **DB レコード全体** (iconUrl?: string 含む) を表す。`serviceDescriptorSchema` (zod) は **admin write の subset** (iconUrl 不含) を表す
+  - **二重防御**: (1) zod schema が iconUrl を含めない → stripUnknown で req.body.iconUrl を除去 (構造防御) (2) `upsertService` SET 句に iconUrl を含めない (動作防御) (3) テスト FP-U-26 / FP-E2E-20 で admin 経路 iconUrl 不可を assert (検証防御)
+  - **`r.data as ServiceDescriptor` キャスト時の挙動**: zod output (iconUrl 無し) → ServiceDescriptor (iconUrl optional) はキャスト可能、結果は iconUrl=undefined。明示的に意図された設計
 
 ### 7.4 バリデーション・エラー（新仕様）
 

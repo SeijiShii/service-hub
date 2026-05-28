@@ -76,11 +76,22 @@
 
 ## 3. ロールバック手順
 
+drizzle-kit には `migrate:rollback` コマンドがないため、rollback は**forward migration として手動 SQL ファイルを作成して再 apply** する形を取る (詳細手順): <!-- spec-review R8: 具体的手順明示 -->
+
+### 3.1 DB rollback (forward migration として apply)
+1. `drizzle/<NNNN+1>_revert_add_services_icon_url.sql` を手動作成、内容:
+   ```sql
+   ALTER TABLE "services" DROP COLUMN "icon_url";
+   ```
+2. drizzle migration journal (`drizzle/meta/_journal.json`) に新 migration を追記 (drizzle-kit が自動で取り込まない場合は手動編集)
+3. `bash scripts/with-env.sh drizzle-kit migrate` で再 apply (production env)
+4. 検証: `bash scripts/with-env.sh psql -c "\d services"` で icon_url 列消失、`select count(*) from services` で既存行数完全保持を確認
+
+### 3.2 アプリコード rollback
 | 元 Step | 逆操作 | 検証 |
 |---|---|---|
-| Step 3 (本番 migration apply) | rollback migration: `ALTER TABLE services DROP COLUMN icon_url;` を手動 SQL or rollback migration ファイル経由で適用 | `\d services` で icon_url 列消失確認、既存行データ完全保持確認 |
-| Step 1 (schema.ts 変更) | git revert で `src/db/schema.ts` を変更前に戻す + drizzle migration ファイル削除 | `git diff` で差分なし確認 |
-| (アプリコード) | git revert で `src/types/service.ts` / `src/providers/adapters.ts` / `src/features/public-status/buildPublicStatus.ts` 等の変更を戻す | `npm run build` green、`npm test` green |
+| Step 1 (schema.ts 変更) | git revert で `src/db/schema.ts` を変更前に戻す + 当該 drizzle migration ファイル (上記 add) を削除 | `git diff` で差分なし確認 |
+| (アプリコード) | git revert で `src/types/service.ts` / `src/providers/adapters.ts` / `src/features/public-status/buildPublicStatus.ts` / `src/lib/safeUrl.ts` / 関連テスト等の変更を戻す | `npm run build` green、`npm test` green |
 
 **ロールバック完了後の状態**: 改修前と完全に同じ (公開 API レスポンスから iconUrl キー消失、producer からの iconUrl 申告は受信するが破棄)。
 
