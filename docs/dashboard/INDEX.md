@@ -24,6 +24,7 @@
 |---|---|---|---|---|---|
 | [revise_admin-ux_20260528_link-and-styling/](./revise_admin-ux_20260528_link-and-styling/) | revise | admin-ux | 実装完了 (unit 179 passed) | ダッシュボードヘッダに /admin リンク追加（O55 orphan 解消）+ admin フォームに styling 適用（縦並び・ラベル上・セクション分け） | [INDEX](./revise_admin-ux_20260528_link-and-styling/INDEX.md) |
 | [revise_nav-and-pull_20260528_back-link-and-relocation/](./revise_nav-and-pull_20260528_back-link-and-relocation/) | revise | nav-and-pull | 実装完了 (unit 196 passed) | (1) /admin に「← ダッシュボード」back-link 追加（O55 逆方向）+ (2) 「今すぐ pull」を /admin から **dashboard top に relocation**（鮮度確認→即pull の動線） | [INDEX](./revise_nav-and-pull_20260528_back-link-and-relocation/INDEX.md) |
+| [revise_timeseries-topchart_20260528/](./revise_timeseries-topchart_20260528/) | revise | timeseries-topchart | 設計済 (tdd 待ち) | 画面**上部に時系列グラフ section** (主要 4 metric: up/mau/db_storage_bytes/last_deploy_at、過去 30 日、全 service 重ね描き) + **下部に既存テーブル**維持。`MetricChart` を `src/components/` に共通化、新クエリ `recentSnapshots`、`/api/dashboard/summary` に `charts` additive 追加 (shipyard 公開 API 不変) | [INDEX](./revise_timeseries-topchart_20260528/INDEX.md) |
 
 ## 関連
 - 親 concept: `../concept.md` §1.3.1 dashboard 行
