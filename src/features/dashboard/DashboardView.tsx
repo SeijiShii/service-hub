@@ -10,11 +10,36 @@ export function DashboardView({ vm }: { vm: DashboardVM }) {
         color: "var(--text, #e6e9ef)",
       }}
     >
-      <header>
-        <h1>service-hub</h1>
-        <p data-testid="summary">
-          {vm.upCount} up · {vm.downCount} down
-        </p>
+      <header
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "12px 16px",
+          gap: 16,
+        }}
+      >
+        <div>
+          <h1 style={{ margin: 0 }}>service-hub</h1>
+          <p data-testid="summary" style={{ margin: "4px 0 0" }}>
+            {vm.upCount} up · {vm.downCount} down
+          </p>
+        </div>
+        <nav>
+          <a
+            href="/admin"
+            data-testid="admin-link"
+            style={{
+              color: "var(--text, #e6e9ef)",
+              textDecoration: "none",
+              padding: "6px 12px",
+              border: "1px solid var(--border, #2a2f3a)",
+              borderRadius: 6,
+            }}
+          >
+            管理
+          </a>
+        </nav>
       </header>
       {showAlert && (
         <div

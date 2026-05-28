@@ -17,6 +17,14 @@ const bizNull = {
 } as const;
 
 describe("DashboardView", () => {
+  it("UX-N1: ヘッダに /admin への 'admin-link' が表示される (O55 orphan 解消)", () => {
+    render(<DashboardView vm={vm()} />);
+    const link = screen.getByTestId("admin-link");
+    expect(link).toBeTruthy();
+    expect(link.getAttribute("href")).toBe("/admin");
+    expect(link.textContent).toBe("管理");
+  });
+
   it("DA-N4: ヘッダに up/down サマリ + 行表示", () => {
     render(
       <DashboardView
