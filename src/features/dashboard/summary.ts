@@ -32,6 +32,44 @@ export interface ServiceRowVM {
   iconUrl?: string;
 }
 
+/**
+ * dashboard 上部 chart 用の per-service 時系列 (timeseries-topchart、spec-review R5)。
+ */
+export interface DashboardChartSeries {
+  slug: string;
+  name: string;
+  points: Array<{ capturedAt: string; value: number }>;
+}
+
+/**
+ * dashboard 上部に表示する 1 metric の時系列 chart データ。
+ * series = 全 active service の重ね描き (空 service も series エントリは含む、points=[] で fallback)。
+ */
+export interface DashboardChart {
+  metricKey: MetricKey;
+  unit: string;
+  series: DashboardChartSeries[];
+}
+
+/**
+ * 上部 chart 化する主要 metric 4 件 (固定順序、spec-review R2 確定)。
+ * 順序: 死活 → ビジネス → リソース → デプロイ運用。
+ */
+export const DASHBOARD_CHART_METRICS: readonly MetricKey[] = [
+  "up",
+  "mau",
+  "db_storage_bytes",
+  "last_deploy_at",
+] as const;
+
+/** metric 別の unit fallback (snapshots に unit があれば優先、無ければ既知デフォルト)。 */
+const METRIC_UNIT_FALLBACK: Record<string, string> = {
+  up: "bool",
+  mau: "count",
+  db_storage_bytes: "bytes",
+  last_deploy_at: "epoch_ms",
+};
+
 export interface DashboardVM {
   rows: ServiceRowVM[];
   upCount: number;
@@ -40,6 +78,55 @@ export interface DashboardVM {
   lastRunStatus: CollectionRun["status"] | null;
   /** 直近 run の finishedAt (実行中なら startedAt、無しなら null)、ISO 8601。 */
   lastUpdatedAt: string | null;
+  /**
+   * dashboard 上部 chart 用の主要 metric × 全 service 時系列 (timeseries-topchart、required、spec-review R2)。
+   * 常に 4 件 (DASHBOARD_CHART_METRICS の順)、空 chartSnapshots でも各 chart.series に
+   * 全 service の {slug,name,points:[]} を含む (UI で「データなし」 fallback)。
+   */
+  charts: DashboardChart[];
+}
+
+/**
+ * chartSnapshots から DashboardChart[] を集約 (timeseries-topchart、spec-review R2)。
+ * 固定 4 metric × 全 service で重ね描き用 series を生成、metric 順序は DASHBOARD_CHART_METRICS で固定。
+ * 空 chartSnapshots でも各 chart.series に全 service の {slug,name,points:[]} を含む (UI fallback)。
+ */
+function buildCharts(
+  services: ServiceDescriptor[],
+  chartSnapshots: SnapshotRow[],
+): DashboardChart[] {
+  // metric × slug → points を集約
+  type Key = string; // `${metricKey}|${slug}`
+  const pointsByKey = new Map<
+    Key,
+    Array<{ capturedAt: string; value: number }>
+  >();
+  const unitByMetric = new Map<MetricKey, string>();
+
+  for (const s of chartSnapshots) {
+    if (!DASHBOARD_CHART_METRICS.includes(s.metricKey)) continue; // 非対象 metric 除外
+    const k: Key = `${s.metricKey}|${s.serviceSlug}`;
+    const arr = pointsByKey.get(k) ?? [];
+    arr.push({ capturedAt: s.capturedAt, value: s.metricValue });
+    pointsByKey.set(k, arr);
+    if (!unitByMetric.has(s.metricKey)) unitByMetric.set(s.metricKey, s.unit);
+  }
+
+  // 各 series の points を capturedAt 昇順 sort
+  for (const arr of pointsByKey.values()) {
+    arr.sort((a, b) => a.capturedAt.localeCompare(b.capturedAt));
+  }
+
+  return DASHBOARD_CHART_METRICS.map((metricKey) => {
+    const series: DashboardChartSeries[] = services.map((svc) => ({
+      slug: svc.slug,
+      name: svc.name,
+      points: pointsByKey.get(`${metricKey}|${svc.slug}`) ?? [],
+    }));
+    const unit =
+      unitByMetric.get(metricKey) ?? METRIC_UNIT_FALLBACK[metricKey] ?? "";
+    return { metricKey, unit, series };
+  });
 }
 
 /** db スナップショット + registry + openAlerts を一覧 VM に結合 (provider 直叩きなし)。 */
@@ -48,6 +135,7 @@ export function buildDashboard(
   snapshots: SnapshotRow[],
   openAlerts: AlertEvent[],
   lastRun?: CollectionRun,
+  chartSnapshots: SnapshotRow[] = [],
 ): DashboardVM {
   const alertCountBySlug = new Map<string, number>();
   for (const a of openAlerts)
@@ -125,5 +213,6 @@ export function buildDashboard(
     downCount,
     lastRunStatus: lastRun?.status ?? null,
     lastUpdatedAt,
+    charts: buildCharts(services, chartSnapshots),
   };
 }

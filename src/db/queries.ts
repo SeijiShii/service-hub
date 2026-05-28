@@ -1,4 +1,4 @@
-import { and, desc, eq, gte, isNull, sql } from "drizzle-orm";
+import { and, desc, eq, gte, inArray, isNull, sql } from "drizzle-orm";
 import type { PgDatabase } from "drizzle-orm/pg-core";
 import {
   services,
@@ -138,6 +138,36 @@ export async function timeseries(
       ),
     )
     .orderBy(usageSnapshots.capturedAt);
+  return rows.map(toSnapshotRow);
+}
+
+/**
+ * 全 service 横断の最近 snapshots (timeseries-topchart、dashboard 上部 chart 用)。
+ * sinceIso 以降 + optional metricKeys filter で `usage_snapshots` を 1 query で取得。
+ * spec-review R1: Promise.all 並列実行のため呼び出し側で他 query と並列化可能。
+ */
+export async function recentSnapshots(
+  db: AnyDb,
+  sinceIso: string,
+  metricKeys?: MetricKey[],
+): Promise<SnapshotRow[]> {
+  const rows =
+    metricKeys && metricKeys.length > 0
+      ? await db
+          .select()
+          .from(usageSnapshots)
+          .where(
+            and(
+              gte(usageSnapshots.capturedAt, new Date(sinceIso)),
+              inArray(usageSnapshots.metricKey, metricKeys),
+            ),
+          )
+          .orderBy(usageSnapshots.capturedAt)
+      : await db
+          .select()
+          .from(usageSnapshots)
+          .where(gte(usageSnapshots.capturedAt, new Date(sinceIso)))
+          .orderBy(usageSnapshots.capturedAt);
   return rows.map(toSnapshotRow);
 }
 
