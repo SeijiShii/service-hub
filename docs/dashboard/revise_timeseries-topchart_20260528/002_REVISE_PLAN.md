@@ -11,12 +11,12 @@
 |---|---|---|---|
 | `src/features/dashboard/summary.ts` | (1) `DashboardChart` / `DashboardChartSeries` 型新規追加 (2) `DashboardVM.charts: DashboardChart[]` 追加 (3) `buildDashboard(services, snapshots, openAlerts, lastRun, chartSnapshots?)` シグネチャに第 5 引数 `chartSnapshots: SnapshotRow[]` 追加 (optional、未渡しは空 chart 配列) (4) 4 主要 metric (`up` / `mau` / `db_storage_bytes` / `last_deploy_at`) で chart 集約 | 中 (型シグネチャ拡張 + buildDashboard 引数追加) | §7.3 |
 | `src/db/queries.ts` | 新関数 `recentSnapshots(db, sinceIso, metricKeys?)` 追加: 全 service 横断 + optional metric filter で `usage_snapshots` を 1 query で取得 | 低 (新規関数のみ、既存 query 影響なし) | §7.3 |
-| `api/dashboard/summary.ts` | `recentSnapshots(db, 30d ago)` 呼び出し追加 + `buildDashboard(..., chartSnapshots)` に渡す | 低 (1 query 追加 + 1 引数追加) | §2.2 |
-| `src/features/dashboard/DashboardView.tsx` | テーブル `<table>` の直前に `<DashboardCharts charts={vm.charts} />` 挿入。section style (border-bottom 等) で chart と table の境界明示 | 低 (新 section 挿入のみ、既存テーブル不変) | §7.1 |
+| `api/dashboard/summary.ts` | 既存 `Promise.all([latest, alerts, runs])` に **`recentSnapshots(db, sinceIso30d, [up,mau,db_storage_bytes,last_deploy_at])` を 4 件目として並列追加** + `buildDashboard(..., chartSnapshots)` に渡す | 低 (1 query 並列追加、cold start で追加 RTT 0) | §2.2 <!-- spec-review R1: 並列実行で既存パターン継承 --> |
+| `src/features/dashboard/DashboardView.tsx` | テーブル `<table>` の直前に `<DashboardCharts charts={vm.charts} />` 挿入。**section header = `<h2>直近 30 日の推移</h2>` + border-bottom = `1px solid var(--border, #2a2f3a)`** (既存 force-pull section DashboardView.tsx:74-80 と同パターン継承) | 低 (新 section 挿入のみ、既存テーブル不変) | §7.1 <!-- spec-review R4: section header 文言 + border 既存パターン整合 --> |
 | `src/features/dashboard/DashboardView.test.tsx` | テスト追加: 上部 chart section が render される / 空 chart で「データなし」表示 / table が依然 render される (リグレッション) | 低 | 003 |
 | `src/features/dashboard/summary.test.ts` | テスト追加: FP-TS-01〜04 (chart 集約ロジック、4 metric、空 snapshots) | 低 | 003 |
-| `src/features/service-detail/MetricChart.tsx` | **移動**: `src/components/MetricChart.tsx` へ move (内容変更なし) | 低 (import path のみ変更) | §7.2 [論点-TS3] |
-| `src/features/service-detail/ServiceDetailView.tsx` + 同 test | import path 修正 `from "./MetricChart.js"` → `from "../../components/MetricChart.js"` | 低 (純粋な path 変更) | §7.2 |
+| `src/features/service-detail/MetricChart.tsx` | **移動 + signature 統一**: `src/components/MetricChart.tsx` へ move、`series: MetricSeries` (single) → `series: MetricSeriesMulti[]` (multi、{slug,name,metricKey,unit,points}[]) に signature 変更。`last_deploy_at` chart の Y 軸は **`tickFormatter={(v) => new Intl.DateTimeFormat('ja-JP',{month:'numeric',day:'numeric'}).format(new Date(v))}`** で `M/D` 表示 (生 epoch_ms 値表示禁止) | 低 (import path 変更 + ServiceDetailView 側で 1 series wrap) | §7.2 [論点-TS3] <!-- spec-review R5: signature 統一、R3: tickFormatter 具体化 --> |
+| `src/features/service-detail/ServiceDetailView.tsx` + 同 test | import path 修正 + **MetricChart 呼び出しを 1 series wrap に変更**: `<MetricChart series={[{slug: vm.slug, name: vm.name, metricKey: s.metricKey, unit: s.unit, points: s.points}]} />` | 低 (2 行 + caller wrap) | §7.2 <!-- spec-review R5: caller 側 wrap --> |
 | `src/components/tokens.ts` (or tokens.css) | CSS var `--chart-series-0` 〜 `--chart-series-7` (8 色 palette) 追加。色相環で均等配分、light/dark 両対応 | 低 (CSS var 追加のみ、既存 token 影響なし) | §8 [論点-TS4] |
 
 ## 2. 新規ファイル一覧

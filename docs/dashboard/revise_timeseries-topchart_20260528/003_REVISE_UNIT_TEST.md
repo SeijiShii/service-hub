@@ -21,9 +21,9 @@
 | TS-U-20 | `MetricChart` multi-series 描画 | `series=[{slug:'a',points:[...]},{slug:'b',points:[...]}]` | 2 Line 要素 (data-slug 属性で識別)、Legend 表示、line stroke = `--chart-series-0/1` |
 | TS-U-21 | MetricChart series 空 | `series=[]` | 「データなし」表示、Line 非描画 |
 | TS-U-22 | MetricChart 全 series.points 空 | `series=[{slug:'a',points:[]},{slug:'b',points:[]}]` | 「データなし」表示 (どの series も points 持たない場合) |
-| TS-U-23 | `last_deploy_at` chart の Y 軸表示 | metricKey='last_deploy_at'、points = epoch_ms 値 | tickFormatter で「Mon DD」表示 (生 epoch_ms 値が Y 軸に出ない) |
+| TS-U-23 | `last_deploy_at` chart の Y 軸表示 | metricKey='last_deploy_at'、points = epoch_ms 値 (例: 1779958293585) | **`Intl.DateTimeFormat('ja-JP', {month:'numeric', day:'numeric'}).format(new Date(value))` で `M/D` 表示** (例: `5/28`)、生 epoch_ms 値が Y 軸に出ない <!-- spec-review R3: 具体化 --> |
 | TS-U-30 | `DashboardCharts` 4 chart render | charts=4 件 | 各 chart の data-testid 4 つ確認 (`chart-up` / `chart-mau` / `chart-db_storage_bytes` / `chart-last_deploy_at`) |
-| TS-U-31 | DashboardCharts section header | charts.length > 0 | 「直近 30 日」section header 表示 |
+| TS-U-31 | DashboardCharts section header | charts.length > 0 | **`<h2>直近 30 日の推移</h2>` section header 表示** + border-bottom style (force-pull section と同パターン、`1px solid var(--border, #2a2f3a)`) <!-- spec-review R4: 具体化 --> |
 | TS-U-32 | DashboardCharts 全 chart 空 | 全 chart.series.points=[] | 4 chart 全てに「データなし」表示、section 自体は表示 |
 | TS-U-40 | `DashboardView` 上部 chart + 下部テーブル両表示 | vm = {rows: [a,b], charts: [4 chart]} | `<DashboardCharts>` section + `<table>` 両方 render |
 | TS-U-41 | DashboardView リグレッション: rows 空 + charts も空 | vm = {rows:[], charts:[空 4 件]} | 既存「empty-state」+ DashboardCharts 「データなし」両方表示 |
@@ -47,7 +47,7 @@
 |---|---|---|---|---|
 | TS-M-01 | `src/features/service-detail/MetricChart.test.tsx` | service-detail 配下 | `src/components/MetricChart.test.tsx` に移動 (内容同等 + multi-series 拡張テスト追加) | MetricChart 共通化 [論点-TS3] |
 | TS-M-02 | service-detail 関連 import path test (もしあれば) | `from "./MetricChart.js"` | `from "../../components/MetricChart.js"` | 共通化 move |
-| TS-M-03 | DashboardVM 型を期待する既存テスト | charts プロパティ無し | charts プロパティ含む (空配列 でも OK) | additive 拡張、optional から required へ |
+| TS-M-03 | DashboardVM 型を期待する既存テスト | charts プロパティ無し | **charts プロパティ required で必ず含む** (空配列 fallback、4 件) | spec-review R2 確定: required = buildDashboard が常に 4 件返す |
 
 ## 3. 削除テストケース
 

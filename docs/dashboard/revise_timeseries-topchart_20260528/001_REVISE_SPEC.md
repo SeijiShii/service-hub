@@ -40,7 +40,7 @@ dashboard 画面を**二部構成**に再編する:
 | エンティティ | 変更内容 | マイグレーション要否 |
 |---|---|---|
 | `usage_snapshots` テーブル | **変更なし** (既存時系列を流用) | 不要 |
-| `DashboardVM` 型 | `charts?: DashboardChart[]` (optional 追加) | 型変更のみ |
+| `DashboardVM` 型 | **`charts: DashboardChart[]` (required 追加、buildDashboard が常に 4 件返す)** | 型変更のみ <!-- spec-review R2: 内部矛盾解消 = required で確定、shipyard public API は不変 --> |
 | 新規 `DashboardChart` 型 | `{metricKey, unit, series: Array<{slug, name, points: [{capturedAt, value}]}>}` | 型新規 |
 
 ### 2.4 バリデーション・エラー変更
@@ -149,7 +149,7 @@ dashboard 画面を**二部構成**に再編する:
   }
   export interface DashboardVM {
     // ...既存
-    charts: DashboardChart[];  // additive、optional でも可だが summary.ts でデフォルト [] を返すため non-optional
+    charts: DashboardChart[];  // required (spec-review R2 確定)、buildDashboard が常に 4 件 (空 series fallback) 返す
   }
   ```
 - 新規クエリ (`src/db/queries.ts`):
@@ -213,6 +213,14 @@ dashboard 画面を**二部構成**に再編する:
 - **推奨**: **デフォルト 30 日固定**。理由 = 初版シンプル化 + cron 1 日 1 回で 30 日 = 30 points で trends 把握十分。UI 切替は次 revise 候補 (フィーチャーフラグなしの additive 拡張で容易)。
 - **判断期限**: 本 SPEC 確定時
 - **担当**: seiji
+
+### [論点-TS5] per-service sparkline (各 ServiceRow 行に mini-chart) は本回 scope 外
+- **影響範囲**: ServiceRow.tsx + DashboardCharts と並ぶ別 UI
+- **問い**: 各 service 行に mini-chart (sparkline) を追加するか (上部 4 chart の per-service 切り出し版)
+- **推奨**: **本回 scope 外、次 revise 候補**。理由 = 本 revise は「上部 4 chart × 全 service 重ね描き」に絞り視認性確保。per-service sparkline は別 UC (一覧で各 service の trends を一覧確認) で扱うべき
+- **判断期限**: 次回 dashboard revise 起動時
+- **担当**: seiji
+<!-- spec-review R6: sparkline は本回 scope 外明示、次 revise 候補 -->
 
 ### [論点-TS3] MetricChart の共通化 (service-detail から src/components へ移動)
 - **影響範囲**: `src/features/service-detail/MetricChart.tsx` → `src/components/MetricChart.tsx`
