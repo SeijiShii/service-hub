@@ -48,11 +48,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (method === "PATCH") {
+      // 実機調査の安全網 (D20260528-032 fix admin-form-bug-and-ux):
+      // 「編集→更新で保存されない」を実機で観測した場合 Vercel function logs で原因確認可能化。
+      // 値はログせず、key 群と body type のみ stderr に出す (秘密漏れ防止)。
+      const bodyType = typeof req.body;
+      const bodyKeys =
+        req.body && bodyType === "object"
+          ? Object.keys(req.body as Record<string, unknown>)
+          : [];
+      console.log(
+        `admin/services PATCH slug=${slug} bodyType=${bodyType} bodyKeys=${JSON.stringify(bodyKeys)}`,
+      );
       if (!slug || !(await getService(db, slug)))
         return res.status(404).json({ error: "not_found" });
       const v = validateServiceInput({ ...(req.body as object), slug });
-      if (!v.ok)
+      if (!v.ok) {
+        console.log(
+          `admin/services PATCH validation_failed slug=${slug} errors=${JSON.stringify(v.errors)}`,
+        );
         return res.status(400).json({ error: "validation", errors: v.errors });
+      }
       await upsertService(db, v.data);
       return res.status(200).json(v.data);
     }
