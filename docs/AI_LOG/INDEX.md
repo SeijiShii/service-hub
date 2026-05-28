@@ -1,8 +1,8 @@
 # AI_LOG インデックス — service-hub
 
 **最終更新**: 2026-05-28 (+09:00)
-**総セッション数**: 28
-**総 decision 数**: 50 (D20260528-001〜019、D20260527-001〜031、+ D20260526 系)
+**総セッション数**: 30 (D20260527_009/010 + D20260528_012 audit 追加で再計上)
+**総 decision 数**: 52 (D20260528-001〜020、D20260527-001〜035、+ D20260526 系)
 
 > セッションごとに 1 ファイル、append-only、過去ファイルは削除・編集禁止。
 > 人間向けサマリは `../concept.md` §7 決定事項ログ を参照。
@@ -23,6 +23,8 @@
 | [D20260528_003_tdd_registry_revise_db-sot.md](./D20260528_003_tdd_registry_revise_db-sot.md) | 2026-05-28 | /flow:tdd | registry revise (DB SoT 実装) | D20260528-008〜009 | 完了 |
 | [D20260528_002_revise_registry_db-sot.md](./D20260528_002_revise_registry_db-sot.md) | 2026-05-28 | /flow:revise | registry (DB SoT + admin write) | D20260528-003〜007 | 設計完了 |
 | [D20260528_001_concept_update_20260528.md](./D20260528_001_concept_update_20260528.md) | 2026-05-28 | /flow:concept | update (レジストリ DB 化 + 秘密ゼロ化) | D20260528-001〜002 | 完了 |
+| [D20260527_010_release_service-hub.md](./D20260527_010_release_service-hub.md) | 2026-05-27 | /flow:release | service-hub (test→live 化 Phase 1 FILL 待ち) | D20260527-035〜 | 進行中 (Phase 1 pause、Class C 実キー FILL 待ち) |
+| [D20260527_009_scenario_update.md](./D20260527_009_scenario_update.md) | 2026-05-27 | /flow:scenario | --update (bookkeeping reconcile 5 件) | D20260527-032 | 完了 |
 | [D20260527_008_secure_deps.md](./D20260527_008_secure_deps.md) | 2026-05-27 | /flow:secure | deps (L4) | D20260527-029〜031 | 完了 |
 | [D20260527_007_audit_standard.md](./D20260527_007_audit_standard.md) | 2026-05-27 | /flow:audit | standard (初回) | D20260527-027〜028 | 完了 |
 | [D20260527_006_resume_continuous.md](./D20260527_006_resume_continuous.md) | 2026-05-27 | /flow:auto | continuous(audit→secure→scenario) | D20260527-026,032 | 完了 |
