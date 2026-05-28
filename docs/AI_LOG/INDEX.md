@@ -1,8 +1,8 @@
 # AI_LOG インデックス — service-hub
 
 **最終更新**: 2026-05-28 (+09:00)
-**総セッション数**: 34 (D20260528_016 release post-deploy 3rd 追加で再計上)
-**総 decision 数**: 59 (D20260528-001〜027、D20260527-001〜035、+ D20260526 系)
+**総セッション数**: 34 (D20260528_016 release post-deploy 3rd+4th)
+**総 decision 数**: 60 (D20260528-001〜028、D20260527-001〜035、+ D20260526 系)
 
 > セッションごとに 1 ファイル、append-only、過去ファイルは削除・編集禁止。
 > 人間向けサマリは `../concept.md` §7 決定事項ログ を参照。
@@ -12,7 +12,7 @@
 ## セッション一覧（新しい順）
 | ファイル | 実行日 | コマンド | 対象 | decision 範囲 | 状態 |
 |---|---|---|---|---|---|
-| [D20260528_016_release_post-deploy.md](./D20260528_016_release_post-deploy.md) | 2026-05-28 | /flow:release | post-deploy 3rd (nav-and-pull 反映) + favicon 追加 | D20260528-027 | 完了 |
+| [D20260528_016_release_post-deploy.md](./D20260528_016_release_post-deploy.md) | 2026-05-28 | /flow:release | post-deploy 3rd (nav-and-pull) + 4th (favicon 反映) | D20260528-027〜028 | 完了 |
 | [D20260528_015_tdd_dashboard_nav-and-pull.md](./D20260528_015_tdd_dashboard_nav-and-pull.md) | 2026-05-28 | /flow:tdd | dashboard nav-and-pull (Phase 1+2 実装、unit 196 passed) | D20260528-026 | 完了 |
 | [D20260528_014_revise_dashboard_nav-and-pull.md](./D20260528_014_revise_dashboard_nav-and-pull.md) | 2026-05-28 | /flow:revise | dashboard nav-and-pull (back-link + force-pull relocation) | D20260528-022〜025 | 設計完了 |
 | [D20260528_013_release_post-deploy.md](./D20260528_013_release_post-deploy.md) | 2026-05-28 | /flow:release | post-deploy 2nd (3 revise + 新 endpoint 反映 + smoke) | D20260528-021 | 完了 |
@@ -54,6 +54,7 @@
 ## decision_id 索引（grep 用、新しい順）
 | ID | command | phase | chosen (短縮) | type | ファイル |
 |---|---|---|---|---|---|
+| D20260528-028 | /flow:release | 4th deploy + favicon 本番反映確認 | A. /favicon.svg = image/svg+xml 200 + index.html link 配信確認 → 反映 OK | auto-recommended | D20260528_016_release_post-deploy.md |
 | D20260528-027 | /flow:release | 3rd deploy + smoke + favicon 後続化 | A. 3rd deploy 結果 record、favicon は別 commit (c0818c9) で次回 deploy 反映 | auto-recommended | D20260528_016_release_post-deploy.md |
 | D20260528-026 | /flow:tdd | Phase 軽重 + useFetch 拡張 | A. 両 Phase メイン直接 + useFetch.refetch 追加 (race-safe + 既存 caller 互換) | auto-recommended | D20260528_015_tdd_dashboard_nav-and-pull.md |
 | D20260528-025 | /flow:revise | Phase 軽重 + 共通型配置 | A. 両 Phase 軽メイン + ForcePullState は src/features/dashboard/forcePull.ts 新設 | auto-recommended | D20260528_014_revise_dashboard_nav-and-pull.md |

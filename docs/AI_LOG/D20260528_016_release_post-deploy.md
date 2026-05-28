@@ -1,11 +1,11 @@
 # AI_LOG セッション D20260528_016 — /flow:release (post-deploy 3rd, nav-and-pull 反映)
 
-**実行日時**: 2026-05-28 13:20 (+09:00)
-**コマンド**: `! bash scripts/deploy-prod.sh` (ユーザー手動実行) + post-deploy smoke + favicon 追加
-**dispatch 元**: /flow:auto P4.7 Release gate (nav-and-pull revise 反映)
+**実行日時**: 2026-05-28 13:20 (+09:00) — 3rd deploy / 13:25 (+09:00) — 4th deploy (favicon 反映)
+**コマンド**: `! bash scripts/deploy-prod.sh` × 2 (ユーザー手動実行) + post-deploy smoke + favicon 追加
+**dispatch 元**: /flow:auto P4.7 Release gate (nav-and-pull revise 反映 + favicon 後続)
 **実行者**: seiji (manual deploy + favicon 要望) + Claude (Opus 4.7) (post-deploy smoke + favicon 実装 + bookkeeping)
 **状態**: 完了
-**含まれる decision**: D20260528-027 (3rd deploy + smoke + 後続 favicon 反映用 4th deploy 計画)
+**含まれる decision**: D20260528-027 (3rd deploy)、D20260528-028 (4th deploy + favicon 本番反映確認)
 **ファイル**: `D20260528_016_release_post-deploy.md`
 **前 release セッション**: D20260528_013 (2nd deploy) を継承
 
@@ -31,9 +31,21 @@
   - `/favicon.svg` → 200 だが内容は SPA shell の HTML fallback (= favicon 未配置) → **後続作業で対応**
 - **favicon 追加** (commit c0818c9): `public/favicon.svg` (hub + 4 service status dots + spokes、design-system 整合) + `index.html` link + meta theme-color。次回 deploy で本番反映。
 
+## 4th deploy 結果 (favicon 反映、ユーザー手動)
+- **deploy_id**: `dpl_9oEMWfVEL51THcA7Ky4dVoAjztT2` (Production READY、build 23s)
+- **Aliased**: `https://service-hub.givers.work`
+- **favicon smoke**:
+  - `/favicon.svg` → 200 / content-type `image/svg+xml` ✅ (SVG として正しく配信)
+  - `index.html` の `<link rel="icon" type="image/svg+xml" href="/favicon.svg" />` 配信確認 ✅
+- ブラウザタブで cockpit theme 整合のハブ + 4 status dots アイコンが表示される状態に到達。
+
 ## 後続
-- **次の手動 deploy** (4th): favicon (c0818c9) を本番反映するため `! bash scripts/deploy-prod.sh` を再実行。Class B、seiji 手動。
-- /flow:auto 次反復: 4th deploy 後の P4.7 Release gate 通過 → P5 完了判定 (P4.45 Wording defer + 論点-005 Class C 確認の handoff)。
+- ユーザー [指摘 4 件] → 次セッションで `/flow:fix` dispatch:
+  1. service-info endpoint help (full URL or path?)
+  2. 「サブドメイン」label help
+  3. **編集→更新で保存されない (致命バグ)**
+  4. 「退役」→ 「削除」 wording
+- /flow:auto 次反復: fix セッション完遂 + 5th deploy → P5 完了判定 (P4.45 Wording defer + 論点-005 Class C 確認の handoff)。
 
 ## 学習・改善
 - nav-and-pull revise は scope 小 (UI relocation) で deploy-pre 監査も Critical/High 0 だった → 高速 deploy が機能。
@@ -62,4 +74,22 @@
     favicon は別途ユーザーから後追い要望で発生したので、別 commit にして次回
     deploy で反映する方が責務分離が綺麗 (1 deploy = 1 まとまった変更)。
     favicon は静的アセットのみで low risk、4th deploy は軽い。
+
+- id: D20260528-028
+  timestamp: 2026-05-28T13:25:00+09:00
+  command: /flow:release (4th deploy via ! bash deploy-prod.sh)
+  phase: Phase 3 デプロイ + favicon 本番反映 smoke
+  question: 4th deploy 結果 + favicon 反映確認
+  options:
+    - A. /favicon.svg 配信確認 + index.html link 配信確認 → 反映 OK (recommended)
+    - B. ブラウザ実機タブ表示まで本コマンドで検証
+  recommended: A
+  chosen: A
+  chosen_type: auto-recommended
+  depends_on: [D20260528-027]
+  context: |
+    /favicon.svg = 200 / content-type=image/svg+xml で SVG 配信が確認できた (curl)。
+    index.html の <link rel="icon" type="image/svg+xml" href="/favicon.svg"> も
+    deploy ビルドに焼き込まれているのを HTTP で確認。ブラウザタブ実機表示は
+    Class C (seiji)、本コマンドは HTTP レベルまでで完結。
 ```
