@@ -1,8 +1,8 @@
 # AI_LOG インデックス — service-hub
 
 **最終更新**: 2026-05-28 (+09:00)
-**総セッション数**: 43 (D20260528_025 scenario update 追加、audit High #1 シューティング)
-**総 decision 数**: 112 (D20260528-001〜080、D20260527-001〜035、+ D20260526 系)
+**総セッション数**: 44 (D20260528_026 release 5th-deploy 追加)
+**総 decision 数**: 118 (D20260528-001〜086、D20260527-001〜035、+ D20260526 系)
 
 > セッションごとに 1 ファイル、append-only、過去ファイルは削除・編集禁止。
 > 人間向けサマリは `../concept.md` §7 決定事項ログ を参照。
@@ -12,6 +12,7 @@
 ## セッション一覧（新しい順）
 | ファイル | 実行日 | コマンド | 対象 | decision 範囲 | 状態 |
 |---|---|---|---|---|---|
+| [D20260528_026_release_5th-deploy.md](./D20260528_026_release_5th-deploy.md) | 2026-05-28 | /flow:release | 5th deploy 成功 (admin-form Phase 1+2 + favicon-projection、db:push icon_url + dpl_AAN9DkRkCLLTjFV5UR18r1W3FchC + smoke 全 GREEN) | D20260528-081〜086 | 完了 (公開 URL=https://service-hub.givers.work、SEC-003 確認窓は未提示) |
 | [D20260528_025_scenario_update.md](./D20260528_025_scenario_update.md) | 2026-05-28 | /flow:scenario --update | audit High #1 シューティング (SCENARIO §5 reconcile: admin-form + favicon-projection 完了反映 + 5th deploy 待ち明示) | D20260528-079〜080 | 完了 (P4.7 Release gate dispatch 可能) |
 | [D20260528_024_secure_release-pre.md](./D20260528_024_secure_release-pre.md) | 2026-05-28 | /flow:secure | release-pre 必須監査 2 段目 (CF-009、新規 SEC 0 件 + 既存 SEC-003 Class C maintain → release-pre 2 段クリア) | D20260528-073〜078 | 完了 (P4.7 Release gate へ) |
 | [D20260528_023_audit_full.md](./D20260528_023_audit_full.md) | 2026-05-28 | /flow:audit --scope=full | release-pre 必須監査 (CF-009、22 commits 経過、Critical 0 / High 1 SCENARIO drift / Medium 2 / Low 1 → release-pre クリア) | D20260528-067〜072 | 完了 (P4.7 Release gate 評価へ) |
