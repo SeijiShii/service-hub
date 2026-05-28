@@ -88,4 +88,14 @@ describe("ServicesAdminView (admin form Phase 4)", () => {
     expect(screen.getByLabelText("slug")).toHaveProperty("readOnly", true);
     expect(screen.getByRole("button", { name: "更新" })).toBeTruthy();
   });
+
+  it("UX-N4: ヘッダに / へ戻る 'back-link' が表示 (nav-and-pull revise)", () => {
+    render(
+      <ServicesAdminView services={[]} onSave={() => {}} onRetire={() => {}} />,
+    );
+    const link = screen.getByTestId("back-link");
+    expect(link).toBeTruthy();
+    expect(link.getAttribute("href")).toBe("/");
+    expect(link.textContent).toContain("ダッシュボード");
+  });
 });

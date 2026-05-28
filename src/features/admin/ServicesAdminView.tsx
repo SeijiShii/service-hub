@@ -136,7 +136,33 @@ export function ServicesAdminView({ services, onSave, onRetire }: Props) {
 
   return (
     <main>
-      <h1 style={{ marginTop: 0 }}>サービスレジストリ管理</h1>
+      <header
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 16,
+          marginBottom: 8,
+        }}
+      >
+        <h1 style={{ margin: 0 }}>サービスレジストリ管理</h1>
+        <nav>
+          <a
+            href="/"
+            data-testid="back-link"
+            style={{
+              color: "var(--text, #e6e9ef)",
+              textDecoration: "none",
+              padding: "6px 12px",
+              border: "1px solid var(--border, #2a2f3a)",
+              borderRadius: 6,
+              fontSize: 13,
+            }}
+          >
+            ← ダッシュボード
+          </a>
+        </nav>
+      </header>
 
       {services.length > 0 && (
         <table style={{ marginBottom: 24 }}>
