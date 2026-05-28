@@ -103,6 +103,21 @@ describe("buildDashboard", () => {
     expect(buildDashboard([], [], []).rows).toEqual([]);
   });
 
+  // ── favicon-projection 内部 dashboard 表示 (CF-20260528-020) ──
+  it("FP-DA-01: ServiceDescriptor.iconUrl が ServiceRowVM.iconUrl に投影される", () => {
+    const sWithIcon = {
+      ...svc("a"),
+      iconUrl: "https://a.example/favicon.svg",
+    };
+    const vm = buildDashboard([sWithIcon], [], []);
+    expect(vm.rows[0].iconUrl).toBe("https://a.example/favicon.svg");
+  });
+
+  it("FP-DA-02: iconUrl 無 → ServiceRowVM.iconUrl は undefined (キー含有しない)", () => {
+    const vm = buildDashboard([svc("a")], [], []);
+    expect(vm.rows[0].iconUrl).toBeUndefined();
+  });
+
   it("RC-N1: lastRun (status=ok, finishedAt あり) → VM に lastUpdatedAt + lastRunStatus", () => {
     const run: CollectionRun = {
       id: "r1",

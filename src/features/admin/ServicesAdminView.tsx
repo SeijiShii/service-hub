@@ -1,6 +1,7 @@
 import { useState, type CSSProperties } from "react";
 import type { ServiceDescriptor, ServiceStatus } from "../../types/index.js";
 import type { SaveState } from "./saveState.js";
+import { ServiceIcon } from "../../components/ServiceIcon.js";
 
 const STATUSES: ServiceStatus[] = ["active", "paused", "retired"];
 
@@ -197,6 +198,7 @@ export function ServicesAdminView({
         <table style={{ marginBottom: 24 }}>
           <thead>
             <tr>
+              <th style={{ width: 36 }}>icon</th>
               <th>slug</th>
               <th>name</th>
               <th>status</th>
@@ -206,6 +208,9 @@ export function ServicesAdminView({
           <tbody>
             {services.map((s) => (
               <tr key={s.slug} data-slug={s.slug} data-status={s.status}>
+                <td>
+                  <ServiceIcon iconUrl={s.iconUrl} slug={s.slug} size={24} />
+                </td>
                 <td>{s.slug}</td>
                 <td>{s.name}</td>
                 <td>
@@ -330,8 +335,9 @@ export function ServicesAdminView({
               placeholder="https://example.com/api/hub/service-info"
             />
             <span data-testid="endpoint-help" style={helpStyle}>
-              フル URL を指定 (例: https://&lt;service&gt;.example.com/api/hub/service-info)。
-              path のみは不可。
+              フル URL を指定 (例:
+              https://&lt;service&gt;.example.com/api/hub/service-info)。 path
+              のみは不可。
             </span>
           </label>
         </fieldset>

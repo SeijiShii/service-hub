@@ -24,6 +24,12 @@ export interface ServiceRowVM {
   profitability: Profitability;
   /** 決済ファネル離脱率。未申告は null。business-observability。 */
   funnel: FunnelRates;
+  /**
+   * producer 申告 favicon URL (favicon-projection、2026-05-28)。
+   * 内部 dashboard でアイコン表示に使う。NULL なら fallback (slug 頭文字 or プレースホルダ)。
+   * CF-20260528-020: 新フィールド追加時、公開 API + 内部 dashboard 両方の VM に投影する。
+   */
+  iconUrl?: string;
 }
 
 export interface DashboardVM {
@@ -90,7 +96,7 @@ export function buildDashboard(
     for (const [k, v] of Object.entries(metrics))
       if (v) values[k as MetricKey] = v.value;
 
-    return {
+    const row: ServiceRowVM = {
       slug: svc.slug,
       name: svc.name,
       url: svc.url,
@@ -103,6 +109,9 @@ export function buildDashboard(
       profitability: computeProfitability(values),
       funnel: computeFunnel(values),
     };
+    // favicon-projection (2026-05-28): 内部 dashboard 表示用に iconUrl を投影 (CF-20260528-020 補完)
+    if (svc.iconUrl) row.iconUrl = svc.iconUrl;
+    return row;
   });
 
   const upCount = rows.filter((r) => r.up === true).length;

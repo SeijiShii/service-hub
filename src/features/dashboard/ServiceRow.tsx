@@ -1,4 +1,5 @@
 import { StatusDot } from "../../components/StatusDot.js";
+import { ServiceIcon } from "../../components/ServiceIcon.js";
 import {
   STATUS_COLOR,
   STATUS_SHAPE,
@@ -36,7 +37,10 @@ export function ServiceRow({ row }: { row: ServiceRowVM }) {
       <td>
         <StatusDot kind={kind} label={`${row.slug} ${kind}`} />
       </td>
-      <td style={{ fontFamily: "ui-monospace, monospace" }}>{row.slug}</td>
+      <td style={{ fontFamily: "ui-monospace, monospace" }}>
+        <ServiceIcon iconUrl={row.iconUrl} slug={row.slug} />
+        {row.slug}
+      </td>
       <td style={mono}>{fmt(row.metrics.mau)}</td>
       <td
         style={{
