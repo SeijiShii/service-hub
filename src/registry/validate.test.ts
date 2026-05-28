@@ -42,13 +42,11 @@ describe("validateServiceInput (admin write 検証)", () => {
   it("U-12: provider 識別子に秘密直書き → 拒否", () => {
     const r = validateServiceInput({
       ...base,
-      providers: { clerk: { appId: "app_x", secretEnv: "sk_live_abc123" } },
+      providers: { vercel: { projectId: "sk_live_abc123" } },
     });
     expect(r.ok).toBe(false);
     if (!r.ok)
-      expect(r.errors.map((e) => e.message).join(";")).toMatch(
-        /秘密|env キー名/,
-      );
+      expect(r.errors.map((e) => e.message).join(";")).toMatch(/秘密|識別子/);
   });
 
   it("U-13: 不正な slug → 拒否", () => {

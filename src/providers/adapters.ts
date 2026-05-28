@@ -114,32 +114,17 @@ export const createNeonAdapter = wrap("neon", async (s, deps) => {
   return m;
 });
 
-export const createClerkAdapter = wrap("clerk", async (s, deps) => {
-  if (!s.providers.clerk?.appId) return [];
-  const secretEnvName = s.providers.clerk.secretEnv;
-  const token = secretEnvName ? deps.env?.[secretEnvName] : undefined;
-  const j = await getJson(
-    `https://api.clerk.com/v1/users/count`,
-    deps,
-    token ? { Authorization: `Bearer ${token}` } : undefined,
-  );
-  // total_count 代理 (厳密 MAU は [論点-PR1] Phase2)
-  return [
-    {
-      provider: "clerk",
-      key: "mau",
-      value: Number(j.total_count ?? 0),
-      unit: "count",
-    },
-  ];
-});
+// createClerkAdapter は撤去 ([D20260528-002])。MAU は各サービスが service-info の
+// metrics[] key="mau" で自己申告し createServiceInfoAdapter が emit する。HUB は
+// per-service Clerk secret を持たない (秘密ゼロ化)。未申告サービスはフォールバックなし ([D20260528-010])。
 
 export const createServiceInfoAdapter = wrap(
   "service-info",
   async (s, deps) => {
     const ref = s.serviceInfo;
     if (!ref?.endpoint) return [];
-    const secret = ref.secretEnv ? deps.env?.[ref.secretEnv] : undefined;
+    // 全サービス共通の 1 本 ([D20260528-002])。未設定ならヘッダなしで叩く ([D20260528-011])。
+    const secret = deps.env?.HUB_SERVICE_INFO_SECRET;
     const j = (await getJson(
       ref.endpoint,
       deps,

@@ -13,15 +13,17 @@ export const SERVICE_STATUSES: readonly ServiceStatus[] = [
 export interface ProviderRefs {
   vercel?: { projectId: string };
   neon?: { projectId: string };
-  clerk?: { appId: string; secretEnv?: string };
+  clerk?: { appId: string };
   cloudflare?: { accountId: string; r2Bucket?: string };
   sentry?: { org: string; project: string };
 }
 
-/** service-info エンドポイント接続情報 (services.toml 記述子側)。 */
+/**
+ * service-info エンドポイント接続情報。認証は HUB 共通 1 本 `HUB_SERVICE_INFO_SECRET`
+ * (env) を使うため per-service secretEnv は持たない ([D20260528-002] 秘密ゼロ化)。
+ */
 export interface ServiceInfoRef {
   endpoint?: string;
-  secretEnv?: string;
 }
 
 /** service-info レスポンス契約 ([論点-003]/[論点-T1]、最小固定 + extra)。 */
