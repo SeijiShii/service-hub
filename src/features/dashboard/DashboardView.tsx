@@ -1,4 +1,5 @@
 import { ServiceRow } from "./ServiceRow.js";
+import { DashboardCharts } from "./DashboardCharts.js";
 import type { DashboardVM } from "./summary.js";
 import { formatLastUpdated } from "./lastUpdatedFormat.js";
 import type { ForcePullState } from "./forcePull.js";
@@ -121,6 +122,7 @@ export function DashboardView({ vm, onForcePull, forcePullState }: Props) {
             : "直近の収集に失敗があります"}
         </div>
       )}
+      <DashboardCharts charts={vm.charts} />
       {vm.rows.length === 0 ? (
         <p data-testid="empty-state">
           まだ収集データがありません（収集を待っています）
