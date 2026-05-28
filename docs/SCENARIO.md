@@ -52,18 +52,19 @@ flow で連発するマイクロサービス群の稼働/利用/コスト/障害
 ## 5. 現在地カーソル
 
 <!-- AUTO-GENERATED:BEGIN scenario-cursor -->
-- 現在フェーズ: Phase 4 (Release gate 進行中) — **本番デプロイ済 (旧コード/test Clerk キー)**、3 revise 含む再デプロイ + live 化 + 実 pull データ投入が残
+- 現在フェーズ: Phase 4 (Release gate 進行中) — **本番デプロイ済 (live キー)**、残りは「3 revise + 新 endpoint 含む再デプロイ」のみ (live 化は完了済)
 - 進行中ターゲット: なし (3 revise 全実装完了、unit 194 green / typecheck 0)
-- 最終更新セッション: D20260528_012_audit_standard (2 回目 audit + bookkeeping reconcile)
+- 最終更新セッション: D20260528_012_audit_standard (2 回目 audit + bookkeeping reconcile + 状態誤認補正)
 - 最終更新時刻: 2026-05-28 12:30
-- 完了フェーズ: [Phase1, Phase1.5, Phase2, Phase3 実装(全9フォルダ unit+E2E green, 視覚レビュー green, vite build green), Phase4 一次デプロイ(service-hub-lake.vercel.app, test/dev Clerk キー), **新規追加: registry DB SoT 化 + providers 秘密ゼロ化 + 3 revise (dashboard admin-ux: /admin link + form styling, collection refresh-cadence: 最終更新表示, collection force-pull: admin ボタン + 新エンドポイント `/api/admin/collect`)** 全 unit 194 passed]
-- デプロイ状況: 本番 URL = https://service-hub-lake.vercel.app (Clerk gate で seiji 限定)。post-deploy スモーク green (D20260527-025)。**未デプロイの新規変更**: 3 revise 実装 (admin link / 最終更新表示 / force-pull ボタン + 新 endpoint)、registry DB SoT 化、providers 秘密ゼロ化。次デプロイで反映予定
-- 次の推奨コマンド: /flow:release (test→live 化 + 3 revise 含む再デプロイ: 実 Group B provider read-only トークン FILL + Clerk production instance 化 + `bash scripts/deploy-prod.sh` で本番反映 + 実 pull データ疎通確認)。Class C(実キー)+Class B(再デプロイ)=seiji
-- Open 論点: 001✅/002✅/003✅/004✅(SEC O24 実装充足 closed) 解決済。005[SEC-003] @vercel/node devDep High CVE = accepted-risk 推奨 (release Phase 1 でユーザー明示確認窓を出す予定、本番ランタイム非搭載)。
-- 残ゲート: P4.7 Release (live キー化=production-spec、CF-009 で test 居座り回避) / P4.45 Wording (内部ツールのため低優先、1度も未実行) / P4.8 Promote は §4.7 非公開のため不発火。
+- 完了フェーズ: [Phase1, Phase1.5, Phase2, Phase3 実装(全9フォルダ unit+E2E green, 視覚レビュー green, vite build green), Phase4 一次デプロイ(service-hub-lake.vercel.app, **Clerk production instance / sk_live_*** 確認済 in .env.production.local), **新規追加: registry DB SoT 化 + providers 秘密ゼロ化 + 3 revise (dashboard admin-ux: /admin link + form styling, collection refresh-cadence: 最終更新表示, collection force-pull: admin ボタン + 新エンドポイント `/api/admin/collect`)** 全 unit 194 passed]
+- デプロイ状況: 本番 URL = https://service-hub-lake.vercel.app (Clerk gate で seiji 限定、**live キーで稼働中**)。`.env.production.local` 完備 (CLERK_SECRET_KEY=sk_live_*, VITE_CLERK_PUBLISHABLE_KEY=pk_live_*, HUB_SERVICE_INFO_SECRET / CRON_SECRET / VERCEL_API_TOKEN / NEON_API_KEY / ALLOWED_USER_ID 全 SET)。post-deploy スモーク green (D20260527-025)。**未デプロイの新規変更**: 3 revise 実装 + 新 endpoint `/api/admin/collect`、registry DB SoT 化、providers 秘密ゼロ化 → **次の再デプロイで反映**
+- 次の推奨コマンド: `bash scripts/deploy-prod.sh` (test→live 化は不要、再デプロイだけで反映完了)。Class B(本番デプロイ)=seiji 手動実行 (auto では実行しない)
+- Open 論点: 001✅/002✅/003✅/004✅(SEC O24 実装充足 closed) 解決済。005[SEC-003] @vercel/node devDep High CVE = accepted-risk 推奨 (本番ランタイム非搭載のため低リスク。次回 release セッションで明示確認窓を出す)。
+- 残ゲート: P4.7 Release は live 化済のため再デプロイのみ / P4.45 Wording (内部ツールのため低優先、1度も未実行) / P4.8 Promote は §4.7 非公開のため不発火。
 <!-- AUTO-GENERATED:END scenario-cursor -->
 
 ## 6. 変更履歴
 - 2026-05-26: /flow:concept で初回生成
 - 2026-05-27: /flow:scenario --update で §5 カーソルを reconcile (Phase4 デプロイ済 test キーへ、~10 session 分の stale を解消、decision_id=D20260527-032)。/flow:auto §3.0c drift シューティング由来 (AUDIT_20260527_2126 検出)
 - 2026-05-28: AUDIT_20260528_1230b 由来の bookkeeping reconcile。3 revise tdd 完了 (admin-ux / refresh-cadence / force-pull, unit 177→194) + 新エンドポイント `/api/admin/collect` を §5 完了フェーズに追記、未デプロイ明示 (decision_id=D20260528-020)
+- 2026-05-28 [flow] 補正: §5 が「test/dev Clerk キー」と stale 記述していたが、実態は `.env.production.local` に `sk_live_*` / `pk_live_*` がセット済で live 化完了。残作業は「3 revise + 新 endpoint の再デプロイのみ」に補正 (CF-20260528-XXX、release/auto 側の「.env.production.local 実物確認ベースの live 判定」も flow-suite に補強)
