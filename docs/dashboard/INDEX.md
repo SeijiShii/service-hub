@@ -22,7 +22,7 @@
 ## サブフォルダ（改修・バグ修正・クレーム判定履歴）
 | パス | 種別 | issue/slug | 状態 | 概要 | INDEX |
 |---|---|---|---|---|---|
-| (なし。`/flow:revise` / `/flow:fix` / `/flow:claim` で生成) |
+| [revise_admin-ux_20260528_link-and-styling/](./revise_admin-ux_20260528_link-and-styling/) | revise | admin-ux | 設計完了（実装前） | ダッシュボードヘッダに /admin リンク追加（O55 orphan 解消）+ admin フォームに styling 適用（縦並び・ラベル上・セクション分け） | [INDEX](./revise_admin-ux_20260528_link-and-styling/INDEX.md) |
 
 ## 関連
 - 親 concept: `../concept.md` §1.3.1 dashboard 行
