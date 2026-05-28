@@ -23,6 +23,7 @@
 | パス | 種別 | issue/slug | 状態 | 概要 | INDEX |
 |---|---|---|---|---|---|
 | [revise_001_20260527_business-observability](./revise_001_20260527_business-observability/) | revise | 001 / business-observability | 設計中 (SPEC 完成) | ビジネス/収益観測 (採算 + 決済離脱率 + コストシミュレーション) を service-info 自己申告で追加 | [INDEX](./revise_001_20260527_business-observability/INDEX.md) |
+| [revise_secret-zero_20260528_mau-selfreport](./revise_secret-zero_20260528_mau-selfreport/) | revise | secret-zero / mau-selfreport | 実装完了 (177 green) | 秘密ゼロ化: MAU を service-info 自己申告へ + service-info 共通鍵化、clerk adapter/secretEnv 撤去 ([D20260528-002]) | [INDEX](./revise_secret-zero_20260528_mau-selfreport/INDEX.md) |
 
 ## 関連
 - 親 concept: `../concept.md` §1.3.2 _shared/providers 行
