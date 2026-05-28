@@ -1,8 +1,8 @@
 # AI_LOG インデックス — service-hub
 
 **最終更新**: 2026-05-28 (+09:00)
-**総セッション数**: 26
-**総 decision 数**: 48 (D20260528-001〜017、D20260527-001〜031、+ D20260526 系)
+**総セッション数**: 27
+**総 decision 数**: 49 (D20260528-001〜018、D20260527-001〜031、+ D20260526 系)
 
 > セッションごとに 1 ファイル、append-only、過去ファイルは削除・編集禁止。
 > 人間向けサマリは `../concept.md` §7 決定事項ログ を参照。
@@ -12,6 +12,7 @@
 ## セッション一覧（新しい順）
 | ファイル | 実行日 | コマンド | 対象 | decision 範囲 | 状態 |
 |---|---|---|---|---|---|
+| [D20260528_010_tdd_collection_refresh-cadence.md](./D20260528_010_tdd_collection_refresh-cadence.md) | 2026-05-28 | /flow:tdd | collection refresh-cadence (最終更新表示) | D20260528-018 | 完了 |
 | [D20260528_009_tdd_dashboard_admin-ux.md](./D20260528_009_tdd_dashboard_admin-ux.md) | 2026-05-28 | /flow:tdd | dashboard admin-ux (link + styling) | D20260528-017 | 完了 |
 | [D20260528_008_audit_standard.md](./D20260528_008_audit_standard.md) | 2026-05-28 | /flow:audit | standard (鮮度トリガ) | D20260528-016 | 完了 |
 | [D20260528_007_revise_dashboard_admin-ux.md](./D20260528_007_revise_dashboard_admin-ux.md) | 2026-05-28 | /flow:revise | dashboard (admin 導線 + admin styling) | D20260528-015 | 設計完了 |
@@ -45,6 +46,7 @@
 ## decision_id 索引（grep 用、新しい順）
 | ID | command | phase | chosen (短縮) | type | ファイル |
 |---|---|---|---|---|---|
+| D20260528-018 | /flow:tdd | Phase 軽重 + 設計微差分 | A. メイン直接 + formatter 分離 + lastRunStatus を null 許容に格上げ | auto-recommended | D20260528_010_tdd_collection_refresh-cadence.md |
 | D20260528-017 | /flow:tdd | Phase 軽重 + styling 手段 | A. 全 Phase 軽メイン + inline style + CSS 変数 (Tailwind 未設定) | auto-recommended | D20260528_009_tdd_dashboard_admin-ux.md |
 | D20260528-011 | /flow:revise | 共通鍵未設定時 | A. ヘッダなしで叩く | explicit-choice | D20260528_004_revise_providers_secret-zero.md |
 | D20260528-010 | /flow:revise | MAU フォールバック | A. なし(service-info 自己申告のみ) | explicit-choice | D20260528_004_revise_providers_secret-zero.md |

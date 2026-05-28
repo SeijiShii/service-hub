@@ -23,7 +23,7 @@
 | パス | 種別 | issue/slug | 状態 | 概要 | INDEX |
 |---|---|---|---|---|---|
 | [revise_force-pull_20260528_admin-button/](./revise_force-pull_20260528_admin-button/) | revise | force-pull | 設計完了（実装前） | アプリ内強制プルボタン（/admin に「今すぐ pull」、新 `api/admin/collect.ts` Clerk ゲート、cron 経路は無変更） | [INDEX](./revise_force-pull_20260528_admin-button/INDEX.md) |
-| [revise_refresh-cadence_20260528_15min-and-last-updated/](./revise_refresh-cadence_20260528_15min-and-last-updated/) | revise | refresh-cadence (縮小) | 設計完了（実装前） | **ダッシュボード「最終更新」表示のみ**（cron 移行は撤回・Vercel Cron 日次維持、手動補完は force-pull） | [INDEX](./revise_refresh-cadence_20260528_15min-and-last-updated/INDEX.md) |
+| [revise_refresh-cadence_20260528_15min-and-last-updated/](./revise_refresh-cadence_20260528_15min-and-last-updated/) | revise | refresh-cadence (縮小) | 実装完了 (unit 186 passed) | **ダッシュボード「最終更新」表示のみ**（cron 移行は撤回・Vercel Cron 日次維持、手動補完は force-pull） | [INDEX](./revise_refresh-cadence_20260528_15min-and-last-updated/INDEX.md) |
 
 ## 関連
 - 親 concept: `../concept.md` §1.3.1 collection 行
