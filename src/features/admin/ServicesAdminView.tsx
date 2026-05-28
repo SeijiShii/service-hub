@@ -1,12 +1,24 @@
 import { useState, type CSSProperties } from "react";
-import type { ServiceDescriptor, ServiceStatus } from "../../types/index.js";
+import type {
+  ServiceDescriptor,
+  ServiceStatus,
+  CollectionRun,
+} from "../../types/index.js";
 
 const STATUSES: ServiceStatus[] = ["active", "paused", "retired"];
+
+export interface ForcePullState {
+  running?: boolean;
+  lastResult?: CollectionRun;
+  error?: string;
+}
 
 interface Props {
   services: ServiceDescriptor[];
   onSave: (d: ServiceDescriptor) => void;
   onRetire: (slug: string) => void;
+  onForcePull?: () => void;
+  forcePullState?: ForcePullState;
 }
 
 const empty = {
@@ -92,7 +104,15 @@ const statusBadge = (status: ServiceStatus): CSSProperties => {
 /** 最小 admin フォーム (D20260528-001、admin-ux Phase 2 で styling 適用)。
  * Clerk ゲート内で seiji がサービス座標を登録/編集/退役。HTML 構造を保持しつつ
  * design-system テーマを適用 (縦並び・ラベル上・3 セクション fieldset・登録ボタン accent・テーブル装飾)。 */
-export function ServicesAdminView({ services, onSave, onRetire }: Props) {
+export function ServicesAdminView({
+  services,
+  onSave,
+  onRetire,
+  onForcePull,
+  forcePullState,
+}: Props) {
+  const running = forcePullState?.running === true;
+  const lastResult = forcePullState?.lastResult;
   const [f, setF] = useState({ ...empty });
   const [editing, setEditing] = useState(false);
 
@@ -137,6 +157,55 @@ export function ServicesAdminView({ services, onSave, onRetire }: Props) {
   return (
     <main>
       <h1 style={{ marginTop: 0 }}>サービスレジストリ管理</h1>
+
+      {onForcePull && (
+        <section
+          data-section="force-pull"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            marginBottom: 24,
+            padding: "12px 16px",
+            border: "1px solid var(--border, #232b3a)",
+            borderRadius: 8,
+            background: "var(--surface, #131720)",
+          }}
+        >
+          <button
+            type="button"
+            onClick={onForcePull}
+            disabled={running}
+            style={{
+              ...primaryBtn,
+              opacity: running ? 0.6 : 1,
+              cursor: running ? "not-allowed" : "pointer",
+            }}
+          >
+            {running ? "実行中…" : "今すぐ pull"}
+          </button>
+          {lastResult && (
+            <span
+              data-testid="force-pull-result"
+              style={{
+                color: "var(--text-muted, #9aa4b2)",
+                fontSize: 13,
+              }}
+            >
+              直近: {lastResult.servicesCount} サービス / エラー{" "}
+              {lastResult.errors?.length ?? 0} 件 ({lastResult.status})
+            </span>
+          )}
+          {forcePullState?.error && (
+            <span
+              role="alert"
+              style={{ color: "var(--status-down, #f87171)", fontSize: 13 }}
+            >
+              {forcePullState.error}
+            </span>
+          )}
+        </section>
+      )}
 
       {services.length > 0 && (
         <table style={{ marginBottom: 24 }}>

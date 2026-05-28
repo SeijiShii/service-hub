@@ -1,11 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
-import { ServicesAdminView } from "./ServicesAdminView.js";
-import type { ServiceDescriptor } from "../../types/index.js";
+import { ServicesAdminView, type ForcePullState } from "./ServicesAdminView.js";
+import type { ServiceDescriptor, CollectionRun } from "../../types/index.js";
 
-/** admin write の配線。GET 一覧 + POST/PATCH/DELETE を /api/admin/services に。 */
+/** admin write + force-pull の配線。
+ *  - GET 一覧 + POST/PATCH/DELETE → /api/admin/services
+ *  - 「今すぐ pull」 → POST /api/admin/collect (force-pull、D20260528-019) */
 export function ServicesAdminPage() {
   const [services, setServices] = useState<ServiceDescriptor[]>([]);
   const [error, setError] = useState<string>();
+  const [forcePull, setForcePull] = useState<ForcePullState>({});
 
   const reload = useCallback(async () => {
     try {
@@ -53,6 +56,27 @@ export function ServicesAdminPage() {
     [reload],
   );
 
+  const onForcePull = useCallback(async () => {
+    setForcePull((p) => ({ ...p, running: true, error: undefined }));
+    try {
+      const r = await fetch("/api/admin/collect", {
+        method: "POST",
+        credentials: "include",
+      });
+      if (!r.ok) {
+        setForcePull({ running: false, error: `http_${r.status}` });
+        return;
+      }
+      const lastResult = (await r.json()) as CollectionRun;
+      setForcePull({ running: false, lastResult });
+    } catch (e) {
+      setForcePull({
+        running: false,
+        error: e instanceof Error ? e.message : "force_pull_failed",
+      });
+    }
+  }, []);
+
   return (
     <>
       {error && <p role="alert">エラー: {error}</p>}
@@ -60,6 +84,8 @@ export function ServicesAdminPage() {
         services={services}
         onSave={onSave}
         onRetire={onRetire}
+        onForcePull={onForcePull}
+        forcePullState={forcePull}
       />
     </>
   );
