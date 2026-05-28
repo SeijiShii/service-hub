@@ -23,6 +23,7 @@
 | パス | 種別 | issue/slug | 状態 | 概要 | INDEX |
 |---|---|---|---|---|---|
 | [revise_force-pull_20260528_admin-button/](./revise_force-pull_20260528_admin-button/) | revise | force-pull | 設計完了（実装前） | アプリ内強制プルボタン（/admin に「今すぐ pull」、新 `api/admin/collect.ts` Clerk ゲート、cron 経路は無変更） | [INDEX](./revise_force-pull_20260528_admin-button/INDEX.md) |
+| [revise_refresh-cadence_20260528_15min-and-last-updated/](./revise_refresh-cadence_20260528_15min-and-last-updated/) | revise | refresh-cadence | 設計完了（実装前） | 自動 pull 24h→15分（GitHub Actions cron、Vercel Hobby 制約回避 [論点-002] 案B）+ ダッシュボードに「最終更新」表示 | [INDEX](./revise_refresh-cadence_20260528_15min-and-last-updated/INDEX.md) |
 
 ## 関連
 - 親 concept: `../concept.md` §1.3.1 collection 行
