@@ -1,8 +1,8 @@
 # AI_LOG インデックス — service-hub
 
 **最終更新**: 2026-05-28 (+09:00)
-**総セッション数**: 38 (D20260528_020 spec-review _shared/types favicon-projection 追加)
-**総 decision 数**: 87 (D20260528-001〜055、D20260527-001〜035、+ D20260526 系)
+**総セッション数**: 40 (D20260528_021 resume + D20260528_022 tdd _shared/types favicon-projection 追加)
+**総 decision 数**: 98 (D20260528-001〜066、D20260527-001〜035、+ D20260526 系)
 
 > セッションごとに 1 ファイル、append-only、過去ファイルは削除・編集禁止。
 > 人間向けサマリは `../concept.md` §7 決定事項ログ を参照。
@@ -12,6 +12,8 @@
 ## セッション一覧（新しい順）
 | ファイル | 実行日 | コマンド | 対象 | decision 範囲 | 状態 |
 |---|---|---|---|---|---|
+| [D20260528_022_tdd__shared_types_favicon-projection.md](./D20260528_022_tdd__shared_types_favicon-projection.md) | 2026-05-28 | /flow:tdd | _shared/types favicon-projection revise (Phase 1-4 実装、unit 255 green、CF-018 歪曲停止巻き戻し) | D20260528-059〜066 | 完了 (5th deploy 待ち、連動 PJ bousai-bag-checker dispatch 推奨) |
+| [D20260528_021_resume_continuous.md](./D20260528_021_resume_continuous.md) | 2026-05-28 | /flow:auto | continuous loop dispatch (P4 favicon-projection tdd auto-pick) | D20260528-056〜058 | 完了 (tdd へ dispatch) |
 | [D20260528_020_spec-review__shared_types_favicon-projection.md](./D20260528_020_spec-review__shared_types_favicon-projection.md) | 2026-05-28 | /flow:spec-review | _shared/types favicon-projection (auto-pick R1-R9 解決、P78-P80 学習) | D20260528-046〜055 | 完了 (905 生成、001-005 反映、tdd 着手可) |
 | [D20260528_019_revise__shared_types_favicon-projection.md](./D20260528_019_revise__shared_types_favicon-projection.md) | 2026-05-28 | /flow:revise | _shared/types favicon-projection (service-info contract v2 + icon_url + DTO 投影) | D20260528-034〜045 | 完了 (設計、tdd 待ち、連動 PJ bousai-bag-checker dispatch 推奨) |
 | [D20260528_018_tdd_registry_admin-form.md](./D20260528_018_tdd_registry_admin-form.md) | 2026-05-28 | /flow:tdd | registry admin-form-bug-and-ux (Phase 1+2 実装、unit 203 passed) | D20260528-033 | 完了 |

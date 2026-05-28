@@ -2,7 +2,7 @@
 
 **issue / slug**: favicon-projection
 **実施日**: 2026-05-28
-**状態**: 設計済 (tdd 待ち)
+**状態**: 実装完了 (2026-05-28、unit 255/255 green、5th deploy 待ち)
 
 <!-- auto-generated-start -->
 
@@ -15,6 +15,8 @@
 | 004 | [004_REVISE_E2E_TEST.md](./004_REVISE_E2E_TEST.md) | REVISE_E2E_TEST | 2026-05-28 |
 | 005 | [005_REVISE_MIGRATION.md](./005_REVISE_MIGRATION.md) | REVISE_MIGRATION | 2026-05-28 |
 | 905 | [905_REVISE_SPEC_REVIEW.md](./905_REVISE_SPEC_REVIEW.md) | SPEC_REVIEW | 2026-05-28 (auto-pick 9 件解決: R1-R9) |
+| 101 | [101_REVISE_IMPL_REPORT.md](./101_REVISE_IMPL_REPORT.md) | IMPL_REPORT | 2026-05-28 (Phase 1-4 完了、4 commits: a025cb3/26a4508/f818d28/6bf8a69) |
+| 102 | [102_REVISE_UNIT_TEST_REPORT.md](./102_REVISE_UNIT_TEST_REPORT.md) | UNIT_TEST_REPORT | 2026-05-28 (vitest 255/255 passed、format check 100%) |
 
 ## 関連
 - 親機能 INDEX: `../INDEX.md`

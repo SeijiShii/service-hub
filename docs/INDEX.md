@@ -23,7 +23,7 @@
 ## 横断フォルダ（優先度順）
 | 優先度 | フォルダ | 状態 | 設計完了 | INDEX |
 |---|---|---|---|---|
-| 1 | [_shared/types](./_shared/types/) | 実装済 (unit GREEN) + 改修1件 設計済 (favicon-projection、tdd 待ち) | 2026-05-28 | [INDEX](./_shared/types/INDEX.md) |
+| 1 | [_shared/types](./_shared/types/) | 実装済 (unit GREEN) + 改修1件 実装完了 (favicon-projection、unit 255 green、5th deploy 待ち) | 2026-05-28 | [INDEX](./_shared/types/INDEX.md) |
 | 1 | [_shared/db](./_shared/db/) | 実装済 | 2026-05-26 | [INDEX](./_shared/db/INDEX.md) |
 | 2 | [_shared/providers](./_shared/providers/) | 実装済 (+ business-observability revise) | 2026-05-27 | [INDEX](./_shared/providers/INDEX.md) |
 | 2 | [_shared/auth](./_shared/auth/) | 実装済 (+ public-status-api revise) | 2026-05-27 | [INDEX](./_shared/auth/INDEX.md) |
