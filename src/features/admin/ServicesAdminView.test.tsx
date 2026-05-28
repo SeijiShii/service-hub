@@ -13,9 +13,24 @@ const svc = (over: Partial<ServiceDescriptor> = {}): ServiceDescriptor => ({
 });
 
 describe("ServicesAdminView (admin form Phase 4)", () => {
+  it("UX-N3: フォームに 3 セクション (基本情報/Providers/Service-info) が存在 (styling Phase 2)", () => {
+    render(
+      <ServicesAdminView services={[]} onSave={() => {}} onRetire={() => {}} />,
+    );
+    expect(document.querySelector('[data-section="basic"]')).toBeTruthy();
+    expect(document.querySelector('[data-section="providers"]')).toBeTruthy();
+    expect(
+      document.querySelector('[data-section="service-info"]'),
+    ).toBeTruthy();
+  });
+
   it("AF-1: 既存サービスを行で一覧表示", () => {
     render(
-      <ServicesAdminView services={[svc()]} onSave={() => {}} onRetire={() => {}} />,
+      <ServicesAdminView
+        services={[svc()]}
+        onSave={() => {}}
+        onRetire={() => {}}
+      />,
     );
     const row = document.querySelector('tr[data-slug="hana-memo"]');
     expect(row).toBeTruthy();
@@ -27,8 +42,12 @@ describe("ServicesAdminView (admin form Phase 4)", () => {
     render(
       <ServicesAdminView services={[]} onSave={onSave} onRetire={() => {}} />,
     );
-    fireEvent.change(screen.getByLabelText("slug"), { target: { value: "demo-svc" } });
-    fireEvent.change(screen.getByLabelText("名前"), { target: { value: "Demo" } });
+    fireEvent.change(screen.getByLabelText("slug"), {
+      target: { value: "demo-svc" },
+    });
+    fireEvent.change(screen.getByLabelText("名前"), {
+      target: { value: "Demo" },
+    });
     fireEvent.change(screen.getByLabelText("URL"), {
       target: { value: "https://demo.example.com" },
     });
@@ -47,7 +66,11 @@ describe("ServicesAdminView (admin form Phase 4)", () => {
   it("AF-3: 退役ボタン → onRetire(slug)", () => {
     const onRetire = vi.fn();
     render(
-      <ServicesAdminView services={[svc()]} onSave={() => {}} onRetire={onRetire} />,
+      <ServicesAdminView
+        services={[svc()]}
+        onSave={() => {}}
+        onRetire={onRetire}
+      />,
     );
     fireEvent.click(screen.getByRole("button", { name: "退役" }));
     expect(onRetire).toHaveBeenCalledWith("hana-memo");
@@ -55,7 +78,11 @@ describe("ServicesAdminView (admin form Phase 4)", () => {
 
   it("AF-4: 編集 → slug は readonly、ボタンが更新に", () => {
     render(
-      <ServicesAdminView services={[svc()]} onSave={() => {}} onRetire={() => {}} />,
+      <ServicesAdminView
+        services={[svc()]}
+        onSave={() => {}}
+        onRetire={() => {}}
+      />,
     );
     fireEvent.click(screen.getByRole("button", { name: "編集" }));
     expect(screen.getByLabelText("slug")).toHaveProperty("readOnly", true);
