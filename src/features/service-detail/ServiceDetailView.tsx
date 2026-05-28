@@ -1,4 +1,4 @@
-import { MetricChart } from "./MetricChart.js";
+import { MetricChart } from "../../components/MetricChart.js";
 import { StatusDot } from "../../components/StatusDot.js";
 import type { ServiceDetailVM } from "./detail.js";
 
@@ -34,7 +34,14 @@ export function ServiceDetailView({ vm }: { vm: ServiceDetailVM | null }) {
         {vm.series.length === 0 ? (
           <p data-testid="empty-state">まだ時系列データがありません</p>
         ) : (
-          vm.series.map((s) => <MetricChart key={s.metricKey} series={s} />)
+          vm.series.map((s) => (
+            <MetricChart
+              key={s.metricKey}
+              metricKey={s.metricKey}
+              unit={s.unit}
+              series={[{ slug: vm.slug, name: vm.name, points: s.points }]}
+            />
+          ))
         )}
       </section>
       <section data-testid="revenue-projection">

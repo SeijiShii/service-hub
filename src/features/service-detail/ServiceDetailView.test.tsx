@@ -33,7 +33,8 @@ describe("ServiceDetailView", () => {
         })}
       />,
     );
-    expect(screen.getByText("hana-memo")).toBeTruthy();
+    // hana-memo は h1 (vm.name) + Legend (MetricChart 共通化後の multi-series name) で複数表示 → 最初の要素を取得
+    expect(screen.getAllByText("hana-memo").length).toBeGreaterThan(0);
     const chart = screen.getByTestId("chart-db_storage_bytes");
     expect(chart.getAttribute("data-points")).toBe("2");
   });
