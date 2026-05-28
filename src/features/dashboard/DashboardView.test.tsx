@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { DashboardView } from "./DashboardView.js";
 import type { DashboardVM } from "./summary.js";
@@ -7,6 +7,8 @@ const vm = (over: Partial<DashboardVM> = {}): DashboardVM => ({
   rows: [],
   upCount: 0,
   downCount: 0,
+  lastUpdatedAt: null,
+  lastRunStatus: null,
   ...over,
 });
 
@@ -79,5 +81,65 @@ describe("DashboardView", () => {
   it("DA-N4/E2: down あり or run failed → AlertBanner", () => {
     render(<DashboardView vm={vm({ rows: [], lastRunStatus: "failed" })} />);
     expect(screen.getByTestId("alert-banner")).toBeTruthy();
+  });
+
+  describe("最終更新表示 (refresh-cadence)", () => {
+    beforeEach(() => {
+      // 相対時間テストの決定的化: 現在時刻を 2026-05-28 03:10:00 UTC に固定
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2026-05-28T03:10:00.000Z"));
+    });
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it("RC-N2: lastUpdatedAt が設定されている → 最終更新表示", () => {
+      render(
+        <DashboardView
+          vm={vm({
+            lastUpdatedAt: "2026-05-28T03:00:00.000Z",
+            lastRunStatus: "ok",
+          })}
+        />,
+      );
+      const el = screen.getByTestId("last-updated");
+      expect(el).toBeTruthy();
+      // JST (UTC+9) 表記: 2026-05-28 12:00
+      expect(el.textContent).toContain("2026-05-28");
+      expect(el.textContent).toContain("12:00");
+    });
+
+    it("RC-N3: 7 分前の finishedAt → 相対時間 '10 分前' を表示 (固定時刻 03:10 vs 03:00)", () => {
+      render(
+        <DashboardView
+          vm={vm({
+            lastUpdatedAt: "2026-05-28T03:00:00.000Z",
+            lastRunStatus: "ok",
+          })}
+        />,
+      );
+      const el = screen.getByTestId("last-updated");
+      expect(el.textContent).toContain("10 分前");
+    });
+
+    it("RC-E1: lastUpdatedAt=null → 未収集 表示", () => {
+      render(<DashboardView vm={vm()} />);
+      const el = screen.getByTestId("last-updated");
+      expect(el.textContent).toContain("未収集");
+    });
+
+    it("RC-E2: lastRunStatus=failed → 警告色 + status 表示", () => {
+      render(
+        <DashboardView
+          vm={vm({
+            lastUpdatedAt: "2026-05-28T03:00:00.000Z",
+            lastRunStatus: "failed",
+          })}
+        />,
+      );
+      const el = screen.getByTestId("last-updated");
+      expect(el.getAttribute("data-status")).toBe("failed");
+      expect(el.textContent).toContain("failed");
+    });
   });
 });

@@ -1,8 +1,11 @@
 import { ServiceRow } from "./ServiceRow.js";
 import type { DashboardVM } from "./summary.js";
+import { formatLastUpdated } from "./lastUpdatedFormat.js";
 
 export function DashboardView({ vm }: { vm: DashboardVM }) {
   const showAlert = vm.downCount > 0 || vm.lastRunStatus === "failed";
+  const lastUpdatedText = formatLastUpdated(vm.lastUpdatedAt);
+  const lastUpdatedFailed = vm.lastRunStatus === "failed";
   return (
     <main
       style={{
@@ -23,6 +26,20 @@ export function DashboardView({ vm }: { vm: DashboardVM }) {
           <h1 style={{ margin: 0 }}>service-hub</h1>
           <p data-testid="summary" style={{ margin: "4px 0 0" }}>
             {vm.upCount} up · {vm.downCount} down
+          </p>
+          <p
+            data-testid="last-updated"
+            data-status={vm.lastRunStatus ?? "none"}
+            style={{
+              margin: "4px 0 0",
+              fontSize: 12,
+              color: lastUpdatedFailed
+                ? "var(--status-down, #f87171)"
+                : "var(--text-muted, #9aa3b2)",
+            }}
+          >
+            最終更新: {lastUpdatedText}
+            {lastUpdatedFailed && " · failed"}
           </p>
         </div>
         <nav>

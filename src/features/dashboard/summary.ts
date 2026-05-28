@@ -30,7 +30,10 @@ export interface DashboardVM {
   rows: ServiceRowVM[];
   upCount: number;
   downCount: number;
-  lastRunStatus?: CollectionRun["status"];
+  /** 直近 collection_runs.status (run 無しは null)。 */
+  lastRunStatus: CollectionRun["status"] | null;
+  /** 直近 run の finishedAt (実行中なら startedAt、無しなら null)、ISO 8601。 */
+  lastUpdatedAt: string | null;
 }
 
 /** db スナップショット + registry + openAlerts を一覧 VM に結合 (provider 直叩きなし)。 */
@@ -104,5 +107,14 @@ export function buildDashboard(
 
   const upCount = rows.filter((r) => r.up === true).length;
   const downCount = rows.filter((r) => r.up === false).length;
-  return { rows, upCount, downCount, lastRunStatus: lastRun?.status };
+  const lastUpdatedAt = lastRun
+    ? (lastRun.finishedAt ?? lastRun.startedAt)
+    : null;
+  return {
+    rows,
+    upCount,
+    downCount,
+    lastRunStatus: lastRun?.status ?? null,
+    lastUpdatedAt,
+  };
 }
