@@ -1,11 +1,20 @@
 import { ServiceRow } from "./ServiceRow.js";
 import type { DashboardVM } from "./summary.js";
 import { formatLastUpdated } from "./lastUpdatedFormat.js";
+import type { ForcePullState } from "./forcePull.js";
 
-export function DashboardView({ vm }: { vm: DashboardVM }) {
+interface Props {
+  vm: DashboardVM;
+  onForcePull?: () => void;
+  forcePullState?: ForcePullState;
+}
+
+export function DashboardView({ vm, onForcePull, forcePullState }: Props) {
   const showAlert = vm.downCount > 0 || vm.lastRunStatus === "failed";
   const lastUpdatedText = formatLastUpdated(vm.lastUpdatedAt);
   const lastUpdatedFailed = vm.lastRunStatus === "failed";
+  const running = forcePullState?.running === true;
+  const lastResult = forcePullState?.lastResult;
   return (
     <main
       style={{
@@ -58,6 +67,49 @@ export function DashboardView({ vm }: { vm: DashboardVM }) {
           </a>
         </nav>
       </header>
+      {onForcePull && (
+        <section
+          data-section="force-pull"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            padding: "8px 16px",
+            fontSize: 12,
+            color: "var(--text-muted, #9aa3b2)",
+            borderBottom: "1px solid var(--border, #2a2f3a)",
+          }}
+        >
+          <button
+            type="button"
+            onClick={onForcePull}
+            disabled={running}
+            style={{
+              background: "transparent",
+              color: "var(--text, #e6e9ef)",
+              border: "1px solid var(--border, #2a2f3a)",
+              borderRadius: 6,
+              padding: "4px 10px",
+              fontSize: 12,
+              cursor: running ? "not-allowed" : "pointer",
+              opacity: running ? 0.6 : 1,
+            }}
+          >
+            {running ? "実行中…" : "今すぐ pull"}
+          </button>
+          {lastResult && (
+            <span data-testid="force-pull-result">
+              直近: {lastResult.servicesCount} サービス / エラー{" "}
+              {lastResult.errors?.length ?? 0} 件 ({lastResult.status})
+            </span>
+          )}
+          {forcePullState?.error && (
+            <span role="alert" style={{ color: "var(--status-down, #f87171)" }}>
+              {forcePullState.error}
+            </span>
+          )}
+        </section>
+      )}
       {showAlert && (
         <div
           role="alert"

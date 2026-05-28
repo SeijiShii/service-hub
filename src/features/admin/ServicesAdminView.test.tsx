@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { ServicesAdminView } from "./ServicesAdminView.js";
-import type { ServiceDescriptor, CollectionRun } from "../../types/index.js";
+import type { ServiceDescriptor } from "../../types/index.js";
 
 const svc = (over: Partial<ServiceDescriptor> = {}): ServiceDescriptor => ({
   slug: "hana-memo",
@@ -87,61 +87,5 @@ describe("ServicesAdminView (admin form Phase 4)", () => {
     fireEvent.click(screen.getByRole("button", { name: "編集" }));
     expect(screen.getByLabelText("slug")).toHaveProperty("readOnly", true);
     expect(screen.getByRole("button", { name: "更新" })).toBeTruthy();
-  });
-
-  it("FP-N3: 「今すぐ pull」ボタン click → onForcePull が 1 回呼ばれる", () => {
-    const onForcePull = vi.fn();
-    render(
-      <ServicesAdminView
-        services={[]}
-        onSave={() => {}}
-        onRetire={() => {}}
-        onForcePull={onForcePull}
-      />,
-    );
-    fireEvent.click(screen.getByRole("button", { name: "今すぐ pull" }));
-    expect(onForcePull).toHaveBeenCalledTimes(1);
-  });
-
-  it("FP-N4: forcePullState.lastResult → サマリ表示 (services/errors 件数)", () => {
-    const result: CollectionRun = {
-      id: "r1",
-      startedAt: "2026-05-28T03:00:00.000Z",
-      finishedAt: "2026-05-28T03:00:30.000Z",
-      status: "ok",
-      servicesCount: 3,
-      errors: [{ serviceSlug: "x", provider: "ping", message: "timeout" }],
-    };
-    render(
-      <ServicesAdminView
-        services={[]}
-        onSave={() => {}}
-        onRetire={() => {}}
-        onForcePull={() => {}}
-        forcePullState={{ running: false, lastResult: result }}
-      />,
-    );
-    const summary = screen.getByTestId("force-pull-result");
-    expect(summary.textContent).toContain("3");
-    expect(summary.textContent).toContain("1");
-  });
-
-  it("FP-E4: running=true → ボタン disabled + 「実行中…」表記 + click しても呼ばれない", () => {
-    const onForcePull = vi.fn();
-    render(
-      <ServicesAdminView
-        services={[]}
-        onSave={() => {}}
-        onRetire={() => {}}
-        onForcePull={onForcePull}
-        forcePullState={{ running: true }}
-      />,
-    );
-    const btn = screen.getByRole("button", {
-      name: "実行中…",
-    }) as HTMLButtonElement;
-    expect(btn.disabled).toBe(true);
-    fireEvent.click(btn);
-    expect(onForcePull).not.toHaveBeenCalled();
   });
 });

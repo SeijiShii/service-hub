@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { DashboardView } from "./DashboardView.js";
 import type { DashboardVM } from "./summary.js";
+import type { CollectionRun } from "../../types/index.js";
 
 const vm = (over: Partial<DashboardVM> = {}): DashboardVM => ({
   rows: [],
@@ -140,6 +141,60 @@ describe("DashboardView", () => {
       const el = screen.getByTestId("last-updated");
       expect(el.getAttribute("data-status")).toBe("failed");
       expect(el.textContent).toContain("failed");
+    });
+  });
+
+  describe("force-pull section (nav-and-pull revise)", () => {
+    it("TFP-B2: onForcePull 未渡し → force-pull section 非表示", () => {
+      render(<DashboardView vm={vm()} />);
+      expect(
+        screen.queryByRole("button", { name: /今すぐ pull|実行中/ }),
+      ).toBeNull();
+    });
+
+    it("TFP-N3: 「今すぐ pull」ボタン click → onForcePull が 1 回呼ばれる", () => {
+      const onForcePull = vi.fn();
+      render(<DashboardView vm={vm()} onForcePull={onForcePull} />);
+      fireEvent.click(screen.getByRole("button", { name: "今すぐ pull" }));
+      expect(onForcePull).toHaveBeenCalledTimes(1);
+    });
+
+    it("TFP-N4: forcePullState.lastResult → サマリ表示 (services/errors 件数)", () => {
+      const result: CollectionRun = {
+        id: "r1",
+        startedAt: "2026-05-28T03:00:00.000Z",
+        finishedAt: "2026-05-28T03:00:30.000Z",
+        status: "ok",
+        servicesCount: 3,
+        errors: [{ serviceSlug: "x", provider: "ping", message: "timeout" }],
+      };
+      render(
+        <DashboardView
+          vm={vm()}
+          onForcePull={() => {}}
+          forcePullState={{ running: false, lastResult: result }}
+        />,
+      );
+      const summary = screen.getByTestId("force-pull-result");
+      expect(summary.textContent).toContain("3");
+      expect(summary.textContent).toContain("1");
+    });
+
+    it("TFP-E4: running=true → ボタン disabled + 「実行中…」+ click 抑止", () => {
+      const onForcePull = vi.fn();
+      render(
+        <DashboardView
+          vm={vm()}
+          onForcePull={onForcePull}
+          forcePullState={{ running: true }}
+        />,
+      );
+      const btn = screen.getByRole("button", {
+        name: "実行中…",
+      }) as HTMLButtonElement;
+      expect(btn.disabled).toBe(true);
+      fireEvent.click(btn);
+      expect(onForcePull).not.toHaveBeenCalled();
     });
   });
 });
