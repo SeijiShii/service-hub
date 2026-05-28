@@ -1,8 +1,8 @@
 # AI_LOG インデックス — service-hub
 
 **最終更新**: 2026-05-28 (+09:00)
-**総セッション数**: 51 (D20260528_033 secure release-pre 2 段目 追加)
-**総 decision 数**: 157 (D20260528-001〜125、D20260527-001〜035、+ D20260526 系)
+**総セッション数**: 52 (D20260528_034 release 8th-deploy 追加)
+**総 decision 数**: 163 (D20260528-001〜131、D20260527-001〜035、+ D20260526 系)
 
 > セッションごとに 1 ファイル、append-only、過去ファイルは削除・編集禁止。
 > 人間向けサマリは `../concept.md` §7 決定事項ログ を参照。
@@ -12,6 +12,7 @@
 ## セッション一覧（新しい順）
 | ファイル | 実行日 | コマンド | 対象 | decision 範囲 | 状態 |
 |---|---|---|---|---|---|
+| [D20260528_034_release_8th-deploy.md](./D20260528_034_release_8th-deploy.md) | 2026-05-28 | /flow:release | **8th deploy 成功** (timeseries-topchart 反映、dpl_2VjaF8Ay4fzcdEbxT2yuHtHa8LH5、aliased https://service-hub.givers.work、post-deploy smoke 全 green) + SEC-003 accepted-risk 確定 close (4 回連続再提示の悪循環断ち) | D20260528-126〜131 | 完了 (P4.7 Release gate 通過) |
 | [D20260528_033_secure_release-pre.md](./D20260528_033_secure_release-pre.md) | 2026-05-28 | /flow:secure --phase=deps | release-pre 2 段目 (新規 SEC 0 件、SEC-003 Class C maintain 4 回連続、release-pre 2 段クリア完了 → P4.7 評価可能) | D20260528-122〜125 | 完了 (release へ dispatch) |
 | [D20260528_032_scenario_update.md](./D20260528_032_scenario_update.md) | 2026-05-28 | /flow:scenario --update | audit D-031 High #1 シューティング (SCENARIO §5 reconcile: 7 回 deploy 完了 + timeseries-topchart 全工程完了 + 8th deploy 待ち明示) | D20260528-120〜121 | 完了 (secure → release dispatch) |
 | [D20260528_031_audit_release-pre.md](./D20260528_031_audit_release-pre.md) | 2026-05-28 | /flow:audit | release-pre 必須監査 (full scope、Critical 0 / High 1 SCENARIO drift 4 回連続 CHRONIC / Medium 1 / Low 1、release-blocking なし) | D20260528-112〜119 | 完了 (secure へ dispatch) |

@@ -402,8 +402,8 @@ service-hub が定義する service-info エンドポイント契約（[論点-0
 - **L1 レポート**: `./SECURITY_REVIEW_20260526.md#sec-002`
 
 ### [論点-005] [SEC-003] @vercel/node devDependency チェーンの High CVE 6 件 (ReDoS / undici): High (in-context Low)
-- **status**: `open` — **推奨=accepted-risk、ユーザー明示確認待ち** (secure 契約: High に accepted-risk を auto では選ばない)
-- **status 履歴**: 2026-05-27 21:30 open（/flow:secure --phase=deps、npm audit 由来）
+- **status**: `closed` ✅ **(2026-05-28 解決、accepted-risk としてユーザー明示確定、4 回連続再提示の悪循環断ち)**
+- **status 履歴**: 2026-05-27 21:30 open（/flow:secure --phase=deps、npm audit 由来） → 2026-05-28 20:14 closed (accepted-risk、ユーザー明示確定、release Phase 1 SEC-003 確認窓で承認、decision_id=D20260528-126)
 - **観点 ID**: O28_dependency_vulnerability
 - **severity**: High (npm audit CVSS ベース) / **in-context Low** (devDep build-tooling・本番ランタイム非搭載)
 - **影響範囲**: `package.json` devDependencies (`@vercel/node@5.8.4`)、build/dev/test ツールチェーンのみ

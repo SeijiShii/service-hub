@@ -52,20 +52,17 @@ flow で連発するマイクロサービス群の稼働/利用/コスト/障害
 ## 5. 現在地カーソル
 
 <!-- AUTO-GENERATED:BEGIN scenario-cursor -->
-- 現在フェーズ: Phase 4 (Release gate **8th deploy 待ち** ⏳) — 7 回 deploy 完了済、本セッションで dashboard timeseries-topchart 全工程完了 (revise+spec-review+tdd Phase 1-4 unit 287 green + release-pre 監査本回) → **8th deploy で timeseries-topchart 反映予定** (db schema 変更なし = db:push 不要)
-- 進行中ターゲット: なし (timeseries-topchart 全完了)
-- 最終更新セッション: D20260528_031_audit_release-pre (release-pre 必須監査 1 段目クリア、続く secure で 2 段クリア予定)
-- 最終更新時刻: 2026-05-28 20:11
-- 完了フェーズ: [Phase1, Phase1.5, Phase2, Phase3 実装, Phase4 デプロイ(7 回完了): 1st=D20260527-025 / 2nd=D-021 / 3rd=D-027 / 4th=D-028 (favicon SVG) / **5th=D-026 (admin-form Phase 1+2 + favicon-projection)** / **6th=内部 dashboard icon (commit de8bdfa)** / **7th=admin/collect hot-fix (commit a1a8f88)**、Clerk production instance / sk_live_* 稼働中, **追加: registry DB SoT + providers 秘密ゼロ + 4 revise + favicon SVG + admin-form fix Phase 1+2 + favicon-projection revise/spec-review/tdd + dashboard timeseries-topchart revise/spec-review/tdd Phase 1-4 (D-027/D-029/D-030 commits 676954a/f5f83ba/0eaf627/5f34d6a/f0d84b2/0aba2c3 unit 287)** + release-pre 監査本回 (D-031 audit)]
-- デプロイ状況: **公開 URL = https://service-hub.givers.work** (custom domain、Clerk production instance、live キー稼働中、favicon=hub+4 dots SVG、services.icon_url 本番反映済)。**8th deploy 未実施 (timeseries-topchart 反映待ち、db schema 変更なし = db:push 不要)**。
-- 次の推奨コマンド: **`/flow:release`** (8th deploy = timeseries-topchart 反映):
-  1. Phase 1 で SEC-003 accepted-risk ユーザー確認窓 (4 回連続再提示の悪循環を 1 回確定で断つ)
-  2. Phase 2 ローカル動作確認 (dashboard /, chart section 「直近 30 日の推移」表示確認、軽め)
-  3. Phase 3 vercel deploy (Class B 明示確認、8th deploy、db:push 不要)
-- Open 論点: 001✅/002✅/003✅/004✅ 解決済。005[SEC-003] accepted-risk 推奨 (4 回連続 audit/secure 再提示 = 次 release Phase 1 で確定推奨)。
-- 残ゲート: **P4.7 Release 8th deploy 要** / P4.45 Wording (低優先、defer 判断待ち) / P4.8 Promote 不発火 / 連動 PJ **bousai-bag-checker producer 連動 revise (CF-016)** — release 後リマインダ。
-- release-pre 必須監査 (CF-009): ⏳ **1 段クリア** (audit D-031、AUDIT_20260528_2010.md、Critical 0 / High 1 SCENARIO drift bookkeeping = release-blocking なし) → **続く secure で 2 段クリア予定**。
-- audit 検出常習化 (本回 audit §6.2): SCENARIO drift = **4 回連続 CHRONIC** (1230 → 1230b → 1724 → 本回 2010)、本回 reconcile が **解消行為** だが flow-suite 補強候補 3 案を §8 自己学習プロトコルに記録 (tdd Step Z 拡張 / release Step Z 拡張 / auto §3.0c シューティング 1st action 固定)。
+- 現在フェーズ: Phase 4 (Release gate ✅ **8th deploy 完了**) — 8 回 deploy 完了済、本セッションで dashboard timeseries-topchart 全工程完了 + release-pre 監査 2 段クリア + **8th deploy 成功** (dpl_2VjaF8Ay4fzcdEbxT2yuHtHa8LH5、aliased https://service-hub.givers.work、post-deploy smoke 全 green、SEC-003 accepted-risk 確定 close)
+- 進行中ターゲット: なし (8th deploy 完了)
+- 最終更新セッション: D20260528_034_release_8th-deploy (timeseries-topchart 反映 deploy 成功)
+- 最終更新時刻: 2026-05-28 20:15
+- 完了フェーズ: [Phase1, Phase1.5, Phase2, Phase3 実装, Phase4 デプロイ(**8 回完了**): 1st=D20260527-025 / 2nd=D-021 / 3rd=D-027 / 4th=D-028 (favicon SVG) / 5th=D-026 (admin-form + favicon-projection) / 6th=internal icon / 7th=admin/collect hot-fix / **8th=D-034 (timeseries-topchart、dpl_2VjaF8Ay4fzcdEbxT2yuHtHa8LH5、24s build、post-deploy smoke 全 green)**、Clerk production instance / sk_live_* 稼働中, **追加: registry DB SoT + providers 秘密ゼロ + 4 revise + favicon SVG + admin-form fix Phase 1+2 + favicon-projection 全工程 + dashboard timeseries-topchart 全工程 (D-027/D-029/D-030 unit 287 green) + release-pre 監査 2 段クリア (D-031 audit + D-033 secure) + 8th deploy 成功 (D-034)**]
+- デプロイ状況: ✅ **公開 URL = https://service-hub.givers.work** (custom domain、Clerk production instance、live キー稼働中、**8th deploy 完了 = timeseries-topchart 上部 chart section + 下部 ServicesTable 二部構成 本番反映済**、SEC-003 accepted-risk 確定 close)。
+- 次の推奨コマンド: **`/flow:auto`** (次反復で全 P5 完了判定 = ✅ unit 287 green + E2E green (既存 target) + design green + Wording defer + 8th deploy 公開 + SEC-003 close + 鮮度ゲート fresh) または bousai-bag-checker producer 連動 revise (CF-016 横断、別 PJ 操作)
+- Open 論点: 001✅/002✅/003✅/004✅/**005✅ (SEC-003 accepted-risk 確定 close、D-126)** 全 5 件解決済。
+- 残ゲート: **P4.7 Release ✅ 8th deploy 完了** / P4.45 Wording (低優先、defer 判断待ち) / P4.8 Promote 不発火 (internal、非公開 PJ) / 連動 PJ **bousai-bag-checker producer 連動 revise (CF-016)** — 別 PJ 操作。
+- release-pre 必須監査 (CF-009): ✅ **2 段クリア完了** (audit D-031 Critical 0 + secure D-033 新規 SEC 0 件)。
+- audit 検出常習化 (CHRONIC 注記): SCENARIO drift = 4 回連続 (1230 → 1230b → 1724 → 2010)、本セッション D-032 reconcile で解消行為、flow-suite 補強候補 3 案を D-031 §8 自己学習プロトコルに記録 (tdd/release Step Z 拡張 or auto §3.0c シューティング 1st action 固定)。
 <!-- AUTO-GENERATED:END scenario-cursor -->
 
 ## 6. 変更履歴
@@ -83,3 +80,5 @@ flow で連発するマイクロサービス群の稼働/利用/コスト/障害
 - 2026-05-28: 5th deploy 完了 (D-026、commit b4f70b5 = admin-form Phase 1+2 + favicon-projection 本番反映、services.icon_url カラム db:push 済)。続けて 6th deploy (内部 dashboard + admin UI icon、commit de8bdfa)、7th deploy (admin/collect updateServiceMeta hot-fix、commit a1a8f88) 完了
 - 2026-05-28: dashboard timeseries-topchart 全工程完了 — revise 設計 (D-027、画面上部に時系列グラフ + 下部に既存テーブル、commit 676954a) → spec-review (D-029、auto-pick R1-R6 全件解決、commit f5f83ba) → tdd Phase 1-4 (D-030、unit 287 green、4 commits 0eaf627/5f34d6a/f0d84b2/0aba2c3、CF-021 歪曲停止再発 4 件目で巻き戻し継続)。8th deploy 待ち
 - 2026-05-28: release-pre 必須監査本回 audit 1 段目 (D-031、AUDIT_20260528_2010.md、Critical 0 / High 1 SCENARIO drift 4 回連続 CHRONIC / Medium 1 / Low 1 = release-blocking なし、続く secure で 2 段クリア予定) → /flow:scenario --update で §5 reconcile (本セッション、audit High #1 シューティング、7 回 deploy 完了 + timeseries-topchart 全工程完了 + release-pre 監査本回 1 段目を反映、decision_id=D20260528-120) — 次は /flow:secure で release-pre 2 段目 → /flow:release で 8th deploy
+- 2026-05-28: release-pre 2 段目 (D-033 secure --phase=deps、SECURITY_DEPS_20260528b.md、新規 SEC 0 件、SEC-003 Class C maintain 4 回連続) → release-pre 必須監査 2 段クリア完了 → P4.7 Release gate 評価可能
+- 2026-05-28: ✅ **8th deploy 完了** (D-034 release、commit 群 0eaf627/5f34d6a/f0d84b2/0aba2c3 + 6b2942c/dde07e5/106855d、dpl_2VjaF8Ay4fzcdEbxT2yuHtHa8LH5、24s build、aliased https://service-hub.givers.work、post-deploy smoke 全 green) + SEC-003 accepted-risk 確定 close (D-126、§8 [論点-005] status=open → closed、4 回連続再提示の悪循環断ち) — 次は /flow:auto で全 P5 完了判定 or bousai-bag-checker 連動 revise (別 PJ)
