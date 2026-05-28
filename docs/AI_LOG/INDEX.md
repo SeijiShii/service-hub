@@ -1,8 +1,8 @@
 # AI_LOG インデックス — service-hub
 
 **最終更新**: 2026-05-28 (+09:00)
-**総セッション数**: 30 (D20260527_009/010 + D20260528_012 audit 追加で再計上)
-**総 decision 数**: 52 (D20260528-001〜020、D20260527-001〜035、+ D20260526 系)
+**総セッション数**: 31 (D20260528_013 release post-deploy 追加で再計上)
+**総 decision 数**: 53 (D20260528-001〜021、D20260527-001〜035、+ D20260526 系)
 
 > セッションごとに 1 ファイル、append-only、過去ファイルは削除・編集禁止。
 > 人間向けサマリは `../concept.md` §7 決定事項ログ を参照。
@@ -12,6 +12,8 @@
 ## セッション一覧（新しい順）
 | ファイル | 実行日 | コマンド | 対象 | decision 範囲 | 状態 |
 |---|---|---|---|---|---|
+| [D20260528_013_release_post-deploy.md](./D20260528_013_release_post-deploy.md) | 2026-05-28 | /flow:release | post-deploy 2nd (3 revise + 新 endpoint 反映 + smoke) | D20260528-021 | 完了 |
+| [D20260528_012_audit_standard.md](./D20260528_012_audit_standard.md) | 2026-05-28 | /flow:audit | standard 2回目 (鮮度 + bookkeeping reconcile) | D20260528-020 | 完了 |
 | [D20260528_011_tdd_collection_force-pull.md](./D20260528_011_tdd_collection_force-pull.md) | 2026-05-28 | /flow:tdd | collection force-pull (admin ボタン + endpoint) | D20260528-019 | 完了 |
 | [D20260528_010_tdd_collection_refresh-cadence.md](./D20260528_010_tdd_collection_refresh-cadence.md) | 2026-05-28 | /flow:tdd | collection refresh-cadence (最終更新表示) | D20260528-018 | 完了 |
 | [D20260528_009_tdd_dashboard_admin-ux.md](./D20260528_009_tdd_dashboard_admin-ux.md) | 2026-05-28 | /flow:tdd | dashboard admin-ux (link + styling) | D20260528-017 | 完了 |
@@ -23,7 +25,7 @@
 | [D20260528_003_tdd_registry_revise_db-sot.md](./D20260528_003_tdd_registry_revise_db-sot.md) | 2026-05-28 | /flow:tdd | registry revise (DB SoT 実装) | D20260528-008〜009 | 完了 |
 | [D20260528_002_revise_registry_db-sot.md](./D20260528_002_revise_registry_db-sot.md) | 2026-05-28 | /flow:revise | registry (DB SoT + admin write) | D20260528-003〜007 | 設計完了 |
 | [D20260528_001_concept_update_20260528.md](./D20260528_001_concept_update_20260528.md) | 2026-05-28 | /flow:concept | update (レジストリ DB 化 + 秘密ゼロ化) | D20260528-001〜002 | 完了 |
-| [D20260527_010_release_service-hub.md](./D20260527_010_release_service-hub.md) | 2026-05-27 | /flow:release | service-hub (test→live 化 Phase 1 FILL 待ち) | D20260527-035〜 | 進行中 (Phase 1 pause、Class C 実キー FILL 待ち) |
+| [D20260527_010_release_service-hub.md](./D20260527_010_release_service-hub.md) | 2026-05-27 | /flow:release | service-hub (Phase 1 FILL) | D20260527-035〜 | 完了 (後続 D20260528_013 で deploy 2nd 完遂、本セッションは Phase 1 のみで分離 close) |
 | [D20260527_009_scenario_update.md](./D20260527_009_scenario_update.md) | 2026-05-27 | /flow:scenario | --update (bookkeeping reconcile 5 件) | D20260527-032 | 完了 |
 | [D20260527_008_secure_deps.md](./D20260527_008_secure_deps.md) | 2026-05-27 | /flow:secure | deps (L4) | D20260527-029〜031 | 完了 |
 | [D20260527_007_audit_standard.md](./D20260527_007_audit_standard.md) | 2026-05-27 | /flow:audit | standard (初回) | D20260527-027〜028 | 完了 |
@@ -49,6 +51,8 @@
 ## decision_id 索引（grep 用、新しい順）
 | ID | command | phase | chosen (短縮) | type | ファイル |
 |---|---|---|---|---|---|
+| D20260528-021 | /flow:release | post-deploy 2nd + smoke | A. 全 gate 期待値通り → Release gate 通過扱い + D-010 セッション close | auto-recommended | D20260528_013_release_post-deploy.md |
+| D20260528-020 | /flow:audit | §3.0c シューティング + 結果総括 | A. Low 2 件即 reconcile + Medium 1 件 (論点-005) は release Phase 1 まで pause | auto-recommended | D20260528_012_audit_standard.md |
 | D20260528-019 | /flow:tdd | Phase 軽重 + View props 後方互換 | A. メイン直接 + Props オプショナル + ForcePullState 型を View export | auto-recommended | D20260528_011_tdd_collection_force-pull.md |
 | D20260528-018 | /flow:tdd | Phase 軽重 + 設計微差分 | A. メイン直接 + formatter 分離 + lastRunStatus を null 許容に格上げ | auto-recommended | D20260528_010_tdd_collection_refresh-cadence.md |
 | D20260528-017 | /flow:tdd | Phase 軽重 + styling 手段 | A. 全 Phase 軽メイン + inline style + CSS 変数 (Tailwind 未設定) | auto-recommended | D20260528_009_tdd_dashboard_admin-ux.md |
