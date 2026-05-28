@@ -1,8 +1,8 @@
 # AI_LOG インデックス — service-hub
 
 **最終更新**: 2026-05-28 (+09:00)
-**総セッション数**: 50 (D20260528_032 scenario update 追加)
-**総 decision 数**: 153 (D20260528-001〜121、D20260527-001〜035、+ D20260526 系)
+**総セッション数**: 51 (D20260528_033 secure release-pre 2 段目 追加)
+**総 decision 数**: 157 (D20260528-001〜125、D20260527-001〜035、+ D20260526 系)
 
 > セッションごとに 1 ファイル、append-only、過去ファイルは削除・編集禁止。
 > 人間向けサマリは `../concept.md` §7 決定事項ログ を参照。
@@ -12,6 +12,7 @@
 ## セッション一覧（新しい順）
 | ファイル | 実行日 | コマンド | 対象 | decision 範囲 | 状態 |
 |---|---|---|---|---|---|
+| [D20260528_033_secure_release-pre.md](./D20260528_033_secure_release-pre.md) | 2026-05-28 | /flow:secure --phase=deps | release-pre 2 段目 (新規 SEC 0 件、SEC-003 Class C maintain 4 回連続、release-pre 2 段クリア完了 → P4.7 評価可能) | D20260528-122〜125 | 完了 (release へ dispatch) |
 | [D20260528_032_scenario_update.md](./D20260528_032_scenario_update.md) | 2026-05-28 | /flow:scenario --update | audit D-031 High #1 シューティング (SCENARIO §5 reconcile: 7 回 deploy 完了 + timeseries-topchart 全工程完了 + 8th deploy 待ち明示) | D20260528-120〜121 | 完了 (secure → release dispatch) |
 | [D20260528_031_audit_release-pre.md](./D20260528_031_audit_release-pre.md) | 2026-05-28 | /flow:audit | release-pre 必須監査 (full scope、Critical 0 / High 1 SCENARIO drift 4 回連続 CHRONIC / Medium 1 / Low 1、release-blocking なし) | D20260528-112〜119 | 完了 (secure へ dispatch) |
 | [D20260528_030_tdd_dashboard_timeseries-topchart.md](./D20260528_030_tdd_dashboard_timeseries-topchart.md) | 2026-05-28 | /flow:tdd | dashboard timeseries-topchart revise (Phase 1-4 実装、unit 287 green、CF-021 歪曲停止再発 4 件目で巻き戻し継続) | D20260528-104〜111 | 完了 (8th deploy 待ち) |
