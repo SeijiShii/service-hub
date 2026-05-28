@@ -23,7 +23,7 @@
 | パス | 種別 | issue/slug | 状態 | 概要 | INDEX |
 |---|---|---|---|---|---|
 | [revise_admin-ux_20260528_link-and-styling/](./revise_admin-ux_20260528_link-and-styling/) | revise | admin-ux | 実装完了 (unit 179 passed) | ダッシュボードヘッダに /admin リンク追加（O55 orphan 解消）+ admin フォームに styling 適用（縦並び・ラベル上・セクション分け） | [INDEX](./revise_admin-ux_20260528_link-and-styling/INDEX.md) |
-| [revise_nav-and-pull_20260528_back-link-and-relocation/](./revise_nav-and-pull_20260528_back-link-and-relocation/) | revise | nav-and-pull | 設計完了（実装前） | (1) /admin に「← ダッシュボード」back-link 追加（O55 逆方向）+ (2) 「今すぐ pull」を /admin から **dashboard top に relocation**（鮮度確認→即pull の動線） | [INDEX](./revise_nav-and-pull_20260528_back-link-and-relocation/INDEX.md) |
+| [revise_nav-and-pull_20260528_back-link-and-relocation/](./revise_nav-and-pull_20260528_back-link-and-relocation/) | revise | nav-and-pull | 実装完了 (unit 196 passed) | (1) /admin に「← ダッシュボード」back-link 追加（O55 逆方向）+ (2) 「今すぐ pull」を /admin から **dashboard top に relocation**（鮮度確認→即pull の動線） | [INDEX](./revise_nav-and-pull_20260528_back-link-and-relocation/INDEX.md) |
 
 ## 関連
 - 親 concept: `../concept.md` §1.3.1 dashboard 行

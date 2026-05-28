@@ -2,7 +2,7 @@
 
 **issue / slug**: nav-and-pull / back-link-and-relocation
 **実施日**: 2026-05-28
-**状態**: 設計完了 → 実装
+**状態**: 実装完了 (unit 196 passed)
 
 <!-- auto-generated-start -->
 
@@ -14,6 +14,8 @@
 | 002 | 002_REVISE_PLAN.md | 変更計画 (Phase 1 移管 + Phase 2 back-link) | 2026-05-28 |
 | 003 | 003_REVISE_UNIT_TEST.md | 単体テスト計画 (TFP-N3/N4/E4 + UX-N4 + TFP-B2) | 2026-05-28 |
 | 004 | 004_REVISE_E2E_TEST.md | E2E テスト計画 (E-NAV-PULL-1 + E-NAV-BACK-1 + 3 regression) | 2026-05-28 |
+| 101 | 101_REVISE_IMPL_REPORT.md | 実装レポート | 2026-05-28 |
+| 102 | 102_REVISE_UNIT_TEST_REPORT.md | 単体テストレポート (196 passed) | 2026-05-28 |
 
 ## 関連
 - 親機能 INDEX: `../INDEX.md`
