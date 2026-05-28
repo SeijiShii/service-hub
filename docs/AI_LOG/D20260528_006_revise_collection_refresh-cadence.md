@@ -6,7 +6,7 @@
 **対象**: collection (revise_refresh-cadence_20260528_15min-and-last-updated)
 **実行者**: Claude (Opus 4.7) + seiji
 **状態**: 設計完了（実装は /flow:tdd で別途）
-**含まれる decision**: D20260528-013 (1 件、auto-pick デザインまとめ)
+**含まれる decision**: D20260528-013, D20260528-014 (2 件、auto-pick + スコープ縮小)
 **ファイル**: `D20260528_006_revise_collection_refresh-cadence.md`
 
 ---
@@ -63,4 +63,24 @@
     無料運用方針 + 個人サービスなので A 採用 (Vercel Pro 不要)。force-pull とは別関心
     (UI ボタン vs 自動 cron) なので別 revise に分離。Resume Contract §0.1.1 に従い
     Class A は停止提示せず auto-pick。
+
+- id: D20260528-014
+  timestamp: 2026-05-28T00:00:00+09:00
+  command: /flow:revise
+  phase: scope amend / 方針変更
+  question: refresh-cadence のスコープを縮小するか（Vercel 経由・日次維持・手動補完方針）
+  options:
+    - A. cron 移行のみ撤回、最終更新表示は残す (recommended)
+    - B. revise 全体を撤回 (最終更新表示も無し)
+  recommended: A
+  chosen: A
+  chosen_type: explicit-choice
+  depends_on: [D20260528-013]
+  context: |
+    ユーザー方針「Vercel 経由にしたいので日次更新でよい / 手動更新で補完する」を受け、
+    GH Actions cron 15 分移行を撤回。Vercel Cron 日次 (vercel.json `0 0 * * *`) は無変更、
+    頻度補完は別 revise の force-pull ボタン (2cd6be7) に委ねる。最終更新表示は force-pull を
+    押す判断材料 (鮮度の可視化) としてむしろ重要性が増すので残す。SPEC/PLAN/E2E/README から
+    cron 関連を撤去 (Phase 2 削除、新規 .github/workflows/ 削除、E2E から E-RC-01/02 撤去)、
+    UC-LU1-04 (force-pull と組み合わせた最終更新更新) を追加。
 ```

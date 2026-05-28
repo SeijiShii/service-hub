@@ -2,7 +2,7 @@
 
 **最終更新**: 2026-05-28 (+09:00)
 **総セッション数**: 25
-**総 decision 数**: 44 (D20260528-001〜013、D20260527-001〜031、+ D20260526 系)
+**総 decision 数**: 45 (D20260528-001〜014、D20260527-001〜031、+ D20260526 系)
 
 > セッションごとに 1 ファイル、append-only、過去ファイルは削除・編集禁止。
 > 人間向けサマリは `../concept.md` §7 決定事項ログ を参照。
@@ -12,7 +12,7 @@
 ## セッション一覧（新しい順）
 | ファイル | 実行日 | コマンド | 対象 | decision 範囲 | 状態 |
 |---|---|---|---|---|---|
-| [D20260528_006_revise_collection_refresh-cadence.md](./D20260528_006_revise_collection_refresh-cadence.md) | 2026-05-28 | /flow:revise | collection (15分cron + 最終更新表示) | D20260528-013 | 設計完了 |
+| [D20260528_006_revise_collection_refresh-cadence.md](./D20260528_006_revise_collection_refresh-cadence.md) | 2026-05-28 | /flow:revise | collection (最終更新表示・cron 移行は撤回) | D20260528-013〜014 | 設計完了 (縮小) |
 | [D20260528_005_revise_collection_force-pull.md](./D20260528_005_revise_collection_force-pull.md) | 2026-05-28 | /flow:revise | collection (強制プルボタン) | D20260528-012 | 設計完了 |
 | [D20260528_004_revise_providers_secret-zero.md](./D20260528_004_revise_providers_secret-zero.md) | 2026-05-28 | /flow:revise | providers 秘密ゼロ化 (設計+実装) | D20260528-010〜011 | 完了 |
 | [D20260528_003_tdd_registry_revise_db-sot.md](./D20260528_003_tdd_registry_revise_db-sot.md) | 2026-05-28 | /flow:tdd | registry revise (DB SoT 実装) | D20260528-008〜009 | 完了 |
