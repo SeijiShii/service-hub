@@ -107,6 +107,91 @@ describe("runCollection", () => {
     await runCollection(baseDeps({ onCollected }));
     expect(onCollected).toHaveBeenCalledOnce();
   });
+
+  // ── favicon-projection (revise_favicon-projection_20260528) ──────
+  it("FP-U-35: adapter が meta.iconUrl 返却 → deps.updateServiceMeta が (slug, meta) で呼ばれる", async () => {
+    const updateServiceMeta = vi.fn(async () => {});
+    const adapterWithMeta: ProviderAdapter = {
+      kind: "service-info",
+      collect: async () => ({
+        metrics: [
+          { provider: "service-info", key: "up", value: 1, unit: "bool" },
+        ],
+        meta: { iconUrl: "https://a.example/favicon.svg" },
+      }),
+    };
+    await runCollection(
+      baseDeps({
+        loadServices: async () => [svc("a")],
+        getAdapters: () => [adapterWithMeta],
+        updateServiceMeta,
+      }),
+    );
+    expect(updateServiceMeta).toHaveBeenCalledTimes(1);
+    expect(updateServiceMeta).toHaveBeenCalledWith("a", {
+      iconUrl: "https://a.example/favicon.svg",
+    });
+  });
+
+  it("FP-U-36: adapter が meta 返却なし → deps.updateServiceMeta は呼ばれない (no-op 分岐)", async () => {
+    const updateServiceMeta = vi.fn(async () => {});
+    await runCollection(
+      baseDeps({
+        loadServices: async () => [svc("a")],
+        getAdapters: () => [okAdapter("ping")], // meta 返さない
+        updateServiceMeta,
+      }),
+    );
+    expect(updateServiceMeta).not.toHaveBeenCalled();
+  });
+
+  it("FP-U-35b: updateServiceMeta hook 未渡し (optional) でも meta は無視で正常完了", async () => {
+    const adapterWithMeta: ProviderAdapter = {
+      kind: "service-info",
+      collect: async () => ({
+        metrics: [
+          { provider: "service-info", key: "up", value: 1, unit: "bool" },
+        ],
+        meta: { iconUrl: "https://a.example/favicon.svg" },
+      }),
+    };
+    const run = await runCollection(
+      baseDeps({
+        loadServices: async () => [svc("a")],
+        getAdapters: () => [adapterWithMeta],
+        // updateServiceMeta 未渡し
+      }),
+    );
+    expect(run.status).toBe("ok");
+  });
+
+  it("FP-U-35c: updateServiceMeta が throw しても collect 全体は止まらない (warn 出力)", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const updateServiceMeta = vi.fn(async () => {
+      throw new Error("db_down");
+    });
+    const adapterWithMeta: ProviderAdapter = {
+      kind: "service-info",
+      collect: async () => ({
+        metrics: [
+          { provider: "service-info", key: "up", value: 1, unit: "bool" },
+        ],
+        meta: { iconUrl: "https://a.example/favicon.svg" },
+      }),
+    };
+    const run = await runCollection(
+      baseDeps({
+        loadServices: async () => [svc("a")],
+        getAdapters: () => [adapterWithMeta],
+        updateServiceMeta,
+      }),
+    );
+    expect(run.status).toBe("ok"); // collect 自体は ok (meta 失敗は warn 止まり)
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringMatching(/updateServiceMeta failed: slug=a reason=db_down/),
+    );
+    warn.mockRestore();
+  });
 });
 
 describe("checkCronSecret (CO-N3/E4)", () => {

@@ -7,6 +7,7 @@ import {
   resolveAlert,
   markAlertNotified,
   openAlerts,
+  updateServiceMeta,
 } from "../../src/db/index.js";
 import { loadServices } from "../../src/registry/index.js";
 import { getAdapters } from "../../src/providers/index.js";
@@ -25,6 +26,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     getAdapters: (s) => getAdapters(s, { env: process.env }),
     saveSnapshots: (rows) => upsertSnapshots(db, rows),
     saveRun: (r) => recordRun(db, r),
+    // favicon-projection: service-info adapter からの iconUrl を services テーブルへ永続化
+    updateServiceMeta: (slug, meta) => updateServiceMeta(db, slug, meta),
     onCollected: async (rows, services) => {
       const fired = await evaluate(
         {

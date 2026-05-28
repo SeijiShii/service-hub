@@ -1,6 +1,7 @@
 import type {
   ServiceDescriptor,
   ProviderAdapter,
+  ServiceMeta,
   SnapshotRow,
   CollectionRun,
   CollectionStatus,
@@ -15,6 +16,12 @@ export interface RunnerDeps {
     rows: SnapshotRow[],
     services: ServiceDescriptor[],
   ) => Promise<void>; // alerts hook
+  /**
+   * adapter から受け取った producer 申告メタ (iconUrl 等) を services テーブルへ永続化する hook
+   * (favicon-projection、spec-review R1)。service-info adapter が meta を返したときのみ呼ばれる。
+   * テストでは mock 注入可能、本番は api/cron/collect.ts で updateServiceMeta(db, slug, meta) を渡す。
+   */
+  updateServiceMeta?: (slug: string, meta: ServiceMeta) => Promise<void>;
   now?: () => Date;
   newId?: () => string;
 }
@@ -50,6 +57,17 @@ export async function runCollection(deps: RunnerDeps): Promise<CollectionRun> {
             unit: m.unit,
             capturedAt: now().toISOString(),
           });
+        }
+        // adapter からの producer 申告メタを services テーブルへ永続化 (favicon-projection、spec-review R1)。
+        // service-info adapter のみ meta を返す。失敗は collect 全体を壊さない (warn 出力で運用可視性)。
+        if (res.meta && deps.updateServiceMeta) {
+          try {
+            await deps.updateServiceMeta(svc.slug, res.meta);
+          } catch (e) {
+            console.warn(
+              `updateServiceMeta failed: slug=${svc.slug} reason=${e instanceof Error ? e.message : "error"}`,
+            );
+          }
         }
       } catch (e) {
         errors.push({

@@ -2,10 +2,12 @@ import type {
   ProviderAdapter,
   ProviderKind,
   ServiceDescriptor,
+  ServiceMeta,
   UsageMetric,
   ServiceInfoResponse,
 } from "../types/index.js";
 import { safeFetch, type SafeFetchOpts } from "./fetch.js";
+import { isSafePublicUrl } from "../lib/safeUrl.js";
 
 export interface AdapterDeps {
   fetchImpl?: typeof fetch;
@@ -13,7 +15,11 @@ export interface AdapterDeps {
   env?: Record<string, string | undefined>;
 }
 
-type CollectResult = { metrics: UsageMetric[]; error?: string };
+type CollectResult = {
+  metrics: UsageMetric[];
+  error?: string;
+  meta?: ServiceMeta;
+};
 
 async function getJson(
   url: string,
@@ -41,6 +47,37 @@ function wrap(
     async collect(service): Promise<CollectResult> {
       try {
         return { metrics: await fn(service, deps) };
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "error";
+        return {
+          metrics: [],
+          error: /timeout|abort/i.test(msg) ? "timeout" : msg,
+        };
+      }
+    },
+  });
+}
+
+/**
+ * meta? を返す adapter 用 wrap (favicon-projection、spec-review R1)。
+ * service-info adapter が producer 申告 static identity (iconUrl 等) を runner へ橋渡しする。
+ * ping/vercel/neon は既存 `wrap` を維持 (meta 不要)。
+ */
+function wrapWithMeta(
+  kind: ProviderKind,
+  fn: (
+    s: ServiceDescriptor,
+    deps: AdapterDeps,
+  ) => Promise<{ metrics: UsageMetric[]; meta?: ServiceMeta }>,
+) {
+  return (deps: AdapterDeps = {}): ProviderAdapter => ({
+    kind,
+    async collect(service): Promise<CollectResult> {
+      try {
+        const r = await fn(service, deps);
+        const out: CollectResult = { metrics: r.metrics };
+        if (r.meta) out.meta = r.meta;
+        return out;
       } catch (e) {
         const msg = e instanceof Error ? e.message : "error";
         return {
@@ -118,11 +155,54 @@ export const createNeonAdapter = wrap("neon", async (s, deps) => {
 // metrics[] key="mau" で自己申告し createServiceInfoAdapter が emit する。HUB は
 // per-service Clerk secret を持たない (秘密ゼロ化)。未申告サービスはフォールバックなし ([D20260528-010])。
 
-export const createServiceInfoAdapter = wrap(
+/**
+ * iconUrl format check + silent reject with stderr 警告ログ (favicon-projection、spec-review R6 / P80)。
+ * 値はログしない、rejection 理由のメタ情報 (slug / reason / typeof) のみ stderr へ出力。
+ * 失敗時は undefined を返し、呼び出し側は updateServiceMeta を呼ばない (既存値保持、[論点-FP2])。
+ */
+function pickServiceInfoIconUrl(
+  slug: string,
+  raw: unknown,
+): string | undefined {
+  if (raw === undefined) return undefined; // key 無しは silent (rejection ではない)
+  if (typeof raw !== "string") {
+    console.warn(
+      `service-info iconUrl rejected: slug=${slug} reason=type rawType=${typeof raw}`,
+    );
+    return undefined;
+  }
+  if (raw.length === 0) {
+    console.warn(
+      `service-info iconUrl rejected: slug=${slug} reason=empty rawType=string`,
+    );
+    return undefined;
+  }
+  if (!isSafePublicUrl(raw)) {
+    // reason 推定 (値そのものはログしない): protocol / internal / length / parse のいずれか
+    let reason = "parse";
+    if (raw.length > 1024) reason = "length";
+    else {
+      try {
+        const u = new URL(raw);
+        if (u.protocol !== "https:") reason = "protocol";
+        else reason = "internal";
+      } catch {
+        reason = "parse";
+      }
+    }
+    console.warn(
+      `service-info iconUrl rejected: slug=${slug} reason=${reason} rawType=string`,
+    );
+    return undefined;
+  }
+  return raw;
+}
+
+export const createServiceInfoAdapter = wrapWithMeta(
   "service-info",
   async (s, deps) => {
     const ref = s.serviceInfo;
-    if (!ref?.endpoint) return [];
+    if (!ref?.endpoint) return { metrics: [] };
     // 全サービス共通の 1 本 ([D20260528-002])。未設定ならヘッダなしで叩く ([D20260528-011])。
     const secret = deps.env?.HUB_SERVICE_INFO_SECRET;
     const j = (await getJson(
@@ -131,7 +211,7 @@ export const createServiceInfoAdapter = wrap(
       secret ? { Authorization: `Bearer ${secret}` } : undefined,
     )) as ServiceInfoResponse;
     if (typeof j?.schemaVersion !== "number") throw new Error("parse");
-    const out: UsageMetric[] = [
+    const metrics: UsageMetric[] = [
       {
         provider: "service-info",
         key: "up",
@@ -140,13 +220,18 @@ export const createServiceInfoAdapter = wrap(
       },
     ];
     for (const m of j.metrics ?? []) {
-      out.push({
+      metrics.push({
         provider: "service-info",
         key: m.key,
         value: m.value,
         unit: m.unit,
       });
     }
-    return out;
+    // v2: iconUrl 抽出 + format check (favicon-projection)。失敗時は meta 含めない (silent reject + stderr 警告)。
+    const iconUrl = pickServiceInfoIconUrl(s.slug, j.iconUrl);
+    if (iconUrl !== undefined) {
+      return { metrics, meta: { iconUrl } };
+    }
+    return { metrics };
   },
 );

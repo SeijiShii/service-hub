@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import {
   createPingAdapter,
   createVercelAdapter,
@@ -190,6 +190,160 @@ describe("service-info (PR-N6 / PR-B2)", () => {
 
     expect(seen[0]?.Authorization).toBe("Bearer shared-secret");
     expect(seen[1]?.Authorization).toBeUndefined();
+  });
+
+  // ── favicon-projection (revise_favicon-projection_20260528) ──────
+  describe("iconUrl 抽出 + format check (FP-U-04/05/20-25/33)", () => {
+    const ep = {
+      serviceInfo: {
+        endpoint: "https://svc.example.com/api/hub/service-info",
+      },
+    };
+    const runAdapter = async (body: unknown) =>
+      createServiceInfoAdapter({
+        fetchImpl: mockFetch(200, body),
+        allowInternal: true,
+      }).collect(svc(ep));
+
+    it("FP-U-04: v2 response 正常 iconUrl 抽出 → meta.iconUrl 返却", async () => {
+      const r = await runAdapter({
+        schemaVersion: 2,
+        service: "svc",
+        status: "ok",
+        iconUrl: "https://svc.example.com/favicon.svg",
+      });
+      expect(r.meta?.iconUrl).toBe("https://svc.example.com/favicon.svg");
+      expect(r.metrics[0]?.key).toBe("up");
+    });
+
+    it("FP-U-05: v1 producer (iconUrl 無し) → meta 未含有、metrics は正常", async () => {
+      const r = await runAdapter({
+        schemaVersion: 1,
+        service: "svc",
+        status: "ok",
+      });
+      expect(r.meta).toBeUndefined();
+      expect(r.metrics[0]?.key).toBe("up");
+    });
+
+    it("FP-U-20: iconUrl http (https 必須) → 無視 + stderr 警告 (reason=protocol)", async () => {
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const r = await runAdapter({
+        schemaVersion: 2,
+        service: "svc",
+        status: "ok",
+        iconUrl: "http://svc.example.com/favicon.svg",
+      });
+      expect(r.meta).toBeUndefined();
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringMatching(
+          /service-info iconUrl rejected: slug=.* reason=protocol/,
+        ),
+      );
+      warn.mockRestore();
+    });
+
+    it("FP-U-21: iconUrl 1024 chars 超 → 無視 + stderr 警告 (reason=length)", async () => {
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const long = "https://svc.example.com/" + "a".repeat(1100);
+      const r = await runAdapter({
+        schemaVersion: 2,
+        service: "svc",
+        status: "ok",
+        iconUrl: long,
+      });
+      expect(r.meta).toBeUndefined();
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringMatching(
+          /service-info iconUrl rejected: slug=.* reason=length/,
+        ),
+      );
+      warn.mockRestore();
+    });
+
+    it("FP-U-22: iconUrl 内部アドレス (SSRF 予防) → 無視 + stderr 警告 (reason=internal)", async () => {
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const r = await runAdapter({
+        schemaVersion: 2,
+        service: "svc",
+        status: "ok",
+        iconUrl: "https://10.0.0.5/favicon.ico",
+      });
+      expect(r.meta).toBeUndefined();
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringMatching(
+          /service-info iconUrl rejected: slug=.* reason=internal/,
+        ),
+      );
+      warn.mockRestore();
+    });
+
+    it("FP-U-23: iconUrl 不正プロトコル (javascript:) → 無視 + stderr 警告", async () => {
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const r = await runAdapter({
+        schemaVersion: 2,
+        service: "svc",
+        status: "ok",
+        iconUrl: "javascript:alert(1)",
+      });
+      expect(r.meta).toBeUndefined();
+      expect(warn).toHaveBeenCalled();
+      warn.mockRestore();
+    });
+
+    it("FP-U-24: iconUrl non-string (number) → 無視 + stderr 警告 (reason=type)", async () => {
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const r = await runAdapter({
+        schemaVersion: 2,
+        service: "svc",
+        status: "ok",
+        iconUrl: 12345,
+      });
+      expect(r.meta).toBeUndefined();
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringMatching(
+          /service-info iconUrl rejected: slug=.* reason=type rawType=number/,
+        ),
+      );
+      warn.mockRestore();
+    });
+
+    it("FP-U-25: iconUrl 空文字 → 無視 + stderr 警告 (reason=empty)", async () => {
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const r = await runAdapter({
+        schemaVersion: 2,
+        service: "svc",
+        status: "ok",
+        iconUrl: "",
+      });
+      expect(r.meta).toBeUndefined();
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringMatching(
+          /service-info iconUrl rejected: slug=.* reason=empty/,
+        ),
+      );
+      warn.mockRestore();
+    });
+
+    it("FP-U-33: 値そのものはログに含まれない (PII/secret 漏洩防止)", async () => {
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const sensitive = "https://10.0.0.5/admin?token=SECRET_VALUE_123";
+      await runAdapter({
+        schemaVersion: 2,
+        service: "svc",
+        status: "ok",
+        iconUrl: sensitive,
+      });
+      // 全 warn call の引数を集めて sensitive 値が含まれていないことを確認
+      const allArgs = warn.mock.calls.flat().join(" ");
+      expect(allArgs).not.toContain("SECRET_VALUE_123");
+      expect(allArgs).not.toContain("10.0.0.5");
+      expect(allArgs).not.toContain(sensitive);
+      // メタ情報のみが含まれる
+      expect(allArgs).toContain("reason=");
+      expect(allArgs).toContain("slug=");
+      warn.mockRestore();
+    });
   });
 });
 
