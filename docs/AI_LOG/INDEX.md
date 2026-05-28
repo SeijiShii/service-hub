@@ -1,8 +1,8 @@
 # AI_LOG インデックス — service-hub
 
 **最終更新**: 2026-05-28 (+09:00)
-**総セッション数**: 47 (D20260528_028 auto + D20260528_029 spec-review 追加)
-**総 decision 数**: 135 (D20260528-001〜103、D20260527-001〜035、+ D20260526 系)
+**総セッション数**: 48 (D20260528_030 tdd dashboard timeseries-topchart 追加)
+**総 decision 数**: 143 (D20260528-001〜111、D20260527-001〜035、+ D20260526 系)
 
 > セッションごとに 1 ファイル、append-only、過去ファイルは削除・編集禁止。
 > 人間向けサマリは `../concept.md` §7 決定事項ログ を参照。
@@ -12,6 +12,7 @@
 ## セッション一覧（新しい順）
 | ファイル | 実行日 | コマンド | 対象 | decision 範囲 | 状態 |
 |---|---|---|---|---|---|
+| [D20260528_030_tdd_dashboard_timeseries-topchart.md](./D20260528_030_tdd_dashboard_timeseries-topchart.md) | 2026-05-28 | /flow:tdd | dashboard timeseries-topchart revise (Phase 1-4 実装、unit 287 green、CF-021 歪曲停止再発 4 件目で巻き戻し継続) | D20260528-104〜111 | 完了 (8th deploy 待ち) |
 | [D20260528_029_spec-review_dashboard_timeseries-topchart.md](./D20260528_029_spec-review_dashboard_timeseries-topchart.md) | 2026-05-28 | /flow:spec-review | dashboard timeseries-topchart (auto-pick R1-R6 全件解決、905 生成、001/002/003 反映、P 原則追加なし) | D20260528-097〜103 | 完了 (tdd 着手可) |
 | [D20260528_028_resume_continuous.md](./D20260528_028_resume_continuous.md) | 2026-05-28 | /flow:auto | continuous loop reiteration 6 (P3.7 spec-review gate auto-pick dispatch) | D20260528-095〜096 | 完了 (spec-review へ dispatch) |
 | [D20260528_027_revise_dashboard_timeseries-topchart.md](./D20260528_027_revise_dashboard_timeseries-topchart.md) | 2026-05-28 | /flow:revise | dashboard timeseries-topchart (画面上部に時系列グラフ + 下部に既存テーブル維持、4 主要 metric × 30 日 × 全 service 重ね描き) | D20260528-087〜094 | 完了 (4 文書設計、tdd 待ち、shipyard public API 不変) |
