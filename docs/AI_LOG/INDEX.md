@@ -1,8 +1,8 @@
 # AI_LOG インデックス — service-hub
 
 **最終更新**: 2026-05-28 (+09:00)
-**総セッション数**: 35 (D20260528_017 fix registry admin-form 追加)
-**総 decision 数**: 64 (D20260528-001〜032、D20260527-001〜035、+ D20260526 系)
+**総セッション数**: 36 (D20260528_018 tdd registry admin-form 追加)
+**総 decision 数**: 65 (D20260528-001〜033、D20260527-001〜035、+ D20260526 系)
 
 > セッションごとに 1 ファイル、append-only、過去ファイルは削除・編集禁止。
 > 人間向けサマリは `../concept.md` §7 決定事項ログ を参照。
@@ -12,6 +12,7 @@
 ## セッション一覧（新しい順）
 | ファイル | 実行日 | コマンド | 対象 | decision 範囲 | 状態 |
 |---|---|---|---|---|---|
+| [D20260528_018_tdd_registry_admin-form.md](./D20260528_018_tdd_registry_admin-form.md) | 2026-05-28 | /flow:tdd | registry admin-form-bug-and-ux (Phase 1+2 実装、unit 203 passed) | D20260528-033 | 完了 |
 | [D20260528_017_fix_registry_admin-form.md](./D20260528_017_fix_registry_admin-form.md) | 2026-05-28 | /flow:fix | registry admin-form-bug-and-ux (High 1+Low 3) | D20260528-029〜032 | 修正計画完了 → tdd 待ち |
 | [D20260528_016_release_post-deploy.md](./D20260528_016_release_post-deploy.md) | 2026-05-28 | /flow:release | post-deploy 3rd (nav-and-pull) + 4th (favicon 反映) | D20260528-027〜028 | 完了 |
 | [D20260528_015_tdd_dashboard_nav-and-pull.md](./D20260528_015_tdd_dashboard_nav-and-pull.md) | 2026-05-28 | /flow:tdd | dashboard nav-and-pull (Phase 1+2 実装、unit 196 passed) | D20260528-026 | 完了 |
@@ -55,6 +56,7 @@
 ## decision_id 索引（grep 用、新しい順）
 | ID | command | phase | chosen (短縮) | type | ファイル |
 |---|---|---|---|---|---|
+| D20260528-033 | /flow:tdd | Phase 軽重 + 既存 callsite 一括 | A. 両 Phase 軽メイン + sed 一括置換 + label 検索 regex 化 + waitFor 採用 | auto-recommended | D20260528_018_tdd_registry_admin-form.md |
 | D20260528-032 | /flow:fix | 5 Whys 末段 = 根本原因 | A. 「フォーム async 完了 UX (4 状態) 観点が flow-suite テンプレに無い」 → flow-suite 補強 candidate を Postmortem §8 に予約 | auto-recommended | D20260528_017_fix_registry_admin-form.md |
 | D20260528-031 | /flow:fix | Read スコープ | A. src/features/admin/* + api/admin/services.ts + src/db/queries.ts + src/db/schema.ts + src/providers/adapters.ts | auto-recommended | D20260528_017_fix_registry_admin-form.md |
 | D20260528-030 | /flow:fix | 再現可否 (#3) | B. 再現困難 (実機 prod でのみ観測、unit test green) | auto-recommended | D20260528_017_fix_registry_admin-form.md |

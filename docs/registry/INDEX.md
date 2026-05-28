@@ -23,7 +23,7 @@
 | パス | 種別 | issue/slug | 状態 | 概要 | INDEX |
 |---|---|---|---|---|---|
 | [revise_db-sot_20260528_db-admin-write/](./revise_db-sot_20260528_db-admin-write/) | revise | db-sot | 実装完了（unit 176 green、E2E 未） | レジストリ SoT を Git services.toml → Neon services テーブル + Clerk ゲート内 admin write。未運用ゆえ移行なし・toml 削除（[D20260528-001/002]） | [INDEX](./revise_db-sot_20260528_db-admin-write/INDEX.md) |
-| [fix_admin-form-bug-and-ux_20260528_edit-save-and-help-and-wording/](./fix_admin-form-bug-and-ux_20260528_edit-save-and-help-and-wording/) | fix | admin-form-bug-and-ux | 修正計画済 → 実装待ち (High 1 + Low 3 併合) | (1) 編集→更新で UI feedback gap → async UX 4 状態化 + (2) endpoint placeholder/help + (3) subdomain help (dead field 明示) + (4) 退役→削除 | [INDEX](./fix_admin-form-bug-and-ux_20260528_edit-save-and-help-and-wording/INDEX.md) |
+| [fix_admin-form-bug-and-ux_20260528_edit-save-and-help-and-wording/](./fix_admin-form-bug-and-ux_20260528_edit-save-and-help-and-wording/) | fix | admin-form-bug-and-ux | 実装完了 (unit 203 passed) → 5th deploy 待ち | (1) 編集→更新で UI feedback gap → async UX 4 状態化 + (2) endpoint placeholder/help + (3) subdomain help (dead field 明示) + (4) 退役→削除 | [INDEX](./fix_admin-form-bug-and-ux_20260528_edit-save-and-help-and-wording/INDEX.md) |
 
 ## 関連
 - 親 concept: `../concept.md` §1.3.1 registry 行

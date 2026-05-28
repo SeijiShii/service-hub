@@ -3,7 +3,7 @@
 **issue / slug**: admin-form-bug-and-ux / edit-save-and-help-and-wording
 **重大度**: High (#3) + Low 3 件併合
 **実施日**: 2026-05-28
-**状態**: 修正計画済 → 実装待ち
+**状態**: 実装完了 (unit 203 passed) → 5th deploy 待ち
 
 <!-- auto-generated-start -->
 
@@ -16,6 +16,8 @@
 | 002 | 002_FIX_PLAN.md | 修正対象 (View/Page/saveState.ts/handler stderr/test) + リリース戦略 (即時 5th deploy) | 2026-05-28 |
 | 003 | 003_REGRESSION_TEST.md | SAVE-N1〜N4/E1 + FORM-N1/N2 + WORD-N1 + 境界 SAVE-B1〜B3 | 2026-05-28 |
 | 004 | 004_POSTMORTEM.md | High 必須、再発防止策 5 件 (うち [flow] 2 件は別セッション handoff) | 2026-05-28 |
+| 101 | 101_FIX_IMPL_REPORT.md | 実装レポート (Phase 1+2 frontend 3b37fe0 + backend stderr 225cbf3) | 2026-05-28 |
+| 102 | 102_FIX_UNIT_TEST_REPORT.md | 単体テストレポート (203 passed、新規 7 件) | 2026-05-28 |
 
 ## 関連
 - 親 INDEX: `../INDEX.md`
