@@ -34,3 +34,7 @@ D20260530-042 〜 (反復ごとに追記)
     biz-charts revise 設計完了 (001-004)、905/101 不在 → P3.7。採算派生系列・日本語ラベル・
     MetricChart label 後方互換 (service-detail) が主レビュー観点。Class A auto-execute。
 ```
+
+## 反復ログ
+- 反復 1: P3.7 spec-review dashboard → ✅ 完了 (905、P87 学習、commit 6fbe09c)
+- 反復 2: P4 次フェーズ → /flow:tdd dashboard (biz-charts 実装: Phase1 chart 定義分離+label+取得キー / Phase2 profitAt 共通化+profit 派生) — Class A auto-execute
