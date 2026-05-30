@@ -1,8 +1,8 @@
 # AI_LOG インデックス — service-hub
 
 **最終更新**: 2026-05-30 (+09:00)
-**総セッション数**: 61 (D20260530_009 release 9th-deploy 追加)
-**総 decision 数**: 197 (D20260530-001〜034、D20260528-001〜131、D20260527-001〜035、+ D20260526 系)
+**総セッション数**: 62 (D20260530_010 revise dashboard biz-charts 追加)
+**総 decision 数**: 204 (D20260530-001〜041、D20260528-001〜131、D20260527-001〜035、+ D20260526 系)
 
 > セッションごとに 1 ファイル、append-only、過去ファイルは削除・編集禁止。
 > 人間向けサマリは `../concept.md` §7 決定事項ログ を参照。
@@ -12,6 +12,7 @@
 ## セッション一覧（新しい順）
 | ファイル | 実行日 | コマンド | 対象 | decision 範囲 | 状態 |
 |---|---|---|---|---|---|
+| [D20260530_010_revise_dashboard_biz-charts.md](./D20260530_010_revise_dashboard_biz-charts.md) | 2026-05-30 | /flow:revise | dashboard biz-charts: 上部 chart をビジネス指標化 (up/db_storage_bytes 除外 → ユーザー数/課金額/コスト/採算、採算=revenue−cost 派生、日本語ラベル) | D20260530-035〜041 | 完了 (設計、tdd 待ち) |
 | [D20260530_009_release_9th-deploy.md](./D20260530_009_release_9th-deploy.md) | 2026-05-30 | /flow:release | ✅ 9th deploy 成功 (last-deploy-col 本番反映、dpl_2JKZcinXnWiCsMRchTWzjpYtsoWs、aliased https://service-hub.givers.work、post-deploy smoke 全 green) → P5 シナリオ完了 | D20260530-034 | 完了 |
 | [D20260530_008_secure_release-pre.md](./D20260530_008_secure_release-pre.md) | 2026-05-30 | /flow:secure | release-pre 2 段目 (依存変更なし → 新規 SEC 0、SEC-003 accepted-risk maintain、release-pre 2 段クリア → P4.7 評価可) | D20260530-033 | 完了 |
 | [D20260530_007_scenario_update.md](./D20260530_007_scenario_update.md) | 2026-05-30 | /flow:scenario | §5 reconcile (last-deploy-col 完了 + 9th deploy 待ち、audit D-006 High drift シューティング) | D20260530-032 | 完了 |
