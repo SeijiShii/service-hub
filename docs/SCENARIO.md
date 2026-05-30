@@ -52,17 +52,17 @@ flow で連発するマイクロサービス群の稼働/利用/コスト/障害
 ## 5. 現在地カーソル
 
 <!-- AUTO-GENERATED:BEGIN scenario-cursor -->
-- 現在フェーズ: Phase 4 (Release gate ✅ **8th deploy 完了**) — 8 回 deploy 完了済、本セッションで dashboard timeseries-topchart 全工程完了 + release-pre 監査 2 段クリア + **8th deploy 成功** (dpl_2VjaF8Ay4fzcdEbxT2yuHtHa8LH5、aliased https://service-hub.givers.work、post-deploy smoke 全 green、SEC-003 accepted-risk 確定 close)
-- 進行中ターゲット: なし (8th deploy 完了)
-- 最終更新セッション: D20260528_034_release_8th-deploy (timeseries-topchart 反映 deploy 成功)
-- 最終更新時刻: 2026-05-28 20:15
-- 完了フェーズ: [Phase1, Phase1.5, Phase2, Phase3 実装, Phase4 デプロイ(**8 回完了**): 1st=D20260527-025 / 2nd=D-021 / 3rd=D-027 / 4th=D-028 (favicon SVG) / 5th=D-026 (admin-form + favicon-projection) / 6th=internal icon / 7th=admin/collect hot-fix / **8th=D-034 (timeseries-topchart、dpl_2VjaF8Ay4fzcdEbxT2yuHtHa8LH5、24s build、post-deploy smoke 全 green)**、Clerk production instance / sk_live_* 稼働中, **追加: registry DB SoT + providers 秘密ゼロ + 4 revise + favicon SVG + admin-form fix Phase 1+2 + favicon-projection 全工程 + dashboard timeseries-topchart 全工程 (D-027/D-029/D-030 unit 287 green) + release-pre 監査 2 段クリア (D-031 audit + D-033 secure) + 8th deploy 成功 (D-034)**]
-- デプロイ状況: ✅ **公開 URL = https://service-hub.givers.work** (custom domain、Clerk production instance、live キー稼働中、**8th deploy 完了 = timeseries-topchart 上部 chart section + 下部 ServicesTable 二部構成 本番反映済**、SEC-003 accepted-risk 確定 close)。
-- 次の推奨コマンド: **シナリオ完了 (停止条件 §1 (1) 該当)**。残り user-driven activities = (1) bousai-bag-checker 別 PJ で `cd /home/seiji/projects/bousai-bag-checker && /flow:revise _shared/service-info favicon-projection-producer` (CF-016 連動、本 PJ 完了とは独立)、(2) 監視運用 (cron 日次 collect で snapshots 蓄積、chart が時間経過で育つ)。本 PJ session 完了。
-- Open 論点: 001✅/002✅/003✅/004✅/**005✅ (SEC-003 accepted-risk 確定 close、D-126)** 全 5 件解決済。
-- 残ゲート: **P4.7 Release ✅ 8th deploy 完了** / **P4.45 Wording ✅ defer 確定 (2026-05-28、internal + 単一ユーザー + コピー誠意不要、ユーザー option 1 明示判断、CF-20260528-025 Class C surface 義務準拠)** / P4.8 Promote 不発火 (internal、非公開 PJ) / 連動 PJ **bousai-bag-checker producer 連動 revise (CF-016)** — 別 PJ 操作 (本 PJ 完了とは独立、リマインダのみ)。
-- release-pre 必須監査 (CF-009): ✅ **2 段クリア完了** (audit D-031 Critical 0 + secure D-033 新規 SEC 0 件)。
-- audit 検出常習化 (CHRONIC 注記): SCENARIO drift = 4 回連続 (1230 → 1230b → 1724 → 2010)、本セッション D-032 reconcile で解消行為、flow-suite 補強候補 3 案を D-031 §8 自己学習プロトコルに記録 (tdd/release Step Z 拡張 or auto §3.0c シューティング 1st action 固定)。
+- 現在フェーズ: Phase 4 (Release gate — **last-deploy-col 実装+E2E 完了、9th deploy 待ち**) — 8 回 deploy 完了済 + 本セッション (2026-05-30) で **dashboard last-deploy-col revise 全工程完了** (design→spec-review→unit→E2E、全 297 unit + dashboard E2E 4/4 green) + release-pre full audit 完了 (release-blocking なし)。8th deploy 反映済の本番に対し **last-deploy-col の再デプロイ (9th) が未実施**。
+- 進行中ターゲット: dashboard last-deploy-col (実装+テスト完了、再デプロイ待ち)
+- 最終更新セッション: D20260530_002_resume_continuous (flow:auto loop: revise→spec-review→tdd→e2e→audit→scenario)
+- 最終更新時刻: 2026-05-30 18:35
+- 完了フェーズ: [Phase1, Phase1.5, Phase2, Phase3 実装, Phase4 デプロイ(**8 回完了**): 1st-7th + **8th=D20260528-034 (timeseries-topchart)**、Clerk production instance / sk_live_* 稼働中, **追加 (2026-05-30): dashboard last-deploy-col revise 全工程 = last_deploy_at を chart(4→3) から除外 + 一覧に「最終デプロイ」日時カラム追加 (D20260530_001 revise / 003 spec-review 905 / 004 tdd unit 全 297 green / 005 e2e dashboard 4/4 green + 既存 fixtures charts drift reconcile / 006 audit full release-blocking なし)**]
+- デプロイ状況: ✅ 公開 URL = https://service-hub.givers.work (custom domain、Clerk production、live キー稼働中、8th deploy=timeseries-topchart 反映済)。⏳ **last-deploy-col は未デプロイ (9th deploy 待ち、build=vite build で deploy 可)**。
+- 次の推奨コマンド: **P4.7 Release gate = `/flow:release` で 9th deploy** (last-deploy-col 反映)。前段: secure release-pre 2 段目 (新規 endpoint/dep/入力なし = 0 new 想定)。**デプロイは Class B = ユーザー確認必須**。
+- Open 論点: 001✅/002✅/003✅/004✅/005✅ 全 5 件解決済 (変更なし)。
+- 残ゲート: **P4.7 Release ⏳ 9th deploy 待ち (last-deploy-col)** / P4.45 Wording ✅ defer 確定 / P4.8 Promote 不発火 (internal) / 既知 Low: queries.test.ts tsc TS2578 (deploy 非ブロッカー、別 issue)。
+- release-pre 必須監査 (CF-009、2026-05-30): ✅ **full audit 完了** (D20260530_006、Critical 0 = release-blocking なし)。secure release-pre 2 段目は未 (次)。
+- audit 検出常習化 (CHRONIC 注記): SCENARIO drift = 5 回連続 (...2010 → 本回 1830 D20260530_006)、本セッションで reconcile。active 開発で実装が進むたび §5 が遅れる構造的性質 (release 前 reconcile で実害なし)。
 <!-- AUTO-GENERATED:END scenario-cursor -->
 
 ## 6. 変更履歴
@@ -82,3 +82,4 @@ flow で連発するマイクロサービス群の稼働/利用/コスト/障害
 - 2026-05-28: release-pre 必須監査本回 audit 1 段目 (D-031、AUDIT_20260528_2010.md、Critical 0 / High 1 SCENARIO drift 4 回連続 CHRONIC / Medium 1 / Low 1 = release-blocking なし、続く secure で 2 段クリア予定) → /flow:scenario --update で §5 reconcile (本セッション、audit High #1 シューティング、7 回 deploy 完了 + timeseries-topchart 全工程完了 + release-pre 監査本回 1 段目を反映、decision_id=D20260528-120) — 次は /flow:secure で release-pre 2 段目 → /flow:release で 8th deploy
 - 2026-05-28: release-pre 2 段目 (D-033 secure --phase=deps、SECURITY_DEPS_20260528b.md、新規 SEC 0 件、SEC-003 Class C maintain 4 回連続) → release-pre 必須監査 2 段クリア完了 → P4.7 Release gate 評価可能
 - 2026-05-28: ✅ **8th deploy 完了** (D-034 release、commit 群 0eaf627/5f34d6a/f0d84b2/0aba2c3 + 6b2942c/dde07e5/106855d、dpl_2VjaF8Ay4fzcdEbxT2yuHtHa8LH5、24s build、aliased https://service-hub.givers.work、post-deploy smoke 全 green) + SEC-003 accepted-risk 確定 close (D-126、§8 [論点-005] status=open → closed、4 回連続再提示の悪循環断ち) — 次は /flow:auto で全 P5 完了判定 or bousai-bag-checker 連動 revise (別 PJ)
+- 2026-05-30: **dashboard last-deploy-col revise 全工程完了** (/flow:auto loop、D20260530_002)。ユーザー要望「last_deploy_at はチャート表示しない、一覧に日時カラム追加」を design (D-001 revise) → spec-review (D-003、905、P86 学習) → tdd (D-004、unit 全 297 green、commits 77105ae/a264d66/ba28a72) → e2e (D-005、dashboard E2E 4/4 green + 既存 fixtures charts drift reconcile、commits 5bc67d5/04f7339) → audit full (D-006、AUDIT_20260530_1830、release-blocking なし) で完遂。§5 reconcile (本エントリ、§3.0c drift シューティング 5 回連続)。**次は secure release-pre 2 段目 → /flow:release で 9th deploy (last-deploy-col 反映、Class B ユーザー確認)**
