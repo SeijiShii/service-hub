@@ -1,8 +1,8 @@
 # AI_LOG インデックス — service-hub
 
 **最終更新**: 2026-05-30 (+09:00)
-**総セッション数**: 53 (D20260530_001 revise dashboard last-deploy-col 追加)
-**総 decision 数**: 173 (D20260530-001〜010、D20260528-001〜131、D20260527-001〜035、+ D20260526 系)
+**総セッション数**: 55 (D20260530_002 auto + D20260530_003 spec-review 追加)
+**総 decision 数**: 182 (D20260530-001〜019、D20260528-001〜131、D20260527-001〜035、+ D20260526 系)
 
 > セッションごとに 1 ファイル、append-only、過去ファイルは削除・編集禁止。
 > 人間向けサマリは `../concept.md` §7 決定事項ログ を参照。
@@ -12,6 +12,8 @@
 ## セッション一覧（新しい順）
 | ファイル | 実行日 | コマンド | 対象 | decision 範囲 | 状態 |
 |---|---|---|---|---|---|
+| [D20260530_003_spec-review_dashboard.md](./D20260530_003_spec-review_dashboard.md) | 2026-05-30 | /flow:spec-review | dashboard last-deploy-col 設計レビュー (auto-pick、Critical/High 0・Medium 1 R1 service-detail 整合・Low 3 R2 列データソース/R3 api 漏れ/R4 formatJst 再利用、P86 学習、905 生成、001-003 反映) | D20260530-012〜019 | 完了 (tdd 着手可) |
+| [D20260530_002_resume_continuous.md](./D20260530_002_resume_continuous.md) | 2026-05-30 | /flow:auto | continuous loop (P3.7 Spec-review gate → spec-review dispatch、反復継続中) | D20260530-011〜 | 進行中 |
 | [D20260530_001_revise_dashboard_last-deploy-col.md](./D20260530_001_revise_dashboard_last-deploy-col.md) | 2026-05-30 | /flow:revise | dashboard last-deploy-col: `last_deploy_at` を上部 chart から除外 (4→3) + 一覧テーブルに「最終デプロイ」日時カラム追加 (timeseries-topchart の一部差し戻し、表示層のみ・DB/公開 API 不変) | D20260530-001〜010 | 完了 (4 文書設計、tdd 待ち) |
 | [D20260528_034_release_8th-deploy.md](./D20260528_034_release_8th-deploy.md) | 2026-05-28 | /flow:release | **8th deploy 成功** (timeseries-topchart 反映、dpl_2VjaF8Ay4fzcdEbxT2yuHtHa8LH5、aliased https://service-hub.givers.work、post-deploy smoke 全 green) + SEC-003 accepted-risk 確定 close (4 回連続再提示の悪循環断ち) | D20260528-126〜131 | 完了 (P4.7 Release gate 通過) |
 | [D20260528_033_secure_release-pre.md](./D20260528_033_secure_release-pre.md) | 2026-05-28 | /flow:secure --phase=deps | release-pre 2 段目 (新規 SEC 0 件、SEC-003 Class C maintain 4 回連続、release-pre 2 段クリア完了 → P4.7 評価可能) | D20260528-122〜125 | 完了 (release へ dispatch) |

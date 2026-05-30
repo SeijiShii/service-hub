@@ -47,6 +47,9 @@
 - 既存 chart（up / mau / db_storage_bytes）の render・空 fallback は維持確認。
 - 既存テーブル列（status / service / MAU / 採算 / 離脱率 / errors / alerts）の表示・値整形が列追加で壊れないこと（特に `mono` セルや `data-*` 属性の参照）。
 - `buildDashboard` の `rows`/`upCount`/`downCount` 等は不変であることを確認（charts のみ変更）。
+- <!-- spec-review R2 -->`buildDashboard` の `metrics.last_deploy_at` が `snapshots`（latestPerService 由来）から従来通り populate されることを確認（chart metric 除外と独立）。新規 test 不要だが既存 summary.test が latest snapshots の metrics 投影をカバー済か確認。
+
+> <!-- spec-review: テスト面の実測補正 -->**テスト面の確認結果**: `src/features/dashboard/` に `ServiceRow.test.tsx` は存在せず、`DashboardView.test.tsx` にセル index 依存（`getAllByRole('cell')[n]` 等）のアサーションは無い → **列追加による既存テスト破綻リスクは低**（§2 PLAN の懸念より低リスク）。修正が要るのは last_deploy_at **chart** アサーション（DashboardCharts.test / summary.test / DashboardView.test の charts helper 4→3）のみ。`api/dashboard/summary.ts` の変更はコメントのみ（R3）でテスト対象なし。
 
 ## 5. Mock 方針差分
 

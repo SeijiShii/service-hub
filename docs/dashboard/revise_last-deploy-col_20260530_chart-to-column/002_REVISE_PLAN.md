@@ -13,18 +13,33 @@
 | `src/features/dashboard/DashboardView.tsx` | `<thead>` に `<th>最終デプロイ</th>` を追加（service 列の後、MAU 系の前 or alerts の後ろ — 配置は §下記）。 | 低 | §2.2, §7.1 |
 | `src/features/dashboard/ServiceRow.tsx` | 対応する `<td>` を追加。`row.metrics.last_deploy_at?.value` を `formatDeployAt` で整形。未収集は `—`。 | 低 | §7.1, §7.2 |
 | `src/features/dashboard/DashboardCharts.tsx` | JSDoc「主要 4 metric (... last_deploy_at)」→「主要 3 metric」に文言修正（描画ロジックは `charts` を map するだけなので機能変更なし、コメント整合のみ） | なし | §2.1 |
+| `api/dashboard/summary.ts` | <!-- spec-review R3 -->**コメントのみ修正**。L29「過去 30 日 + 主要 4 metric (DASHBOARD_CHART_METRICS) に絞って軽量化」→「主要 3 metric」。コード L35 `recentSnapshots(db, sinceIso, [...DASHBOARD_CHART_METRICS])` は定数 spread のため自動で 3 metric query に縮小（機能変更なし、むしろ軽量化）。P2 で grep 検出した DASHBOARD_CHART_METRICS の唯一の他参照 | なし | §2.2 |
 
 ### カラム配置方針
 既存列順: status / service / MAU / 採算 / 離脱率 / errors / alerts。
 「最終デプロイ」は運用情報のため **末尾（alerts の後ろ）に追加**。既存列の順序・意味を一切変えず additive を担保する。
 
+<!-- spec-review R2: 列データソースの確定（実装の linchpin） -->
+### カラムのデータソース（重要・spec-review R2 で確認）
+「最終デプロイ」列の値は **`latestPerService(db)`（= buildDashboard の `snapshots` 引数、metric フィルタなし）由来の `row.metrics.last_deploy_at`** から取る。チャート用の `recentSnapshots(db, sinceIso, [...DASHBOARD_CHART_METRICS])`（metric フィルタあり）とは**別系統**。したがって `DASHBOARD_CHART_METRICS` から `last_deploy_at` を除外しても、`latestPerService` は全 metric を返すため**列データは一切失われない**。実装時に「chart から外したらデータが消える」誤解をしないこと。`latestPerService` が last_deploy_at 最新値を含むことが前提（unfiltered = 含む、確認済）。
+
 ## 2. 新規ファイル一覧
 
 | ファイル | 責務 | 依存 | LOC 見積 |
 |---|---|---|---|
-| `src/features/dashboard/deployAtFormat.ts` | epoch_ms → `YYYY-MM-DD HH:MM`（JST）整形。不正値/未収集は `—`。決定的（now 非依存）。 | なし（`lastUpdatedFormat.ts` の `formatJst` 方式を踏襲、共通化は任意） | ~20 |
+| `src/features/dashboard/deployAtFormat.ts` | epoch_ms → `YYYY-MM-DD HH:MM`（JST）整形。不正値/未収集/0/負値は `—`。決定的（now 非依存）。 | `lastUpdatedFormat.ts` の `formatJst`（export 化して再利用、R4） | ~15 |
 
-> 補足: `lastUpdatedFormat.ts` 内 `formatJst` は非 export。重複を避けるなら `formatJst` を export して再利用も可。本計画では責務分離のため `deployAtFormat.ts` に独立実装（epoch_ms 入力 + `—` fallback という入力契約が異なるため）。実装時 `/flow:tdd` で重複度を見て判断。
+<!-- spec-review R4: P19/DRY — JST 整形ロジックを再利用 -->
+> 補足 (spec-review R4 で確定): `lastUpdatedFormat.ts` 内 `formatJst(d: Date)` は現在**非 export**で、JST オフセット演算（`d.getTime() + 9*3600*1000` → `pad` 整形）を持つ。`deployAtFormat` で同じ演算を再実装すると JST ロジックが 2 箇所に分散する（P19「新規前に既存確認」/ DRY）。**推奨 = `formatJst` を export し `deployAtFormat` が再利用**。入力契約の差（epoch_ms number + 未収集/0/負値→`—`）は `deployAtFormat` 側の薄いガードで吸収し、JST 整形本体は `formatJst` に一元化する。実装:
+> ```
+> // deployAtFormat.ts
+> import { formatJst } from "./lastUpdatedFormat.js"; // ← export 化
+> export function formatDeployAt(epochMs: number | null | undefined): string {
+>   if (epochMs == null || !Number.isFinite(epochMs) || epochMs <= 0) return "—";
+>   return formatJst(new Date(epochMs));
+> }
+> ```
+> `lastUpdatedFormat.ts` 側は `function formatJst` → `export function formatJst` の 1 語追加のみ（既存 `formatLastUpdated` の挙動は不変）。
 
 ## 3. 削除ファイル一覧
 
