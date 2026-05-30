@@ -38,3 +38,5 @@ D20260530-042 〜 (反復ごとに追記)
 ## 反復ログ
 - 反復 1: P3.7 spec-review dashboard → ✅ 完了 (905、P87 学習、commit 6fbe09c)
 - 反復 2: P4 次フェーズ → /flow:tdd dashboard (biz-charts 実装: Phase1 chart 定義分離+label+取得キー / Phase2 profitAt 共通化+profit 派生) — Class A auto-execute
+- 反復 2: P4 tdd dashboard → ✅ 完了 (全 307 green、commits f852745/a0d3e2e)
+- 反復 3: P4.5 E2E gate → /flow:e2e dashboard (biz-charts: 4 ビジネス chart + label の E2E fixture/snapshot 更新) — Class A no-key
