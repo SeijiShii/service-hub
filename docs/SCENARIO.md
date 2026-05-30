@@ -52,17 +52,17 @@ flow で連発するマイクロサービス群の稼働/利用/コスト/障害
 ## 5. 現在地カーソル
 
 <!-- AUTO-GENERATED:BEGIN scenario-cursor -->
-- 現在フェーズ: **Phase 4 再オープン** (biz-charts 完遂、**10th deploy 待ち**)。9 回 deploy 済 (9th=last-deploy-col)。本 loop (2026-05-31) で **dashboard biz-charts revise 全工程完了** (上部 chart をビジネス指標化: ユーザー数/課金額/コスト/採算、design→spec-review→unit→E2E、全 307 unit + E2E 9/9 green)、未デプロイ。
-- 進行中ターゲット: dashboard biz-charts (実装+E2E 完了、deploy 前ゲート評価中)
-- 最終更新セッション: D20260531_004_scenario_update
-- 最終更新時刻: 2026-05-31 06:20
-- 完了フェーズ: [Phase1, Phase1.5, Phase2, Phase3 実装, Phase4 デプロイ(**9 回完了**): 1st-7th + **8th (timeseries-topchart)** + **9th (last-deploy-col、dpl_2JKZcinXnWiCsMRchTWzjpYtsoWs)**、Clerk production instance / sk_live_* 稼働中]。**biz-charts は実装+E2E green だが 10th deploy 未済**。
-- デプロイ状況: ✅ 公開 URL = https://service-hub.givers.work (custom domain、Clerk production、live キー稼働中、9th=last-deploy-col まで本番反映済)。**biz-charts (上部 chart ビジネス指標化) は未デプロイ → 10th deploy 対象**。
-- 次の推奨コマンド: biz-charts UI 変更ゲート評価 → **P4.4 Design gate (b) 視覚レビュー** (新ラベル/4 chart レイアウト) → release-pre 必須監査 (full audit + secure、最新 HEAD) → **P4.7 Release gate (10th deploy)**。Wording は本 PJ で defer 確定済 (internal 単一ユーザー、コピーは seiji 直管理)。
+- 現在フェーズ: **Phase 4 (Release gate ✅ 10th deploy 完了)** — 10 回 deploy 完了済。本 loop (2026-05-31) で **dashboard biz-charts revise 全工程完了 + 10th deploy 成功** (上部 chart をビジネス指標化: ユーザー数/課金額/コスト/採算、design→spec-review→unit→E2E→audit full→scenario→secure→release、全 307 unit + E2E 9/9 green、dpl_A1v4GA2yrduXehqUfPQT5CeEXfqz、post-deploy smoke 全 green)。
+- 進行中ターゲット: なし (biz-charts 10th deploy 完了)
+- 最終更新セッション: D20260531_008_release_10th-deploy
+- 最終更新時刻: 2026-05-31 06:35
+- 完了フェーズ: [Phase1, Phase1.5, Phase2, Phase3 実装, Phase4 デプロイ(**10 回完了**): 1st-7th + **8th (timeseries-topchart)** + **9th (last-deploy-col)** + **10th=D20260531-013 (biz-charts、dpl_A1v4GA2yrduXehqUfPQT5CeEXfqz、24s build、smoke 全 green)**、Clerk production instance / sk_live_* 稼働中]
+- デプロイ状況: ✅ 公開 URL = https://service-hub.givers.work (custom domain、Clerk production、live キー稼働中、**10th deploy = biz-charts 本番反映済** = 上部 chart をビジネス指標 4 枚 ユーザー数/課金額/コスト/採算 に)。
+- 次の推奨コマンド: **シナリオ完了 (P5、停止条件 §1 (1) 該当)**。残り user-driven = 監視運用 (cron 日次 collect で snapshots 蓄積) / 連動 PJ bousai-bag-checker producer revise (別 PJ、本 PJ 完了とは独立)。
 - Open 論点: 001✅/002✅/003✅/004✅/005✅ 全 5 件解決済 (変更なし)。
-- 残ゲート: P4.4 Design ✅ **biz-charts 視覚レビュー green** (D20260531_005、design-system 適合 + O38 クリア、逸脱なし) / P4.45 Wording ✅ defer 確定 (internal) / **P4.7 Release 10th deploy 待ち** (前に release-pre full audit+secure 必須) / P4.8 Promote 不発火 (internal、非公開 PJ) / 既知 Low: queries.test.ts tsc TS2578 (deploy 非ブロッカー)。
-- release-pre 必須監査 (CF-009): biz-charts 完遂時の standard audit ✅ (本回 AUDIT_20260531_0616、Critical 0)。**10th deploy 前に full audit + secure を最新 HEAD で再実行が必須** (P4.7 評価直前)。
-- audit 検出常習化 (CHRONIC 注記): SCENARIO drift = **6 回連続** (...1830 → 0616)、本セッションで reconcile。active 開発で §5 が遅れる構造的性質 (release 前 reconcile で実害なし)。
+- 残ゲート: P4.4 Design ✅ biz-charts 視覚レビュー green (D20260531_005) / P4.45 Wording ✅ defer 確定 (internal) / **P4.7 Release ✅ 10th deploy 完了** / P4.8 Promote 不発火 (internal、非公開 PJ) / 既知 Low: queries.test.ts tsc TS2578 (deploy 非ブロッカー)。
+- release-pre 必須監査 (CF-009): biz-charts 完遂後 ✅ **2 段クリア** (full audit D20260531_006 AUDIT_20260531_0622 Critical 0/High 0 + secure D20260531_007 新規 SEC 0)。
+- audit 検出常習化 (CHRONIC 注記): SCENARIO drift は本 loop で reconcile → release-pre full audit (0622) で **検出 0 = CHRONIC 解除** (6 回連続後、トレンド改善)。
 <!-- AUTO-GENERATED:END scenario-cursor -->
 
 ## 6. 変更履歴
@@ -84,4 +84,4 @@ flow で連発するマイクロサービス群の稼働/利用/コスト/障害
 - 2026-05-28: ✅ **8th deploy 完了** (D-034 release、commit 群 0eaf627/5f34d6a/f0d84b2/0aba2c3 + 6b2942c/dde07e5/106855d、dpl_2VjaF8Ay4fzcdEbxT2yuHtHa8LH5、24s build、aliased https://service-hub.givers.work、post-deploy smoke 全 green) + SEC-003 accepted-risk 確定 close (D-126、§8 [論点-005] status=open → closed、4 回連続再提示の悪循環断ち) — 次は /flow:auto で全 P5 完了判定 or bousai-bag-checker 連動 revise (別 PJ)
 - 2026-05-30: **dashboard last-deploy-col revise 全工程完了** (/flow:auto loop、D20260530_002)。ユーザー要望「last_deploy_at はチャート表示しない、一覧に日時カラム追加」を design (D-001 revise) → spec-review (D-003、905、P86 学習) → tdd (D-004、unit 全 297 green、commits 77105ae/a264d66/ba28a72) → e2e (D-005、dashboard E2E 4/4 green + 既存 fixtures charts drift reconcile、commits 5bc67d5/04f7339) → audit full (D-006、AUDIT_20260530_1830、release-blocking なし) → scenario reconcile (D-007) → secure release-pre 2 段目 (D-008、新規 SEC 0) で完遂。
 - 2026-05-30: ✅ **9th deploy 完了** (D-009 release、ユーザー承認「今デプロイ」、dpl_2JKZcinXnWiCsMRchTWzjpYtsoWs、24s build、aliased https://service-hub.givers.work、post-deploy smoke 全 green = frontend 200 / api auth 401 / public 200)。**last-deploy-col 本番反映** (last_deploy_at chart 除外 + 一覧「最終デプロイ」列)。P4.8 Promote 不発火 (internal) → **P5 シナリオ完了**。loop 停止条件 #1 で正常終了 (8 反復、歪曲停止なし)。
-- 2026-05-31: **dashboard biz-charts revise 全工程完了** (/flow:auto loop、D20260531_001)。ユーザー要望「上部 chart を死活/ストレージでなくビジネス指標 (課金額/コスト/採算/ユーザー数) に」を design→spec-review (D-001~、905、P87) → tdd (D20260530-050~、unit 全 307 green、commits f852745/a0d3e2e) → e2e (D20260531_002、E2E 9/9 green + snapshot 2 件再生成 [dashboard=biz意図 / service-detail=既存 ResponsiveContainer drift reconcile]、commit feae45e) で完遂。未デプロイ (10th deploy 待ち)。続く standard audit (D20260531_003、AUDIT_20260531_0616、Critical 0 / High 1=SCENARIO drift 常習6回) → 本 reconcile (§5 を P5→Phase4 再オープン + 10th deploy 待ち、decision_id=D20260531-008)。次は P4.4 Design gate → release-pre full audit+secure → P4.7 Release (10th deploy)。
+- 2026-05-31: **dashboard biz-charts revise 全工程完了 + 10th deploy** (/flow:auto loop、D20260531_001、7 反復)。ユーザー要望「上部 chart を死活/ストレージでなくビジネス指標 (課金額/コスト/採算/ユーザー数) に」を design→spec-review (905、P87) → tdd (unit 全 307 green、commits f852745/a0d3e2e) → e2e (D20260531_002、E2E 9/9 green + snapshot 2 件再生成 [dashboard=biz意図 / service-detail=既存 ResponsiveContainer drift reconcile]、commit feae45e) → standard audit (D-003、AUDIT_0616、High 1 drift) → scenario reconcile (D-004、P5→Phase4 再オープン) → design review green (D-005、c119eaf) → release-pre full audit (D-006、AUDIT_0622、Critical 0/High 0 = drift 解消・CHRONIC 6回 → 解除) → release-pre secure (D-007、新規 SEC 0) → **release 10th deploy** (D-008、dpl_A1v4GA2yrduXehqUfPQT5CeEXfqz、24s build、aliased givers.work、post-deploy smoke 全 green = frontend 200/api 401/public 200、ユーザー承認「今デプロイ」) で完遂。biz-charts 本番反映 (上部 chart = ビジネス 4 枚)。P4.8 Promote 不発火 (internal) → **P5 シナリオ完了**。
