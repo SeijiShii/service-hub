@@ -2,7 +2,7 @@
 
 **issue / slug**: biz-charts (revenue-cost-profit)
 **実施日**: 2026-05-30
-**状態**: 設計完了 (tdd 待ち)
+**状態**: 設計完了 + spec-review 通過 (905、tdd 待ち)
 
 <!-- auto-generated-start -->
 
@@ -13,6 +13,7 @@
 | 002 | [002_REVISE_PLAN.md](./002_REVISE_PLAN.md) | REVISE_PLAN | 2026-05-30 |
 | 003 | [003_REVISE_UNIT_TEST.md](./003_REVISE_UNIT_TEST.md) | REVISE_UNIT_TEST | 2026-05-30 |
 | 004 | [004_REVISE_E2E_TEST.md](./004_REVISE_E2E_TEST.md) | REVISE_E2E_TEST | 2026-05-30 |
+| 905 | [905_REVISE_SPEC_REVIEW.md](./905_REVISE_SPEC_REVIEW.md) | SPEC_REVIEW | 2026-05-30 |
 
 ## 関連
 - 親機能 INDEX: `../INDEX.md`

@@ -13,7 +13,7 @@
 | `src/components/MetricChart.tsx` | `label?: string` prop 追加。見出し `{metricKey} ({unit})` → `{label ?? metricKey} ({unit})`（label optional で service-detail 後方互換）。testid は `chart-${metricKey}` 維持。 | 低 | §2.2,§7.3 |
 | `src/features/dashboard/DashboardCharts.tsx` | `MetricChart` に `label={chart.label}` を渡す。JSDoc を 4 ビジネス chart に更新。 | 低 | §2.1 |
 | `api/dashboard/summary.ts` | `recentSnapshots(db, sinceIso, [...DASHBOARD_CHART_SOURCE_METRICS])` に変更（取得キー = mau/revenue/cost）。コメント更新。 | 低 | §2.2 |
-| `src/features/dashboard/profitability.ts` | (論点-001 採用時) `profitAt(revenue, cost)` 純関数を export し computeProfitability から再利用（採算定義 SoT 化）。 | 低 | §7.5,§9 |
+| `src/features/dashboard/profitability.ts` | <!-- spec-review R1: 確定 -->**`profitAt(revenue: number, cost: number\|null\|undefined): number = revenue − (cost ?? 0)` を export**（採算定義 SoT）。`computeProfitability` の `profit = revenue − cost` を `profitAt(revenue, cost)` 呼び出しに置換、`buildCharts` の派生 profit も同関数を使う。**チャート採算 = 一覧「採算」列の一致を構造的に保証**（論点-001 (a) 確定）。 | 低 | §7.5,§9 |
 
 ## 2. 新規ファイル一覧
 | ファイル | 責務 | 依存 | LOC 見積 |

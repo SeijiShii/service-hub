@@ -47,10 +47,15 @@
 
 ## 4. リグレッション強化
 - `up` の latestPerService 取得・一覧 status 列（rowStatusKind が row.up 由来）が**不変**であることを確認（chart 除外と独立）。
-- `db_storage_bytes` の収集が不変（chart から外すだけ）。
+- `db_storage_bytes` の収集が不変（chart から外すだけ、adapters で収集継続）。
 - service-detail の MetricChart（label 未指定）が従来通り metricKey 見出しで render（BC-U-12）。
 - 既存 chart の空 fallback・tickFormatter が不変。
-- profitability.ts `computeProfitability`（最新値 profit）が不変（論点-001 で profitAt 共通化する場合も既存挙動維持）。
+- profitability.ts `computeProfitability`（最新値 profit = 一覧採算列）が不変（R1 で profitAt 共通化後も既存テスト green）。
+
+<!-- spec-review R1: 採算チャート = 一覧採算列の一致テスト -->
+### 4.1 採算チャート ↔ 一覧採算列 一致（spec-review R1、必須）
+- BC-U-30: 同一 revenue/cost のとき、`buildCharts` の profit chart 最新点 = `computeProfitability` の `profit` であることを確認（同じ `profitAt` 経由 = 構造的一致）。チャートと一覧で採算値が食い違わないことの回帰防止。
+- `profitAt(revenue, cost)` 純関数の単体テスト: `profitAt(50,10)=40` / `profitAt(50,null)=50` / `profitAt(0,5)=-5`。
 
 ## 5. Mock 方針差分
 | 対象 | 前回 | 今回 | 理由 |
