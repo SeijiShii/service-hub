@@ -4,7 +4,7 @@
 **コマンド**: /flow:auto
 **モード**: continuous loop (default)
 **実行者**: SeijiShii (via Claude Code)
-**状態**: 進行中
+**状態**: 完了 (停止条件 #1 = シナリオ §5 全完了、10 反復、歪曲停止なし)
 
 ## 含まれる decision 範囲
 D20260531-001 〜 (反復ごとに追記)
@@ -44,7 +44,24 @@ D20260531-001 〜 (反復ごとに追記)
 - 反復 5: §3.0c release-pre 必須監査 (ハードゲート) → /flow:audit --scope=full → ✅ 完了 (Critical 0 / High 0、6回連続 drift 解消=改善、AUDIT_20260531_0622、commit d942e12)
 - 反復 6: §3.0c release-pre 必須監査 2 段目 → /flow:secure → ✅ 完了 (新規 SEC 0、攻撃面増加なし、SECURITY_REVIEW_20260531、commit 394d6a0)。**release-pre 必須監査 2 段クリア**
 - 反復 7: P4.7 Release gate → /flow:release (biz-charts 10th deploy) → ✅ 完了 (ユーザー承認「今デプロイ」、dpl_A1v4GA2yrduXehqUfPQT5CeEXfqz、24s build、post-deploy smoke 全 green、commit 61ee026)。biz-charts 本番反映。P4.8 Promote 不発火 (internal)
-- 反復 8: §4.5.1#0 no-key 枯渇チェックで **9 件の未消化 E2E gate を検出** (2026-05-28 batch: timeseries-topchart/admin-ux/nav-and-pull/db-sot/force-pull/refresh-cadence/public-status-api/favicon-projection/secret-zero、いずれも 101+004 あり 103 不在)。P4.5 E2E gate 未消化 = P5 完了に進めない (false completion 回避)。→ P4.5 E2E gate → /flow:e2e (continuous mode) で取り崩し。Class A no-key
+- 反復 8: §4.5.1#0 no-key 枯渇チェックで **9 件の未消化 E2E gate を検出** (2026-05-28 batch) → /flow:e2e (continuous) → ✅ 完了 (admin.spec.ts 新規 3 + dashboard 2、全 14 E2E green、9×103 生成、commit 3a342a1)
+- 反復 9: 再評価で **business-observability の未ファイル report (905/101/103) を検出** (実装+デプロイ済だが 2026-05-27 歪曲停止で未ファイル) → reconcile (905/101/103 as-built 生成、commit 後続)。全 gate clear
+- 反復 10: P5 完了判定 → §4.5.1#0 no-key 変種枯渇を徹底確認 (10 件の隠れ gap 全取り崩し済、残存ゼロ) + 全 P5 条件充足 → **停止条件 #1 (シナリオ §5 全完了)** で loop 終了
+
+```yaml
+- id: D20260531-018
+  timestamp: 2026-05-31T06:55:00+09:00
+  command: /flow:auto
+  phase: §4.5.1#0 + 停止条件 #1 判定 (反復 10)
+  question: P5 完了前の no-key/Class-A 変種枯渇 最終確認
+  chosen: 枯渇のため P5 完了 (停止条件 #1)
+  chosen_type: auto-recommended
+  context: |
+    本 loop で 10 件の隠れ gap を取り崩し: 9 E2E gate (2026-05-28 batch) + business-observability reconcile。
+    全 tdd/E2E/spec-review/report clear、307 unit + 14 E2E green、biz-charts 10th deploy (live)、
+    release-pre full audit (Critical 0) + secure (新規 SEC 0)、drift 解消、Promote 不発火 (internal)。
+    残存 no-key 作業ゼロ + .env 不足なし = 真の全完了。歪曲停止なしで停止条件 #1 達成。
+```
 
 ```yaml
 - id: D20260531-014
