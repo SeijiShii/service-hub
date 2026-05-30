@@ -7,25 +7,12 @@ const noBiz = {
   funnel: { started: null, abandonmentRate: null, cardFailureRate: null },
 } as const;
 
-// last-deploy-col: charts は timeseries-topchart 以降 required (3 件、last_deploy_at 除外)。
-// 旧 fixture は charts 欠落で dashboard ページが crash していた (timeseries-topchart 後の drift) → 補完。
+// biz-charts: charts はビジネス 4 件 (ユーザー数/課金額/コスト/採算、label 付き、採算は派生済み)。
+// route-mock は buildCharts をバイパスするため、本番 buildCharts の出力形 (label + profit 派生) を再現。
 const fixtureCharts: DashboardVM["charts"] = [
   {
-    metricKey: "up",
-    unit: "bool",
-    series: [
-      {
-        slug: "hana-memo",
-        name: "hana-memo",
-        points: [
-          { capturedAt: "2026-05-26T00:00:00.000Z", value: 1 },
-          { capturedAt: "2026-05-27T00:00:00.000Z", value: 1 },
-        ],
-      },
-    ],
-  },
-  {
     metricKey: "mau",
+    label: "ユーザー数",
     unit: "count",
     series: [
       {
@@ -39,15 +26,46 @@ const fixtureCharts: DashboardVM["charts"] = [
     ],
   },
   {
-    metricKey: "db_storage_bytes",
-    unit: "bytes",
+    metricKey: "revenue_month_usd",
+    label: "課金額",
+    unit: "usd",
     series: [
       {
         slug: "hana-memo",
         name: "hana-memo",
         points: [
-          { capturedAt: "2026-05-26T00:00:00.000Z", value: 100 },
-          { capturedAt: "2026-05-27T00:00:00.000Z", value: 180 },
+          { capturedAt: "2026-05-26T00:00:00.000Z", value: 40 },
+          { capturedAt: "2026-05-27T00:00:00.000Z", value: 50 },
+        ],
+      },
+    ],
+  },
+  {
+    metricKey: "ai_cost_month_usd",
+    label: "コスト",
+    unit: "usd",
+    series: [
+      {
+        slug: "hana-memo",
+        name: "hana-memo",
+        points: [
+          { capturedAt: "2026-05-26T00:00:00.000Z", value: 8 },
+          { capturedAt: "2026-05-27T00:00:00.000Z", value: 10 },
+        ],
+      },
+    ],
+  },
+  {
+    metricKey: "profit",
+    label: "採算",
+    unit: "usd",
+    series: [
+      {
+        slug: "hana-memo",
+        name: "hana-memo",
+        points: [
+          { capturedAt: "2026-05-26T00:00:00.000Z", value: 32 }, // 40 - 8
+          { capturedAt: "2026-05-27T00:00:00.000Z", value: 40 }, // 50 - 10
         ],
       },
     ],

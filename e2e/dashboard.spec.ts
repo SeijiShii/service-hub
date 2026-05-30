@@ -26,6 +26,15 @@ test("UC1-S1: 全サービス横断サマリ + down 前景化", async ({ page })
   await expect(
     page.locator('tr[data-slug="sanpo-log"] [data-deploy-at]'),
   ).toHaveText("—");
+  // biz-charts: 上部チャートは 4 ビジネス指標 (日本語ラベル)、旧 up/db_storage chart は不在
+  const chartsSection = page.getByTestId("dashboard-charts");
+  await expect(chartsSection).toContainText("ユーザー数");
+  await expect(chartsSection).toContainText("課金額");
+  await expect(chartsSection).toContainText("コスト");
+  await expect(chartsSection).toContainText("採算");
+  await expect(page.getByTestId("chart-profit")).toBeVisible();
+  await expect(page.getByTestId("chart-up")).toHaveCount(0);
+  await expect(page.getByTestId("chart-db_storage_bytes")).toHaveCount(0);
   await expect(page).toHaveScreenshot("dashboard-happy.png", {
     maxDiffPixels: 200,
   });
