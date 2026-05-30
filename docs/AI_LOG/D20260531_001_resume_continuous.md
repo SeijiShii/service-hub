@@ -38,6 +38,9 @@ D20260531-001 〜 (反復ごとに追記)
 
 ## 反復ログ
 - 反復 1: P4.5 E2E gate → /flow:e2e dashboard (biz-charts: 4 ビジネス chart + label の E2E) → ✅ 完了 (9/9 green、103 生成、snapshot 2 件再生成、commit feae45e)
+- 反復 2: §3.0c 鮮度 → /flow:audit --scope=standard → ✅ 完了 (Critical 0 / High 1 SCENARIO drift、#1-#4 実体クリア、AUDIT_20260531_0616、commit 8122658)
+- 反復 3: §3.0c drift シューティング → /flow:scenario --update → ✅ 完了 (§5 P5→Phase4 再オープン、biz-charts 10th deploy 待ち、commit 83850f8)
+- 反復 4: P4.4 Design gate (b) → /flow:design --review-only (biz-charts dashboard 上部 4 chart の視覚レビュー、未実行) — Class A no-key headless
 - 反復 2: §3.0c 鮮度ゲート → /flow:audit --scope=standard — biz-charts revise 完遂 (大型 commit) が audit 鮮度トリガ。最新 AUDIT_20260530_1830 以降 biz-charts 設計+実装+E2E 完了 (12 commits) + SCENARIO §5 が「P5 完了」と drift (biz-charts 未デプロイ)。Class A auto-execute、P1-P5 前に drift シュート
 
 ```yaml

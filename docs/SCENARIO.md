@@ -60,7 +60,7 @@ flow で連発するマイクロサービス群の稼働/利用/コスト/障害
 - デプロイ状況: ✅ 公開 URL = https://service-hub.givers.work (custom domain、Clerk production、live キー稼働中、9th=last-deploy-col まで本番反映済)。**biz-charts (上部 chart ビジネス指標化) は未デプロイ → 10th deploy 対象**。
 - 次の推奨コマンド: biz-charts UI 変更ゲート評価 → **P4.4 Design gate (b) 視覚レビュー** (新ラベル/4 chart レイアウト) → release-pre 必須監査 (full audit + secure、最新 HEAD) → **P4.7 Release gate (10th deploy)**。Wording は本 PJ で defer 確定済 (internal 単一ユーザー、コピーは seiji 直管理)。
 - Open 論点: 001✅/002✅/003✅/004✅/005✅ 全 5 件解決済 (変更なし)。
-- 残ゲート: P4.4 Design (biz-charts 視覚レビュー、E2E snapshot で実画面確認済だが /flow:design --review-only 未実行) / P4.45 Wording ✅ defer 確定 (internal) / **P4.7 Release 10th deploy 待ち** / P4.8 Promote 不発火 (internal、非公開 PJ) / 既知 Low: queries.test.ts tsc TS2578 (deploy 非ブロッカー)。
+- 残ゲート: P4.4 Design ✅ **biz-charts 視覚レビュー green** (D20260531_005、design-system 適合 + O38 クリア、逸脱なし) / P4.45 Wording ✅ defer 確定 (internal) / **P4.7 Release 10th deploy 待ち** (前に release-pre full audit+secure 必須) / P4.8 Promote 不発火 (internal、非公開 PJ) / 既知 Low: queries.test.ts tsc TS2578 (deploy 非ブロッカー)。
 - release-pre 必須監査 (CF-009): biz-charts 完遂時の standard audit ✅ (本回 AUDIT_20260531_0616、Critical 0)。**10th deploy 前に full audit + secure を最新 HEAD で再実行が必須** (P4.7 評価直前)。
 - audit 検出常習化 (CHRONIC 注記): SCENARIO drift = **6 回連続** (...1830 → 0616)、本セッションで reconcile。active 開発で §5 が遅れる構造的性質 (release 前 reconcile で実害なし)。
 <!-- AUTO-GENERATED:END scenario-cursor -->
