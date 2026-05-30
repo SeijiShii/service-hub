@@ -41,7 +41,8 @@ D20260531-001 〜 (反復ごとに追記)
 - 反復 2: §3.0c 鮮度 → /flow:audit --scope=standard → ✅ 完了 (Critical 0 / High 1 SCENARIO drift、#1-#4 実体クリア、AUDIT_20260531_0616、commit 8122658)
 - 反復 3: §3.0c drift シューティング → /flow:scenario --update → ✅ 完了 (§5 P5→Phase4 再オープン、biz-charts 10th deploy 待ち、commit 83850f8)
 - 反復 4: P4.4 Design gate (b) → /flow:design --review-only → ✅ 完了 (視覚レビュー green、design-system 適合 + O38 クリア、逸脱なし、commit c119eaf)
-- 反復 5: §3.0c release-pre 必須監査 (ハードゲート) → /flow:audit --scope=full — P4.7 評価直前、最新 AUDIT ≠ HEAD + release-pre full 未実行 → 無条件必須 (CF-20260528-009)。Class A auto-execute
+- 反復 5: §3.0c release-pre 必須監査 (ハードゲート) → /flow:audit --scope=full → ✅ 完了 (Critical 0 / High 0、6回連続 drift 解消=改善、AUDIT_20260531_0622、commit d942e12)
+- 反復 6: §3.0c release-pre 必須監査 2 段目 → /flow:secure — full audit に続く必須 secure。biz-charts は新 endpoint/外部入力/deps 変更なしの UI 変更。Class A auto-execute
 - 反復 2: §3.0c 鮮度ゲート → /flow:audit --scope=standard — biz-charts revise 完遂 (大型 commit) が audit 鮮度トリガ。最新 AUDIT_20260530_1830 以降 biz-charts 設計+実装+E2E 完了 (12 commits) + SCENARIO §5 が「P5 完了」と drift (biz-charts 未デプロイ)。Class A auto-execute、P1-P5 前に drift シュート
 
 ```yaml
