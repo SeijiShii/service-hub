@@ -7,39 +7,138 @@ const noBiz = {
   funnel: { started: null, abandonmentRate: null, cardFailureRate: null },
 } as const;
 
+// last-deploy-col: charts は timeseries-topchart 以降 required (3 件、last_deploy_at 除外)。
+// 旧 fixture は charts 欠落で dashboard ページが crash していた (timeseries-topchart 後の drift) → 補完。
+const fixtureCharts: DashboardVM["charts"] = [
+  {
+    metricKey: "up",
+    unit: "bool",
+    series: [
+      {
+        slug: "hana-memo",
+        name: "hana-memo",
+        points: [
+          { capturedAt: "2026-05-26T00:00:00.000Z", value: 1 },
+          { capturedAt: "2026-05-27T00:00:00.000Z", value: 1 },
+        ],
+      },
+    ],
+  },
+  {
+    metricKey: "mau",
+    unit: "count",
+    series: [
+      {
+        slug: "hana-memo",
+        name: "hana-memo",
+        points: [
+          { capturedAt: "2026-05-26T00:00:00.000Z", value: 120 },
+          { capturedAt: "2026-05-27T00:00:00.000Z", value: 142 },
+        ],
+      },
+    ],
+  },
+  {
+    metricKey: "db_storage_bytes",
+    unit: "bytes",
+    series: [
+      {
+        slug: "hana-memo",
+        name: "hana-memo",
+        points: [
+          { capturedAt: "2026-05-26T00:00:00.000Z", value: 100 },
+          { capturedAt: "2026-05-27T00:00:00.000Z", value: 180 },
+        ],
+      },
+    ],
+  },
+];
+
 export const dashboardVM: DashboardVM = {
-  upCount: 2, downCount: 1, lastRunStatus: "ok",
+  upCount: 2,
+  downCount: 1,
+  lastRunStatus: "ok",
+  charts: fixtureCharts,
   rows: [
-    // 黒字 + 健全ファネル
-    { slug: "hana-memo", name: "hana-memo", url: "https://hana-memo.example.com", status: "active", up: true, metrics: { mau: { value: 142, unit: "count" } }, freeTierState: "ok", openAlertCount: 0,
+    // 黒字 + 健全ファネル + 最終デプロイあり (last-deploy-col: 列に JST 日時を表示)
+    {
+      slug: "hana-memo",
+      name: "hana-memo",
+      url: "https://hana-memo.example.com",
+      status: "active",
+      up: true,
+      metrics: {
+        mau: { value: 142, unit: "count" },
+        last_deploy_at: {
+          value: Date.UTC(2026, 4, 28, 0, 0, 0),
+          unit: "epoch_ms",
+        },
+      },
+      freeTierState: "ok",
+      openAlertCount: 0,
       profitability: { revenue: 50, cost: 10, profit: 40, state: "profit" },
-      funnel: { started: 200, abandonmentRate: 0.25, cardFailureRate: 0.1 } },
-    // 薄利 + 高離脱率
-    { slug: "sanpo-log", name: "sanpo-log", url: "https://sanpo.example.com", status: "active", up: true, metrics: { mau: { value: 38, unit: "count" } }, freeTierState: "warn", openAlertCount: 0,
+      funnel: { started: 200, abandonmentRate: 0.25, cardFailureRate: 0.1 },
+    },
+    // 薄利 + 高離脱率 (last_deploy_at なし → 列は —)
+    {
+      slug: "sanpo-log",
+      name: "sanpo-log",
+      url: "https://sanpo.example.com",
+      status: "active",
+      up: true,
+      metrics: { mau: { value: 38, unit: "count" } },
+      freeTierState: "warn",
+      openAlertCount: 0,
       profitability: { revenue: 5, cost: 4.5, profit: 0.5, state: "thin" },
-      funnel: { started: 100, abandonmentRate: 0.6, cardFailureRate: 0.35 } },
+      funnel: { started: 100, abandonmentRate: 0.6, cardFailureRate: 0.35 },
+    },
     // 赤字 + データ欠損 (down)
-    { slug: "kakei", name: "kakei", url: "https://kakei.example.com", status: "active", up: false, metrics: {}, freeTierState: null, openAlertCount: 1,
+    {
+      slug: "kakei",
+      name: "kakei",
+      url: "https://kakei.example.com",
+      status: "active",
+      up: false,
+      metrics: {},
+      freeTierState: null,
+      openAlertCount: 1,
       profitability: { revenue: 1, cost: 8, profit: -7, state: "loss" },
-      funnel: { started: null, abandonmentRate: null, cardFailureRate: null } },
+      funnel: { started: null, abandonmentRate: null, cardFailureRate: null },
+    },
   ],
 };
 
-export const emptyVM: DashboardVM = { upCount: 0, downCount: 0, rows: [] };
+export const emptyVM: DashboardVM = {
+  upCount: 0,
+  downCount: 0,
+  charts: [],
+  rows: [],
+};
 
 export const detailVM: ServiceDetailVM = {
-  slug: "hana-memo", name: "hana-memo", url: "https://hana-memo.example.com", status: "active",
+  slug: "hana-memo",
+  name: "hana-memo",
+  url: "https://hana-memo.example.com",
+  status: "active",
   series: [
-    { metricKey: "db_storage_bytes", unit: "bytes", points: [
-      { capturedAt: "2026-05-24T00:00:00.000Z", value: 100 },
-      { capturedAt: "2026-05-25T00:00:00.000Z", value: 180 },
-      { capturedAt: "2026-05-26T00:00:00.000Z", value: 240 },
-    ] },
-    { metricKey: "revenue_month_usd", unit: "usd", points: [
-      { capturedAt: "2026-03-01T00:00:00.000Z", value: 30 },
-      { capturedAt: "2026-04-01T00:00:00.000Z", value: 40 },
-      { capturedAt: "2026-05-01T00:00:00.000Z", value: 50 },
-    ] },
+    {
+      metricKey: "db_storage_bytes",
+      unit: "bytes",
+      points: [
+        { capturedAt: "2026-05-24T00:00:00.000Z", value: 100 },
+        { capturedAt: "2026-05-25T00:00:00.000Z", value: 180 },
+        { capturedAt: "2026-05-26T00:00:00.000Z", value: 240 },
+      ],
+    },
+    {
+      metricKey: "revenue_month_usd",
+      unit: "usd",
+      points: [
+        { capturedAt: "2026-03-01T00:00:00.000Z", value: 30 },
+        { capturedAt: "2026-04-01T00:00:00.000Z", value: 40 },
+        { capturedAt: "2026-05-01T00:00:00.000Z", value: 50 },
+      ],
+    },
   ],
   alerts: [],
   funnel: { started: 200, abandonmentRate: 0.25, cardFailureRate: 0.1 },
@@ -50,8 +149,38 @@ export const costSimResponse: CostSimResponse = {
   pricingUpdated: "2026-05-27",
   stale: false,
   accounts: [
-    { provider: "vercel", account: "vercel", serviceCount: 3, metrics: [], maxUsagePct: 0.92, daysToCeiling: 60, upgradeCostUsd: 20, aggregateRevenueUsd: 55, recommendation: "upgrade" },
-    { provider: "neon", account: "neon", serviceCount: 3, metrics: [], maxUsagePct: 0.85, daysToCeiling: 30, upgradeCostUsd: 19, aggregateRevenueUsd: 6, recommendation: "consolidate" },
-    { provider: "clerk", account: "clerk", serviceCount: 1, metrics: [], maxUsagePct: 0.4, daysToCeiling: null, upgradeCostUsd: 25, aggregateRevenueUsd: 0, recommendation: "keep" },
+    {
+      provider: "vercel",
+      account: "vercel",
+      serviceCount: 3,
+      metrics: [],
+      maxUsagePct: 0.92,
+      daysToCeiling: 60,
+      upgradeCostUsd: 20,
+      aggregateRevenueUsd: 55,
+      recommendation: "upgrade",
+    },
+    {
+      provider: "neon",
+      account: "neon",
+      serviceCount: 3,
+      metrics: [],
+      maxUsagePct: 0.85,
+      daysToCeiling: 30,
+      upgradeCostUsd: 19,
+      aggregateRevenueUsd: 6,
+      recommendation: "consolidate",
+    },
+    {
+      provider: "clerk",
+      account: "clerk",
+      serviceCount: 1,
+      metrics: [],
+      maxUsagePct: 0.4,
+      daysToCeiling: null,
+      upgradeCostUsd: 25,
+      aggregateRevenueUsd: 0,
+      recommendation: "keep",
+    },
   ],
 };

@@ -16,6 +16,16 @@ test("UC1-S1: 全サービス横断サマリ + down 前景化", async ({ page })
     "data-status",
     "up",
   );
+  // last-deploy-col: thead に「最終デプロイ」列 + hana-memo 行に JST 日時、欠損行は —
+  await expect(
+    page.locator("thead th", { hasText: "最終デプロイ" }),
+  ).toBeVisible();
+  await expect(
+    page.locator('tr[data-slug="hana-memo"] [data-deploy-at]'),
+  ).toHaveText("2026-05-28 09:00");
+  await expect(
+    page.locator('tr[data-slug="sanpo-log"] [data-deploy-at]'),
+  ).toHaveText("—");
   await expect(page).toHaveScreenshot("dashboard-happy.png", {
     maxDiffPixels: 200,
   });
