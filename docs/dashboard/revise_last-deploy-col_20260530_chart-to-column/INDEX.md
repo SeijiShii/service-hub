@@ -2,7 +2,7 @@
 
 **issue / slug**: last-deploy-col (chart-to-column)
 **実施日**: 2026-05-30
-**状態**: 設計完了 + spec-review 通過 (tdd 待ち)
+**状態**: 実装完了 (unit 52 green / 全 297 green、E2E 待ち)
 
 <!-- auto-generated-start -->
 
@@ -14,6 +14,8 @@
 | 003 | [003_REVISE_UNIT_TEST.md](./003_REVISE_UNIT_TEST.md) | REVISE_UNIT_TEST | 2026-05-30 (R2 反映) |
 | 004 | [004_REVISE_E2E_TEST.md](./004_REVISE_E2E_TEST.md) | REVISE_E2E_TEST | 2026-05-30 |
 | 905 | [905_REVISE_SPEC_REVIEW.md](./905_REVISE_SPEC_REVIEW.md) | SPEC_REVIEW | 2026-05-30 |
+| 101 | [101_REVISE_IMPL_REPORT.md](./101_REVISE_IMPL_REPORT.md) | IMPL_REPORT | 2026-05-30 |
+| 102 | [102_REVISE_UNIT_TEST_REPORT.md](./102_REVISE_UNIT_TEST_REPORT.md) | UNIT_TEST_REPORT | 2026-05-30 |
 
 ## 関連
 - 親機能 INDEX: `../INDEX.md`
