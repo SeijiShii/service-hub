@@ -1,8 +1,8 @@
 # AI_LOG インデックス — service-hub
 
 **最終更新**: 2026-05-30 (+09:00)
-**総セッション数**: 56 (D20260530_004 tdd 追加)
-**総 decision 数**: 187 (D20260530-001〜024、D20260528-001〜131、D20260527-001〜035、+ D20260526 系)
+**総セッション数**: 57 (D20260530_005 e2e 追加)
+**総 decision 数**: 191 (D20260530-001〜028、D20260528-001〜131、D20260527-001〜035、+ D20260526 系)
 
 > セッションごとに 1 ファイル、append-only、過去ファイルは削除・編集禁止。
 > 人間向けサマリは `../concept.md` §7 決定事項ログ を参照。
@@ -12,6 +12,7 @@
 ## セッション一覧（新しい順）
 | ファイル | 実行日 | コマンド | 対象 | decision 範囲 | 状態 |
 |---|---|---|---|---|---|
+| [D20260530_005_e2e_dashboard.md](./D20260530_005_e2e_dashboard.md) | 2026-05-30 | /flow:e2e | dashboard last-deploy-col E2E (Playwright 4/4 green、最終デプロイ列検証 + 既存 fixtures charts 欠落 drift を reconcile、ビジュアル baseline 再生成 ユーザー承認) | D20260530-025〜028 | 完了 (E2E green) |
 | [D20260530_004_tdd_dashboard_revise_last-deploy-col.md](./D20260530_004_tdd_dashboard_revise_last-deploy-col.md) | 2026-05-30 | /flow:tdd | dashboard last-deploy-col 実装 (Phase 1 chart 除外 + Phase 2 deployAtFormat/列、全 297 green、既存 tsc TS2578 を無関係既存問題として surface) | D20260530-021〜024 | 完了 (E2E 待ち) |
 | [D20260530_003_spec-review_dashboard.md](./D20260530_003_spec-review_dashboard.md) | 2026-05-30 | /flow:spec-review | dashboard last-deploy-col 設計レビュー (auto-pick、Critical/High 0・Medium 1 R1 service-detail 整合・Low 3 R2 列データソース/R3 api 漏れ/R4 formatJst 再利用、P86 学習、905 生成、001-003 反映) | D20260530-012〜019 | 完了 (tdd 着手可) |
 | [D20260530_002_resume_continuous.md](./D20260530_002_resume_continuous.md) | 2026-05-30 | /flow:auto | continuous loop (P3.7 Spec-review gate → spec-review dispatch、反復継続中) | D20260530-011〜 | 進行中 |
