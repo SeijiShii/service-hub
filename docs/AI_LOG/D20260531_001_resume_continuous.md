@@ -43,7 +43,23 @@ D20260531-001 〜 (反復ごとに追記)
 - 反復 4: P4.4 Design gate (b) → /flow:design --review-only → ✅ 完了 (視覚レビュー green、design-system 適合 + O38 クリア、逸脱なし、commit c119eaf)
 - 反復 5: §3.0c release-pre 必須監査 (ハードゲート) → /flow:audit --scope=full → ✅ 完了 (Critical 0 / High 0、6回連続 drift 解消=改善、AUDIT_20260531_0622、commit d942e12)
 - 反復 6: §3.0c release-pre 必須監査 2 段目 → /flow:secure → ✅ 完了 (新規 SEC 0、攻撃面増加なし、SECURITY_REVIEW_20260531、commit 394d6a0)。**release-pre 必須監査 2 段クリア**
-- 反復 7: P4.7 Release gate → /flow:release (biz-charts 10th deploy) → ✅ 完了 (ユーザー承認「今デプロイ」、dpl_A1v4GA2yrduXehqUfPQT5CeEXfqz、24s build、post-deploy smoke 全 green、commit 後続)。biz-charts 本番反映。P4.8 Promote 不発火 (internal)
+- 反復 7: P4.7 Release gate → /flow:release (biz-charts 10th deploy) → ✅ 完了 (ユーザー承認「今デプロイ」、dpl_A1v4GA2yrduXehqUfPQT5CeEXfqz、24s build、post-deploy smoke 全 green、commit 61ee026)。biz-charts 本番反映。P4.8 Promote 不発火 (internal)
+- 反復 8: §4.5.1#0 no-key 枯渇チェックで **9 件の未消化 E2E gate を検出** (2026-05-28 batch: timeseries-topchart/admin-ux/nav-and-pull/db-sot/force-pull/refresh-cadence/public-status-api/favicon-projection/secret-zero、いずれも 101+004 あり 103 不在)。P4.5 E2E gate 未消化 = P5 完了に進めない (false completion 回避)。→ P4.5 E2E gate → /flow:e2e (continuous mode) で取り崩し。Class A no-key
+
+```yaml
+- id: D20260531-014
+  timestamp: 2026-05-31T06:40:00+09:00
+  command: /flow:auto
+  phase: §4.5.1#0 no-key 枯渇チェック (反復 8)
+  question: P5 完了前の no-key/Class-A 変種枯渇確認
+  recommended: jump to /flow:e2e (P4.5 E2E gate、9 件未消化 103)
+  chosen: /flow:e2e (continuous mode)
+  chosen_type: auto-recommended
+  context: |
+    biz-charts は全工程完了+10th deploy 済だが、2026-05-28 batch の 9 revise が
+    101+004 ありで 103 不在 = E2E gate 未消化 (前セッション CF-021 歪曲停止で取りこぼし)。
+    E2E green まで P5 完了に進まない規約により停止せず /flow:e2e へ。
+```
 - 反復 2: §3.0c 鮮度ゲート → /flow:audit --scope=standard — biz-charts revise 完遂 (大型 commit) が audit 鮮度トリガ。最新 AUDIT_20260530_1830 以降 biz-charts 設計+実装+E2E 完了 (12 commits) + SCENARIO §5 が「P5 完了」と drift (biz-charts 未デプロイ)。Class A auto-execute、P1-P5 前に drift シュート
 
 ```yaml

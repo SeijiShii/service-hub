@@ -56,6 +56,34 @@ test("UC1-S5: 直近 run failed → AlertBanner", async ({ page }) => {
   await expect(page.getByTestId("alert-banner")).toBeVisible();
 });
 
+test("DA-NAV (nav-and-pull): 管理リンクが /admin を指す", async ({ page }) => {
+  await page.route("**/api/dashboard/summary", (r) =>
+    r.fulfill({ json: dashboardVM }),
+  );
+  await page.goto("/");
+  await expect(page.getByTestId("admin-link")).toHaveAttribute(
+    "href",
+    "/admin",
+  );
+});
+
+test("DA-FP (force-pull/refresh-cadence): 今すぐ pull → 結果サマリ表示", async ({
+  page,
+}) => {
+  await page.route("**/api/dashboard/summary", (r) =>
+    r.fulfill({ json: dashboardVM }),
+  );
+  await page.route("**/api/admin/collect", (r) =>
+    r.fulfill({ json: { status: "ok", servicesCount: 3, errors: [] } }),
+  );
+  await page.goto("/");
+  await page.getByRole("button", { name: "今すぐ pull" }).click();
+  // force-pull 完了後に結果サマリ (servicesCount / errors 件数) が表示
+  await expect(page.getByTestId("force-pull-result")).toContainText(
+    "3 サービス",
+  );
+});
+
 test("UC1-S4: 行クリックで詳細へ遷移", async ({ page }) => {
   await page.route("**/api/dashboard/summary", (r) =>
     r.fulfill({ json: dashboardVM }),
