@@ -3,7 +3,8 @@ import type { DashboardChart } from "./summary.js";
 
 /**
  * dashboard 上部 chart section (timeseries-topchart、spec-review R4)。
- * 主要 4 metric (up / mau / db_storage_bytes / last_deploy_at) を縦並びで表示。
+ * 主要 3 metric (up / mau / db_storage_bytes) を縦並びで表示。
+ * last_deploy_at は一覧テーブルの「最終デプロイ」カラムへ移設 (last-deploy-col、2026-05-30)。
  * 各 chart は MetricChart に委譲 (全 service 重ね描き、空 series で「データなし」 fallback)。
  *
  * section header = 「直近 30 日の推移」 + border-bottom (DashboardView force-pull section と同パターン)。

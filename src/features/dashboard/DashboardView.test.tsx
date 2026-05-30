@@ -10,12 +10,11 @@ const vm = (over: Partial<DashboardVM> = {}): DashboardVM => ({
   downCount: 0,
   lastUpdatedAt: null,
   lastRunStatus: null,
-  // timeseries-topchart: charts は required (常に 4 件、helper default は空 series)
+  // timeseries-topchart + last-deploy-col: charts は required (常に 3 件、helper default は空 series)
   charts: [
     { metricKey: "up", unit: "bool", series: [] },
     { metricKey: "mau", unit: "count", series: [] },
     { metricKey: "db_storage_bytes", unit: "bytes", series: [] },
-    { metricKey: "last_deploy_at", unit: "epoch_ms", series: [] },
   ],
   ...over,
 });
@@ -207,7 +206,7 @@ describe("DashboardView", () => {
 
   // ── timeseries-topchart (revise_timeseries-topchart_20260528) ──
   describe("dashboard 二部構成: 上部 chart + 下部 table (spec-review R4)", () => {
-    it("TS-U-40: vm={rows: [], charts: [4 件]} → DashboardCharts section + empty-state 両表示", () => {
+    it("TS-U-40: vm={rows: [], charts: [3 件]} → DashboardCharts section + empty-state 両表示", () => {
       render(<DashboardView vm={vm()} />);
       // 上部 chart section が render される
       expect(screen.getByTestId("dashboard-charts")).not.toBeNull();
@@ -215,7 +214,7 @@ describe("DashboardView", () => {
       expect(screen.getByTestId("empty-state")).not.toBeNull();
     });
 
-    it("TS-U-41: vm={rows: [1 件], charts: [4 件]} → 上部 chart + 下部 table 両表示", () => {
+    it("TS-U-41: vm={rows: [1 件], charts: [3 件]} → 上部 chart + 下部 table 両表示", () => {
       const rowVM = {
         slug: "a",
         name: "Service A",

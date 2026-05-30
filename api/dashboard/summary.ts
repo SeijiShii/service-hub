@@ -26,7 +26,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const db = createDb();
   const services = await loadServices(db, { onlyActive: true });
   // timeseries-topchart (spec-review R1): recentSnapshots を既存 Promise.all に並列追加
-  // 過去 30 日 + 主要 4 metric (DASHBOARD_CHART_METRICS) に絞って軽量化
+  // 過去 30 日 + 主要 3 metric (DASHBOARD_CHART_METRICS、last-deploy-col で 4→3) に絞って軽量化
   const sinceIso = new Date(Date.now() - 30 * 864e5).toISOString();
   const [latest, alerts, runs, chartSnaps] = await Promise.all([
     latestPerService(db),

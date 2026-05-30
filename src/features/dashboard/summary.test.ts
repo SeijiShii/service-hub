@@ -143,23 +143,23 @@ describe("buildDashboard", () => {
       }),
     ];
     const vm = buildDashboard(services2, [], [], undefined, chartSnaps);
-    expect(vm.charts).toHaveLength(4);
+    expect(vm.charts).toHaveLength(3);
     expect(vm.charts.every((c) => c.series.length === 2)).toBe(true); // 全 chart に 2 service
     const upChart = vm.charts.find((c) => c.metricKey === "up")!;
     expect(upChart.series.find((s) => s.slug === "a")!.points).toHaveLength(1);
     expect(upChart.series.find((s) => s.slug === "b")!.points).toHaveLength(1);
   });
 
-  it("TS-U-11: chartSnapshots 未渡し (optional) → charts = 4 件、各 series.points = []", () => {
+  it("TS-U-11: chartSnapshots 未渡し (optional) → charts = 3 件、各 series.points = []", () => {
     const vm = buildDashboard([svc("a")], [], []); // 第 5 引数省略
-    expect(vm.charts).toHaveLength(4);
+    expect(vm.charts).toHaveLength(3);
     expect(vm.charts.every((c) => c.series.length === 1)).toBe(true);
     expect(vm.charts.every((c) => c.series[0].points.length === 0)).toBe(true);
   });
 
-  it("TS-U-12: chart metric 順序固定 (up → mau → db_storage_bytes → last_deploy_at)", () => {
+  it("TS-U-12: chart metric 順序固定 (up → mau → db_storage_bytes) — last_deploy_at は対象外", () => {
     const chartSnaps: SnapshotRow[] = [
-      // ランダム順で渡す
+      // ランダム順で渡す。last_deploy_at は非対象 metric なので chart に出ない
       snap({
         serviceSlug: "a",
         metricKey: "last_deploy_at",
@@ -193,8 +193,9 @@ describe("buildDashboard", () => {
       "up",
       "mau",
       "db_storage_bytes",
-      "last_deploy_at",
     ]);
+    // last-deploy-col: last_deploy_at は chart 対象から除外
+    expect(vm.charts.map((c) => c.metricKey)).not.toContain("last_deploy_at");
   });
 
   it("TS-U-13: 1 service のみ snapshots あり → chart.series に 2 service 含む (なし側は points=[])", () => {
@@ -212,7 +213,7 @@ describe("buildDashboard", () => {
     expect(upChart.series.find((s) => s.slug === "b")!.points).toEqual([]);
   });
 
-  it("TS-U-51: 非対象 metric (revenue_month_usd) 混入 → charts に含まれない (4 件のみ)", () => {
+  it("TS-U-51: 非対象 metric (revenue_month_usd) 混入 → charts に含まれない (3 件のみ)", () => {
     const chartSnaps: SnapshotRow[] = [
       snap({
         serviceSlug: "a",
@@ -228,13 +229,13 @@ describe("buildDashboard", () => {
       }),
     ];
     const vm = buildDashboard([svc("a")], [], [], undefined, chartSnaps);
-    expect(vm.charts).toHaveLength(4);
+    expect(vm.charts).toHaveLength(3);
     expect(vm.charts.map((c) => c.metricKey)).not.toContain(
       "revenue_month_usd",
     );
   });
 
-  it("TS-U-61: 0 service + chartSnapshots 有 → charts = 4 件、各 series=[]", () => {
+  it("TS-U-61: 0 service + chartSnapshots 有 → charts = 3 件、各 series=[]", () => {
     const chartSnaps: SnapshotRow[] = [
       snap({
         serviceSlug: "a",
@@ -243,14 +244,14 @@ describe("buildDashboard", () => {
       }),
     ];
     const vm = buildDashboard([], [], [], undefined, chartSnaps);
-    expect(vm.charts).toHaveLength(4);
+    expect(vm.charts).toHaveLength(3);
     expect(vm.charts.every((c) => c.series.length === 0)).toBe(true);
   });
 
   it("TS-M-03: 既存呼び出し (4 引数) でも charts required で必ず含む (後方互換確認)", () => {
     const vm = buildDashboard([svc("a")], [], []);
     expect(vm.charts).toBeDefined();
-    expect(vm.charts).toHaveLength(4);
+    expect(vm.charts).toHaveLength(3);
   });
 
   it("RC-N1: lastRun (status=ok, finishedAt あり) → VM に lastUpdatedAt + lastRunStatus", () => {

@@ -52,14 +52,15 @@ export interface DashboardChart {
 }
 
 /**
- * 上部 chart 化する主要 metric 4 件 (固定順序、spec-review R2 確定)。
- * 順序: 死活 → ビジネス → リソース → デプロイ運用。
+ * 上部 chart 化する主要 metric 3 件 (固定順序、spec-review R2 確定)。
+ * 順序: 死活 → ビジネス → リソース。
+ * last_deploy_at は単一デプロイ時刻で折れ線不向きのため chart 対象外とし、
+ * 一覧テーブルの「最終デプロイ」カラムへ移設 (last-deploy-col、2026-05-30)。
  */
 export const DASHBOARD_CHART_METRICS: readonly MetricKey[] = [
   "up",
   "mau",
   "db_storage_bytes",
-  "last_deploy_at",
 ] as const;
 
 /** metric 別の unit fallback (snapshots に unit があれば優先、無ければ既知デフォルト)。 */
@@ -80,7 +81,7 @@ export interface DashboardVM {
   lastUpdatedAt: string | null;
   /**
    * dashboard 上部 chart 用の主要 metric × 全 service 時系列 (timeseries-topchart、required、spec-review R2)。
-   * 常に 4 件 (DASHBOARD_CHART_METRICS の順)、空 chartSnapshots でも各 chart.series に
+   * 常に 3 件 (DASHBOARD_CHART_METRICS の順)、空 chartSnapshots でも各 chart.series に
    * 全 service の {slug,name,points:[]} を含む (UI で「データなし」 fallback)。
    */
   charts: DashboardChart[];
@@ -88,7 +89,7 @@ export interface DashboardVM {
 
 /**
  * chartSnapshots から DashboardChart[] を集約 (timeseries-topchart、spec-review R2)。
- * 固定 4 metric × 全 service で重ね描き用 series を生成、metric 順序は DASHBOARD_CHART_METRICS で固定。
+ * 固定 3 metric × 全 service で重ね描き用 series を生成、metric 順序は DASHBOARD_CHART_METRICS で固定。
  * 空 chartSnapshots でも各 chart.series に全 service の {slug,name,points:[]} を含む (UI fallback)。
  */
 function buildCharts(

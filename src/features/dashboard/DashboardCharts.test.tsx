@@ -18,7 +18,7 @@ const mkChart = (
 });
 
 describe("DashboardCharts (timeseries-topchart、spec-review R4)", () => {
-  it("TS-U-30: 4 chart render (up / mau / db_storage_bytes / last_deploy_at)", () => {
+  it("TS-U-30: 3 chart render (up / mau / db_storage_bytes) — last_deploy_at は除外 (last-deploy-col)", () => {
     const charts: DashboardChart[] = [
       mkChart("up", "bool", [
         ["a", [{ capturedAt: "2026-05-10T00:00:00Z", value: 1 }]],
@@ -29,15 +29,13 @@ describe("DashboardCharts (timeseries-topchart、spec-review R4)", () => {
       mkChart("db_storage_bytes", "bytes", [
         ["a", [{ capturedAt: "2026-05-10T00:00:00Z", value: 999 }]],
       ]),
-      mkChart("last_deploy_at", "epoch_ms", [
-        ["a", [{ capturedAt: "2026-05-10T00:00:00Z", value: 1779958293585 }]],
-      ]),
     ];
     render(<DashboardCharts charts={charts} />);
     expect(screen.getByTestId("chart-up")).not.toBeNull();
     expect(screen.getByTestId("chart-mau")).not.toBeNull();
     expect(screen.getByTestId("chart-db_storage_bytes")).not.toBeNull();
-    expect(screen.getByTestId("chart-last_deploy_at")).not.toBeNull();
+    // last-deploy-col: last_deploy_at は chart 表示せず一覧カラムへ移設 → chart 不在
+    expect(screen.queryByTestId("chart-last_deploy_at")).toBeNull();
   });
 
   it("TS-U-31: section header「直近 30 日の推移」 + section testid", () => {
@@ -60,14 +58,13 @@ describe("DashboardCharts (timeseries-topchart、spec-review R4)", () => {
       mkChart("up", "bool", []),
       mkChart("mau", "count", []),
       mkChart("db_storage_bytes", "bytes", []),
-      mkChart("last_deploy_at", "epoch_ms", []),
     ];
     render(<DashboardCharts charts={charts} />);
     expect(screen.getByTestId("dashboard-charts")).not.toBeNull();
     expect(screen.getByTestId("chart-empty-up")).not.toBeNull();
     expect(screen.getByTestId("chart-empty-mau")).not.toBeNull();
     expect(screen.getByTestId("chart-empty-db_storage_bytes")).not.toBeNull();
-    expect(screen.getByTestId("chart-empty-last_deploy_at")).not.toBeNull();
+    expect(screen.queryByTestId("chart-empty-last_deploy_at")).toBeNull();
   });
 
   it("TS-U-32b: charts=[] (空配列) でも section + header は render (チャート部分のみ空)", () => {
