@@ -11,12 +11,18 @@ describe("MetricChart (timeseries-topchart、multi-series 共通化、spec-revie
         {
           slug: "a",
           name: "Service A",
-          points: [ptA("2026-05-01T00:00:00Z", 10), ptA("2026-05-02T00:00:00Z", 20)],
+          points: [
+            ptA("2026-05-01T00:00:00Z", 10),
+            ptA("2026-05-02T00:00:00Z", 20),
+          ],
         },
         {
           slug: "b",
           name: "Service B",
-          points: [ptA("2026-05-01T00:00:00Z", 5), ptA("2026-05-02T00:00:00Z", 15)],
+          points: [
+            ptA("2026-05-01T00:00:00Z", 5),
+            ptA("2026-05-02T00:00:00Z", 15),
+          ],
         },
       ];
       render(<MetricChart metricKey="mau" unit="count" series={series} />);
@@ -27,11 +33,37 @@ describe("MetricChart (timeseries-topchart、multi-series 共通化、spec-revie
     });
   });
 
+  describe("BC-U-04/12: label prop (biz-charts)", () => {
+    it("BC-U-04: label 指定 → 見出しに label を表示 (testid は metricKey 維持)", () => {
+      render(
+        <MetricChart
+          metricKey="revenue_month_usd"
+          label="課金額"
+          unit="usd"
+          series={[]}
+        />,
+      );
+      const figure = screen.getByTestId("chart-empty-revenue_month_usd");
+      // figure 全体の見出しは label
+      const fig = screen.getByTestId("chart-revenue_month_usd");
+      expect(fig.textContent).toContain("課金額 (usd)");
+      expect(figure).not.toBeNull();
+    });
+    it("BC-U-12: label 未指定 → metricKey fallback (service-detail 後方互換)", () => {
+      render(<MetricChart metricKey="mau" unit="count" series={[]} />);
+      expect(screen.getByTestId("chart-mau").textContent).toContain(
+        "mau (count)",
+      );
+    });
+  });
+
   describe("TS-U-21: series 空 → データなし", () => {
     it("series=[] → 「データなし」表示", () => {
       render(<MetricChart metricKey="mau" unit="count" series={[]} />);
       expect(screen.getByTestId("chart-empty-mau")).not.toBeNull();
-      expect(screen.getByTestId("chart-empty-mau").textContent).toBe("データなし");
+      expect(screen.getByTestId("chart-empty-mau").textContent).toBe(
+        "データなし",
+      );
     });
   });
 
@@ -58,16 +90,24 @@ describe("MetricChart (timeseries-topchart、multi-series 共通化、spec-revie
         },
       ];
       const { container } = render(
-        <MetricChart metricKey="last_deploy_at" unit="epoch_ms" series={series} />,
+        <MetricChart
+          metricKey="last_deploy_at"
+          unit="epoch_ms"
+          series={series}
+        />,
       );
       // recharts は SVG 描画、tickFormatter 結果が出るかは描画後の text node を見る
       // ここでは tickFormatter 自体の単体動作を確認 (実装内 helper を indirect 確認)
-      const figure = container.querySelector('[data-testid="chart-last_deploy_at"]');
+      const figure = container.querySelector(
+        '[data-testid="chart-last_deploy_at"]',
+      );
       expect(figure).not.toBeNull();
       // 生 epoch_ms 値が figure 内に表示されていないことを assert (recharts 描画後)
       // 注: chart の svg 内 tick text は jsdom で完全 render されないため、tickFormatter 関数の挙動は
       // 実装ファイル内で確認するか、ここでは関数公開せず描画結果の存在 + 「データなし」非表示で代替
-      expect(container.querySelector('[data-testid="chart-empty-last_deploy_at"]')).toBeNull();
+      expect(
+        container.querySelector('[data-testid="chart-empty-last_deploy_at"]'),
+      ).toBeNull();
       // 期待: figure.textContent に M/D 形式 (例 "5/28") が含まれる or 少なくとも epoch 数値文字列 1779962400000 が含まれない
       expect(figure?.textContent ?? "").not.toContain("1779962400000");
     });
@@ -79,7 +119,10 @@ describe("MetricChart (timeseries-topchart、multi-series 共通化、spec-revie
         {
           slug: "hana-memo",
           name: "花メモ",
-          points: [ptA("2026-05-01T00:00:00Z", 1), ptA("2026-05-02T00:00:00Z", 1)],
+          points: [
+            ptA("2026-05-01T00:00:00Z", 1),
+            ptA("2026-05-02T00:00:00Z", 1),
+          ],
         },
       ];
       render(<MetricChart metricKey="up" unit="bool" series={series} />);
@@ -95,12 +138,18 @@ describe("MetricChart (timeseries-topchart、multi-series 共通化、spec-revie
         <MetricChart
           metricKey="db_storage_bytes"
           unit="bytes"
-          series={[{ slug: "a", name: "A", points: [ptA("2026-05-01T00:00:00Z", 100)] }]}
+          series={[
+            {
+              slug: "a",
+              name: "A",
+              points: [ptA("2026-05-01T00:00:00Z", 100)],
+            },
+          ]}
         />,
       );
-      expect(screen.getByTestId("chart-db_storage_bytes").textContent).toContain(
-        "db_storage_bytes (bytes)",
-      );
+      expect(
+        screen.getByTestId("chart-db_storage_bytes").textContent,
+      ).toContain("db_storage_bytes (bytes)");
     });
   });
 });

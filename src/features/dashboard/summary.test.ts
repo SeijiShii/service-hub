@@ -118,16 +118,9 @@ describe("buildDashboard", () => {
     expect(vm.rows[0].iconUrl).toBeUndefined();
   });
 
-  // ── timeseries-topchart (revise_timeseries-topchart_20260528) ──
-  it("TS-U-10: chartSnapshots あり → DashboardChart 4 件、各 chart.series に 2 service 分", () => {
-    const services2 = [svc("a"), svc("b")];
+  // ── biz-charts (revise_biz-charts_20260530) : ユーザー数/課金額/コスト/採算 ──
+  it("BC-U-01: charts = 4 件、順序 [mau, revenue, cost, profit]、日本語 label", () => {
     const chartSnaps: SnapshotRow[] = [
-      snap({
-        serviceSlug: "a",
-        metricKey: "up",
-        metricValue: 1,
-        capturedAt: "2026-05-10T00:00:00.000Z",
-      }),
       snap({
         serviceSlug: "a",
         metricKey: "mau",
@@ -136,42 +129,188 @@ describe("buildDashboard", () => {
         capturedAt: "2026-05-10T00:00:00.000Z",
       }),
       snap({
-        serviceSlug: "b",
-        metricKey: "up",
-        metricValue: 1,
+        serviceSlug: "a",
+        metricKey: "revenue_month_usd",
+        metricValue: 50,
+        unit: "usd",
+        capturedAt: "2026-05-10T00:00:00.000Z",
+      }),
+      snap({
+        serviceSlug: "a",
+        metricKey: "ai_cost_month_usd",
+        metricValue: 10,
+        unit: "usd",
         capturedAt: "2026-05-10T00:00:00.000Z",
       }),
     ];
-    const vm = buildDashboard(services2, [], [], undefined, chartSnaps);
-    expect(vm.charts).toHaveLength(3);
-    expect(vm.charts.every((c) => c.series.length === 2)).toBe(true); // 全 chart に 2 service
-    const upChart = vm.charts.find((c) => c.metricKey === "up")!;
-    expect(upChart.series.find((s) => s.slug === "a")!.points).toHaveLength(1);
-    expect(upChart.series.find((s) => s.slug === "b")!.points).toHaveLength(1);
+    const vm = buildDashboard([svc("a")], [], [], undefined, chartSnaps);
+    expect(vm.charts).toHaveLength(4);
+    expect(vm.charts.map((c) => c.metricKey)).toEqual([
+      "mau",
+      "revenue_month_usd",
+      "ai_cost_month_usd",
+      "profit",
+    ]);
+    expect(vm.charts.map((c) => c.label)).toEqual([
+      "ユーザー数",
+      "課金額",
+      "コスト",
+      "採算",
+    ]);
+    // up / db_storage_bytes は chart 対象外 (一覧 status 列・収集は別)
+    expect(vm.charts.map((c) => c.metricKey)).not.toContain("up");
+    expect(vm.charts.map((c) => c.metricKey)).not.toContain("db_storage_bytes");
   });
 
-  it("TS-U-11: chartSnapshots 未渡し (optional) → charts = 3 件、各 series.points = []", () => {
-    const vm = buildDashboard([svc("a")], [], []); // 第 5 引数省略
-    expect(vm.charts).toHaveLength(3);
+  it("BC-U-02: 採算(profit) = revenue − cost の派生系列", () => {
+    const chartSnaps: SnapshotRow[] = [
+      snap({
+        serviceSlug: "a",
+        metricKey: "revenue_month_usd",
+        metricValue: 50,
+        unit: "usd",
+        capturedAt: "2026-05-10T00:00:00.000Z",
+      }),
+      snap({
+        serviceSlug: "a",
+        metricKey: "revenue_month_usd",
+        metricValue: 80,
+        unit: "usd",
+        capturedAt: "2026-05-11T00:00:00.000Z",
+      }),
+      snap({
+        serviceSlug: "a",
+        metricKey: "ai_cost_month_usd",
+        metricValue: 10,
+        unit: "usd",
+        capturedAt: "2026-05-10T00:00:00.000Z",
+      }),
+      snap({
+        serviceSlug: "a",
+        metricKey: "ai_cost_month_usd",
+        metricValue: 30,
+        unit: "usd",
+        capturedAt: "2026-05-11T00:00:00.000Z",
+      }),
+    ];
+    const vm = buildDashboard([svc("a")], [], [], undefined, chartSnaps);
+    const profit = vm.charts.find((c) => c.metricKey === "profit")!;
+    expect(profit.series[0].points).toEqual([
+      { capturedAt: "2026-05-10T00:00:00.000Z", value: 40 },
+      { capturedAt: "2026-05-11T00:00:00.000Z", value: 50 },
+    ]);
+  });
+
+  it("BC-U-03: cost 欠落の時点 → profit = revenue (cost 0 扱い)", () => {
+    const chartSnaps: SnapshotRow[] = [
+      snap({
+        serviceSlug: "a",
+        metricKey: "revenue_month_usd",
+        metricValue: 50,
+        unit: "usd",
+        capturedAt: "2026-05-10T00:00:00.000Z",
+      }),
+    ];
+    const vm = buildDashboard([svc("a")], [], [], undefined, chartSnaps);
+    const profit = vm.charts.find((c) => c.metricKey === "profit")!;
+    expect(profit.series[0].points).toEqual([
+      { capturedAt: "2026-05-10T00:00:00.000Z", value: 50 },
+    ]);
+  });
+
+  it("BC-U-10: revenue 無し / cost のみ → profit 系列に点を作らない (revenue 起点)", () => {
+    const chartSnaps: SnapshotRow[] = [
+      snap({
+        serviceSlug: "a",
+        metricKey: "ai_cost_month_usd",
+        metricValue: 20,
+        unit: "usd",
+        capturedAt: "2026-05-10T00:00:00.000Z",
+      }),
+    ];
+    const vm = buildDashboard([svc("a")], [], [], undefined, chartSnaps);
+    const profit = vm.charts.find((c) => c.metricKey === "profit")!;
+    expect(profit.series[0].points).toEqual([]);
+  });
+
+  it("BC-U-11: 全欠落 → charts 4 件、各 series points = []", () => {
+    const vm = buildDashboard([svc("a")], [], []); // chartSnapshots 省略
+    expect(vm.charts).toHaveLength(4);
     expect(vm.charts.every((c) => c.series.length === 1)).toBe(true);
     expect(vm.charts.every((c) => c.series[0].points.length === 0)).toBe(true);
   });
 
-  it("TS-U-12: chart metric 順序固定 (up → mau → db_storage_bytes) — last_deploy_at は対象外", () => {
+  it("BC-U-20: revenue=0, cost=5 → profit = -5 (revenue=0 でも点を作る)", () => {
     const chartSnaps: SnapshotRow[] = [
-      // ランダム順で渡す。last_deploy_at は非対象 metric なので chart に出ない
       snap({
         serviceSlug: "a",
-        metricKey: "last_deploy_at",
-        metricValue: 1779958293585,
-        unit: "epoch_ms",
+        metricKey: "revenue_month_usd",
+        metricValue: 0,
+        unit: "usd",
         capturedAt: "2026-05-10T00:00:00.000Z",
       }),
+      snap({
+        serviceSlug: "a",
+        metricKey: "ai_cost_month_usd",
+        metricValue: 5,
+        unit: "usd",
+        capturedAt: "2026-05-10T00:00:00.000Z",
+      }),
+    ];
+    const vm = buildDashboard([svc("a")], [], [], undefined, chartSnaps);
+    const profit = vm.charts.find((c) => c.metricKey === "profit")!;
+    expect(profit.series[0].points).toEqual([
+      { capturedAt: "2026-05-10T00:00:00.000Z", value: -5 },
+    ]);
+  });
+
+  it("BC-U-21: revenue と cost の capturedAt がずれる → revenue 起点、対応 cost 無し→0", () => {
+    const chartSnaps: SnapshotRow[] = [
+      snap({
+        serviceSlug: "a",
+        metricKey: "revenue_month_usd",
+        metricValue: 50,
+        unit: "usd",
+        capturedAt: "2026-05-10T00:00:00.000Z",
+      }),
+      snap({
+        serviceSlug: "a",
+        metricKey: "ai_cost_month_usd",
+        metricValue: 30,
+        unit: "usd",
+        capturedAt: "2026-05-11T00:00:00.000Z",
+      }),
+    ];
+    const vm = buildDashboard([svc("a")], [], [], undefined, chartSnaps);
+    const profit = vm.charts.find((c) => c.metricKey === "profit")!;
+    // revenue は 05-10 のみ → cost(05-11) は対応せず 0 → profit 50
+    expect(profit.series[0].points).toEqual([
+      { capturedAt: "2026-05-10T00:00:00.000Z", value: 50 },
+    ]);
+  });
+
+  it("BC-U-13: 1 service のみ source あり → series に全 service (なし側 points=[])", () => {
+    const services2 = [svc("a"), svc("b")];
+    const chartSnaps: SnapshotRow[] = [
       snap({
         serviceSlug: "a",
         metricKey: "mau",
         metricValue: 100,
         unit: "count",
+        capturedAt: "2026-05-10T00:00:00.000Z",
+      }),
+    ];
+    const vm = buildDashboard(services2, [], [], undefined, chartSnaps);
+    const mauChart = vm.charts.find((c) => c.metricKey === "mau")!;
+    expect(mauChart.series.find((s) => s.slug === "a")!.points).toHaveLength(1);
+    expect(mauChart.series.find((s) => s.slug === "b")!.points).toEqual([]);
+  });
+
+  it("BC-U-51: 非対象 metric (up/db_storage_bytes) 混入 → chart に含まれない", () => {
+    const chartSnaps: SnapshotRow[] = [
+      snap({
+        serviceSlug: "a",
+        metricKey: "up",
         capturedAt: "2026-05-10T00:00:00.000Z",
       }),
       snap({
@@ -183,75 +322,77 @@ describe("buildDashboard", () => {
       }),
       snap({
         serviceSlug: "a",
-        metricKey: "up",
-        metricValue: 1,
+        metricKey: "mau",
+        metricValue: 7,
+        unit: "count",
         capturedAt: "2026-05-10T00:00:00.000Z",
       }),
     ];
     const vm = buildDashboard([svc("a")], [], [], undefined, chartSnaps);
-    expect(vm.charts.map((c) => c.metricKey)).toEqual([
-      "up",
-      "mau",
-      "db_storage_bytes",
-    ]);
-    // last-deploy-col: last_deploy_at は chart 対象から除外
-    expect(vm.charts.map((c) => c.metricKey)).not.toContain("last_deploy_at");
+    expect(vm.charts).toHaveLength(4);
+    expect(vm.charts.map((c) => c.metricKey)).not.toContain("up");
+    expect(vm.charts.map((c) => c.metricKey)).not.toContain("db_storage_bytes");
   });
 
-  it("TS-U-13: 1 service のみ snapshots あり → chart.series に 2 service 含む (なし側は points=[])", () => {
-    const services2 = [svc("a"), svc("b")];
+  it("BC-U-61: 0 service + chartSnapshots 有 → charts = 4 件、各 series=[]", () => {
     const chartSnaps: SnapshotRow[] = [
       snap({
         serviceSlug: "a",
-        metricKey: "up",
-        capturedAt: "2026-05-10T00:00:00.000Z",
-      }),
-    ];
-    const vm = buildDashboard(services2, [], [], undefined, chartSnaps);
-    const upChart = vm.charts.find((c) => c.metricKey === "up")!;
-    expect(upChart.series.find((s) => s.slug === "a")!.points).toHaveLength(1);
-    expect(upChart.series.find((s) => s.slug === "b")!.points).toEqual([]);
-  });
-
-  it("TS-U-51: 非対象 metric (revenue_month_usd) 混入 → charts に含まれない (3 件のみ)", () => {
-    const chartSnaps: SnapshotRow[] = [
-      snap({
-        serviceSlug: "a",
-        metricKey: "up",
-        capturedAt: "2026-05-10T00:00:00.000Z",
-      }),
-      snap({
-        serviceSlug: "a",
-        metricKey: "revenue_month_usd",
-        metricValue: 9999,
-        unit: "usd",
-        capturedAt: "2026-05-10T00:00:00.000Z",
-      }),
-    ];
-    const vm = buildDashboard([svc("a")], [], [], undefined, chartSnaps);
-    expect(vm.charts).toHaveLength(3);
-    expect(vm.charts.map((c) => c.metricKey)).not.toContain(
-      "revenue_month_usd",
-    );
-  });
-
-  it("TS-U-61: 0 service + chartSnapshots 有 → charts = 3 件、各 series=[]", () => {
-    const chartSnaps: SnapshotRow[] = [
-      snap({
-        serviceSlug: "a",
-        metricKey: "up",
+        metricKey: "mau",
         capturedAt: "2026-05-10T00:00:00.000Z",
       }),
     ];
     const vm = buildDashboard([], [], [], undefined, chartSnaps);
-    expect(vm.charts).toHaveLength(3);
+    expect(vm.charts).toHaveLength(4);
     expect(vm.charts.every((c) => c.series.length === 0)).toBe(true);
   });
 
   it("TS-M-03: 既存呼び出し (4 引数) でも charts required で必ず含む (後方互換確認)", () => {
     const vm = buildDashboard([svc("a")], [], []);
     expect(vm.charts).toBeDefined();
-    expect(vm.charts).toHaveLength(3);
+    expect(vm.charts).toHaveLength(4);
+  });
+
+  it("BC-U-30: 採算チャート最新点 = 一覧採算列 (computeProfitability) の一致 (spec-review R1)", () => {
+    const chartSnaps: SnapshotRow[] = [
+      snap({
+        serviceSlug: "a",
+        metricKey: "revenue_month_usd",
+        metricValue: 50,
+        unit: "usd",
+        capturedAt: "2026-05-10T00:00:00.000Z",
+      }),
+      snap({
+        serviceSlug: "a",
+        metricKey: "ai_cost_month_usd",
+        metricValue: 10,
+        unit: "usd",
+        capturedAt: "2026-05-10T00:00:00.000Z",
+      }),
+    ];
+    // 一覧採算列は latest snapshot から computeProfitability → profit=40
+    const latest: SnapshotRow[] = [
+      snap({
+        serviceSlug: "a",
+        metricKey: "revenue_month_usd",
+        metricValue: 50,
+        unit: "usd",
+        capturedAt: "2026-05-10T00:00:00.000Z",
+      }),
+      snap({
+        serviceSlug: "a",
+        metricKey: "ai_cost_month_usd",
+        metricValue: 10,
+        unit: "usd",
+        capturedAt: "2026-05-10T00:00:00.000Z",
+      }),
+    ];
+    const vm = buildDashboard([svc("a")], latest, [], undefined, chartSnaps);
+    const profitChart = vm.charts.find((c) => c.metricKey === "profit")!;
+    const chartLatest = profitChart.series[0].points.at(-1)!.value;
+    const colProfit = vm.rows[0].profitability.profit;
+    expect(chartLatest).toBe(colProfit); // 同じ profitAt 経由で一致
+    expect(chartLatest).toBe(40);
   });
 
   it("RC-N1: lastRun (status=ok, finishedAt あり) → VM に lastUpdatedAt + lastRunStatus", () => {

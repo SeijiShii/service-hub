@@ -21,15 +21,32 @@ export interface ProfitThresholds {
 type Metrics = Partial<Record<MetricKey, number>>;
 
 /**
+ * 採算の定義 SoT (biz-charts spec-review R1)。`revenue − (cost ?? 0)`。
+ * 一覧テーブルの「採算」列 (computeProfitability) と上部チャートの「採算」(buildCharts 時系列) が
+ * 同じ値の別表現になるよう、両者がこの純関数を共有する (定義分散による view 間乖離を防ぐ、P87)。
+ * cost 未申告 (null/undefined) は 0 扱い (revenue があれば算出)。
+ */
+export function profitAt(
+  revenue: number,
+  cost: number | null | undefined,
+): number {
+  return revenue - (cost ?? 0);
+}
+
+/**
  * service-info 自己申告メトリクスから採算を算出 (business-observability Phase A)。
  * revenue 未申告 = データなし(null)。cost 未申告は 0 扱い (revenue があれば算出)。
  */
-export function computeProfitability(metrics: Metrics, thresholds: ProfitThresholds = {}): Profitability {
+export function computeProfitability(
+  metrics: Metrics,
+  thresholds: ProfitThresholds = {},
+): Profitability {
   const revenue = metrics.revenue_month_usd ?? null;
-  if (revenue == null) return { revenue: null, cost: null, profit: null, state: null };
+  if (revenue == null)
+    return { revenue: null, cost: null, profit: null, state: null };
 
   const cost = metrics.ai_cost_month_usd ?? 0;
-  const profit = revenue - cost;
+  const profit = profitAt(revenue, cost);
   const thinMarginMax = thresholds.thinMarginMax ?? 0.15;
 
   let state: ProfitState;

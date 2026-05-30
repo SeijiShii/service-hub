@@ -6,7 +6,7 @@ import {
   recentRuns,
   recentSnapshots,
 } from "../../src/db/index.js";
-import { DASHBOARD_CHART_METRICS } from "../../src/features/dashboard/summary.js";
+import { DASHBOARD_CHART_SOURCE_METRICS } from "../../src/features/dashboard/summary.js";
 import { loadServices } from "../../src/registry/index.js";
 import { buildDashboard } from "../../src/features/dashboard/summary.js";
 import {
@@ -25,14 +25,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
   const db = createDb();
   const services = await loadServices(db, { onlyActive: true });
-  // timeseries-topchart (spec-review R1): recentSnapshots を既存 Promise.all に並列追加
-  // 過去 30 日 + 主要 3 metric (DASHBOARD_CHART_METRICS、last-deploy-col で 4→3) に絞って軽量化
+  // biz-charts: recentSnapshots を既存 Promise.all に並列追加。
+  // 過去 30 日 + chart source metric (mau/revenue_month_usd/ai_cost_month_usd) に絞って軽量化。
+  // 採算(profit)は buildCharts が revenue−cost から派生するため取得キーには含めない。
   const sinceIso = new Date(Date.now() - 30 * 864e5).toISOString();
   const [latest, alerts, runs, chartSnaps] = await Promise.all([
     latestPerService(db),
     openAlerts(db),
     recentRuns(db, 1),
-    recentSnapshots(db, sinceIso, [...DASHBOARD_CHART_METRICS]),
+    recentSnapshots(db, sinceIso, [...DASHBOARD_CHART_SOURCE_METRICS]),
   ]);
   return res
     .status(200)

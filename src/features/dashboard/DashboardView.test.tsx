@@ -10,11 +10,22 @@ const vm = (over: Partial<DashboardVM> = {}): DashboardVM => ({
   downCount: 0,
   lastUpdatedAt: null,
   lastRunStatus: null,
-  // timeseries-topchart + last-deploy-col: charts は required (常に 3 件、helper default は空 series)
+  // biz-charts: charts は required (常に 4 件: ユーザー数/課金額/コスト/採算、helper default は空 series)
   charts: [
-    { metricKey: "up", unit: "bool", series: [] },
-    { metricKey: "mau", unit: "count", series: [] },
-    { metricKey: "db_storage_bytes", unit: "bytes", series: [] },
+    { metricKey: "mau", label: "ユーザー数", unit: "count", series: [] },
+    {
+      metricKey: "revenue_month_usd",
+      label: "課金額",
+      unit: "usd",
+      series: [],
+    },
+    {
+      metricKey: "ai_cost_month_usd",
+      label: "コスト",
+      unit: "usd",
+      series: [],
+    },
+    { metricKey: "profit", label: "採算", unit: "usd", series: [] },
   ],
   ...over,
 });

@@ -5,10 +5,12 @@ import type { DashboardChart } from "./summary.js";
 
 const mkChart = (
   metricKey: DashboardChart["metricKey"],
+  label: string,
   unit: string,
   seriesPoints: Array<[string, Array<{ capturedAt: string; value: number }>]>,
 ): DashboardChart => ({
   metricKey,
+  label,
   unit,
   series: seriesPoints.map(([slug, points]) => ({
     slug,
@@ -17,29 +19,42 @@ const mkChart = (
   })),
 });
 
-describe("DashboardCharts (timeseries-topchart、spec-review R4)", () => {
-  it("TS-U-30: 3 chart render (up / mau / db_storage_bytes) — last_deploy_at は除外 (last-deploy-col)", () => {
+describe("DashboardCharts (biz-charts)", () => {
+  it("BC-U-05: 4 chart render (ユーザー数/課金額/コスト/採算) — up/db_storage_bytes は除外", () => {
     const charts: DashboardChart[] = [
-      mkChart("up", "bool", [
-        ["a", [{ capturedAt: "2026-05-10T00:00:00Z", value: 1 }]],
-      ]),
-      mkChart("mau", "count", [
+      mkChart("mau", "ユーザー数", "count", [
         ["a", [{ capturedAt: "2026-05-10T00:00:00Z", value: 100 }]],
       ]),
-      mkChart("db_storage_bytes", "bytes", [
-        ["a", [{ capturedAt: "2026-05-10T00:00:00Z", value: 999 }]],
+      mkChart("revenue_month_usd", "課金額", "usd", [
+        ["a", [{ capturedAt: "2026-05-10T00:00:00Z", value: 50 }]],
+      ]),
+      mkChart("ai_cost_month_usd", "コスト", "usd", [
+        ["a", [{ capturedAt: "2026-05-10T00:00:00Z", value: 10 }]],
+      ]),
+      mkChart("profit", "採算", "usd", [
+        ["a", [{ capturedAt: "2026-05-10T00:00:00Z", value: 40 }]],
       ]),
     ];
     render(<DashboardCharts charts={charts} />);
-    expect(screen.getByTestId("chart-up")).not.toBeNull();
     expect(screen.getByTestId("chart-mau")).not.toBeNull();
-    expect(screen.getByTestId("chart-db_storage_bytes")).not.toBeNull();
-    // last-deploy-col: last_deploy_at は chart 表示せず一覧カラムへ移設 → chart 不在
-    expect(screen.queryByTestId("chart-last_deploy_at")).toBeNull();
+    expect(screen.getByTestId("chart-revenue_month_usd")).not.toBeNull();
+    expect(screen.getByTestId("chart-ai_cost_month_usd")).not.toBeNull();
+    expect(screen.getByTestId("chart-profit")).not.toBeNull();
+    // 日本語ラベルが見出しに出る
+    const section = screen.getByTestId("dashboard-charts") as HTMLElement;
+    expect(section.textContent).toContain("ユーザー数");
+    expect(section.textContent).toContain("課金額");
+    expect(section.textContent).toContain("コスト");
+    expect(section.textContent).toContain("採算");
+    // 旧 chart は不在
+    expect(screen.queryByTestId("chart-up")).toBeNull();
+    expect(screen.queryByTestId("chart-db_storage_bytes")).toBeNull();
   });
 
   it("TS-U-31: section header「直近 30 日の推移」 + section testid", () => {
-    const charts: DashboardChart[] = [mkChart("up", "bool", [])];
+    const charts: DashboardChart[] = [
+      mkChart("mau", "ユーザー数", "count", []),
+    ];
     render(<DashboardCharts charts={charts} />);
     const section = screen.getByTestId("dashboard-charts") as HTMLElement;
     expect(section).not.toBeNull();
@@ -53,18 +68,20 @@ describe("DashboardCharts (timeseries-topchart、spec-review R4)", () => {
     expect(heading!.textContent).toBe("直近 30 日の推移");
   });
 
-  it("TS-U-32: 全 chart で series 空 (空 chartSnapshots 状態) → 各 chart で「データなし」表示、section 自体は render", () => {
+  it("TS-U-32: 全 chart で series 空 → 各 chart で「データなし」表示、section 自体は render", () => {
     const charts: DashboardChart[] = [
-      mkChart("up", "bool", []),
-      mkChart("mau", "count", []),
-      mkChart("db_storage_bytes", "bytes", []),
+      mkChart("mau", "ユーザー数", "count", []),
+      mkChart("revenue_month_usd", "課金額", "usd", []),
+      mkChart("ai_cost_month_usd", "コスト", "usd", []),
+      mkChart("profit", "採算", "usd", []),
     ];
     render(<DashboardCharts charts={charts} />);
     expect(screen.getByTestId("dashboard-charts")).not.toBeNull();
-    expect(screen.getByTestId("chart-empty-up")).not.toBeNull();
     expect(screen.getByTestId("chart-empty-mau")).not.toBeNull();
-    expect(screen.getByTestId("chart-empty-db_storage_bytes")).not.toBeNull();
-    expect(screen.queryByTestId("chart-empty-last_deploy_at")).toBeNull();
+    expect(screen.getByTestId("chart-empty-revenue_month_usd")).not.toBeNull();
+    expect(screen.getByTestId("chart-empty-ai_cost_month_usd")).not.toBeNull();
+    expect(screen.getByTestId("chart-empty-profit")).not.toBeNull();
+    expect(screen.queryByTestId("chart-empty-up")).toBeNull();
   });
 
   it("TS-U-32b: charts=[] (空配列) でも section + header は render (チャート部分のみ空)", () => {

@@ -23,6 +23,8 @@ export interface MetricSeriesItem {
 
 export interface MetricChartProps {
   metricKey: MetricKey;
+  /** 見出し用ラベル (biz-charts)。未指定なら metricKey で fallback (service-detail 後方互換、spec-review R2)。 */
+  label?: string;
   unit: string;
   series: MetricSeriesItem[];
   height?: number;
@@ -75,6 +77,7 @@ function mergeSeries(
 
 export function MetricChart({
   metricKey,
+  label,
   unit,
   series,
   height = 160,
@@ -90,7 +93,7 @@ export function MetricChart({
       data-series-count={series.length}
     >
       <figcaption style={{ fontFamily: "ui-monospace, monospace" }}>
-        {metricKey} ({unit})
+        {label ?? metricKey} ({unit})
       </figcaption>
       {empty ? (
         <p data-testid={`chart-empty-${metricKey}`}>データなし</p>
