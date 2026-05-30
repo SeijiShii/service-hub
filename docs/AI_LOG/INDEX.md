@@ -1,8 +1,8 @@
 # AI_LOG インデックス — service-hub
 
 **最終更新**: 2026-05-30 (+09:00)
-**総セッション数**: 64 (D20260530_011 auto + 012 spec-review 追加)
-**総 decision 数**: 211 (D20260530-001〜049、D20260528-001〜131、D20260527-001〜035、+ D20260526 系)
+**総セッション数**: 65 (D20260530_013 tdd biz-charts 追加)
+**総 decision 数**: 214 (D20260530-001〜052、D20260528-001〜131、D20260527-001〜035、+ D20260526 系)
 
 > セッションごとに 1 ファイル、append-only、過去ファイルは削除・編集禁止。
 > 人間向けサマリは `../concept.md` §7 決定事項ログ を参照。
@@ -12,6 +12,7 @@
 ## セッション一覧（新しい順）
 | ファイル | 実行日 | コマンド | 対象 | decision 範囲 | 状態 |
 |---|---|---|---|---|---|
+| [D20260530_013_tdd_dashboard_revise_biz-charts.md](./D20260530_013_tdd_dashboard_revise_biz-charts.md) | 2026-05-30 | /flow:tdd | dashboard biz-charts 実装 (Phase1 chart 定義分離+label+取得キー / Phase2 profitAt 共通化+profit 派生、全 307 green、新規 tsc 0) | D20260530-050〜052 | 完了 (E2E 待ち) |
 | [D20260530_012_spec-review_dashboard.md](./D20260530_012_spec-review_dashboard.md) | 2026-05-30 | /flow:spec-review | dashboard biz-charts 設計レビュー (auto-pick、Critical/High 0・Medium 2 R1 採算共通化/R2 label 後方互換・Low 3・Info 1、P87 学習、905 生成、001-003 反映) | D20260530-043〜049 | 完了 (tdd 着手可) |
 | [D20260530_011_resume_continuous.md](./D20260530_011_resume_continuous.md) | 2026-05-30 | /flow:auto | continuous loop (biz-charts: P3.7 spec-review dispatch、反復継続中) | D20260530-042〜 | 進行中 |
 | [D20260530_010_revise_dashboard_biz-charts.md](./D20260530_010_revise_dashboard_biz-charts.md) | 2026-05-30 | /flow:revise | dashboard biz-charts: 上部 chart をビジネス指標化 (up/db_storage_bytes 除外 → ユーザー数/課金額/コスト/採算、採算=revenue−cost 派生、日本語ラベル) | D20260530-035〜041 | 完了 (設計、tdd 待ち) |
