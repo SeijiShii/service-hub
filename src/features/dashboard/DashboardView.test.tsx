@@ -234,4 +234,26 @@ describe("DashboardView", () => {
       expect(screen.getAllByText("a").length).toBeGreaterThan(0);
     });
   });
+
+  // ── last-deploy-col (revise_last-deploy-col_20260530) ──
+  describe("一覧に最終デプロイ日時カラム追加 (last-deploy-col)", () => {
+    it("LDC-U-03: thead に「最終デプロイ」列見出しが追加される", () => {
+      const rowVM = {
+        slug: "a",
+        name: "Service A",
+        url: "https://a.example/",
+        status: "active" as const,
+        up: true,
+        metrics: {},
+        freeTierState: null,
+        openAlertCount: 0,
+        ...bizNull,
+      };
+      render(<DashboardView vm={vm({ rows: [rowVM], upCount: 1 })} />);
+      const headers = Array.from(document.querySelectorAll("thead th")).map(
+        (th) => th.textContent,
+      );
+      expect(headers).toContain("最終デプロイ");
+    });
+  });
 });

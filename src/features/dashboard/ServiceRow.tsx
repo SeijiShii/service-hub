@@ -6,6 +6,7 @@ import {
   type StatusKind,
 } from "../../components/tokens.js";
 import { rowStatusKind } from "./rowStatus.js";
+import { formatDeployAt } from "./deployAtFormat.js";
 import type { ProfitState } from "./profitability.js";
 import type { ServiceRowVM } from "./summary.js";
 
@@ -66,6 +67,10 @@ export function ServiceRow({ row }: { row: ServiceRowVM }) {
         {row.metrics.error_count ? row.metrics.error_count.value : "—"}
       </td>
       <td style={mono}>{row.openAlertCount || ""}</td>
+      {/* last-deploy-col: 最終デプロイ日時 (epoch_ms→JST、未収集/0 は —)。データは latestPerService 由来で chart と独立 (spec-review R2) */}
+      <td style={mono} data-deploy-at>
+        {formatDeployAt(row.metrics.last_deploy_at?.value)}
+      </td>
     </tr>
   );
 }

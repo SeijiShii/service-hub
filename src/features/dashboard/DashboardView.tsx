@@ -138,6 +138,7 @@ export function DashboardView({ vm, onForcePull, forcePullState }: Props) {
               <th>離脱率</th>
               <th>errors</th>
               <th>alerts</th>
+              <th>最終デプロイ</th>
             </tr>
           </thead>
           <tbody>

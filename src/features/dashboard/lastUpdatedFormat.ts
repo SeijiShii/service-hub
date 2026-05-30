@@ -19,7 +19,8 @@ function pad(n: number): string {
 }
 
 /** UTC+9 (JST) で YYYY-MM-DD HH:MM。サマータイムなし。 */
-function formatJst(d: Date): string {
+// last-deploy-col (spec-review R4): deployAtFormat が再利用するため export 化 (JST 整形の一元化)。
+export function formatJst(d: Date): string {
   const t = d.getTime() + 9 * 3600 * 1000;
   const j = new Date(t);
   return `${j.getUTCFullYear()}-${pad(j.getUTCMonth() + 1)}-${pad(j.getUTCDate())} ${pad(j.getUTCHours())}:${pad(j.getUTCMinutes())}`;
