@@ -4,7 +4,7 @@
 **コマンド**: /flow:auto
 **モード**: continuous loop (default)
 **実行者**: SeijiShii (via Claude Code)
-**状態**: 進行中
+**状態**: 完了 (loop は D20260531_001 へ継続)
 
 ## 含まれる decision 範囲
 D20260530-042 〜 (反復ごとに追記)

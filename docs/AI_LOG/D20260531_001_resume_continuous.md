@@ -37,4 +37,20 @@ D20260531-001 〜 (反復ごとに追記)
 ```
 
 ## 反復ログ
-- 反復 1: P4.5 E2E gate → /flow:e2e dashboard (biz-charts: 4 ビジネス chart + label の E2E) — dispatch
+- 反復 1: P4.5 E2E gate → /flow:e2e dashboard (biz-charts: 4 ビジネス chart + label の E2E) → ✅ 完了 (9/9 green、103 生成、snapshot 2 件再生成、commit feae45e)
+- 反復 2: §3.0c 鮮度ゲート → /flow:audit --scope=standard — biz-charts revise 完遂 (大型 commit) が audit 鮮度トリガ。最新 AUDIT_20260530_1830 以降 biz-charts 設計+実装+E2E 完了 (12 commits) + SCENARIO §5 が「P5 完了」と drift (biz-charts 未デプロイ)。Class A auto-execute、P1-P5 前に drift シュート
+
+```yaml
+- id: D20260531-005
+  timestamp: 2026-05-31T06:25:00+09:00
+  command: /flow:auto
+  phase: Step 3 §3.0c 鮮度ゲート (反復 2)
+  question: biz-charts 完遂後の next-step
+  recommended: §3.0c 鮮度 /flow:audit --scope=standard
+  chosen: /flow:audit --scope=standard
+  chosen_type: auto-recommended
+  context: |
+    biz-charts revise 完遂 (大型 commit、design→impl→E2E green) が audit 鮮度トリガ。
+    SCENARIO §5 が「9th deploy=P5 完了」のまま biz-charts 未デプロイ = drift。
+    standard で #4 観点 (未実装 require / Design/Wording gap) も検出。P1-P5 前に実行。
+```
