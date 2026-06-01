@@ -3,12 +3,20 @@
 **claim id**: C20260601-001
 **判定日**: 2026-06-01
 **判定者**: Claude (opus-4-8) + seiji
-**判定**: 仕様検討漏れ (revise)
+**判定**: 却下 (Won't Fix) — service-hub 側。実障の修正先は bousai-bag-checker（別 repo）+ 運用（秘密一致）。
 
-> **改訂（2026-06-01）**: 報告者見解「秘密不一致で弾かれた／本来 401」を受け、root cause を
-> 「collection の terse message」から「**service-info 契約が認証失敗時の status code 意味論
-> （401/403）を未規定**」へ精緻化。判定（revise）は不変、主たる revise 対象を
-> collection → `_shared/providers`（契約 SoT）へ更新。
+> **最終判定（2026-06-01、改訂2）**: ユーザー判断で **service-hub 側は Won't Fix**。
+> 根拠: (1) スクショで「エラー 0 件 (ok) / 2 up」を確認 = HUB_SERVICE_INFO_SECRET を揃えたら
+> 404 は解消（真因=秘密不一致の運用ミス、service-hub のコードは正しく動作）。(2) service-hub の
+> adapter は 401/403→"auth" を既に正しくマップ済みで、振る舞いは妥当。(3)「本来 401」を返すのは
+> producer（bousai-bag-checker）の責務で、その修正は別 repo の fix。
+> よって当初の revise（_shared/providers 契約明文化）は**取り下げ**、`revise_C20260601-001_*` フォルダは削除。
+>
+> **下流（service-hub 外）**: ① 運用: 共有シークレット一致（対応済み）② bousai-bag-checker: 認証失敗で
+> 401 を返す（404 をやめる）— 別 repo の fix。§3 参照。
+>
+> ---
+> 以下 §1-2 は当初の三項照合（revise 寄り）分析。記録として残すが、最終判定は上記 Won't Fix。
 
 ## 1. 三項照合
 
