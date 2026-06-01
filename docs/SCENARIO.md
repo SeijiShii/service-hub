@@ -53,12 +53,12 @@ flow で連発するマイクロサービス群の稼働/利用/コスト/障害
 
 <!-- AUTO-GENERATED:BEGIN scenario-cursor -->
 - 現在フェーズ: **Phase 4 (Release gate ✅ 12th deploy 完了)** — 12 回 deploy 完了済。本 loop (2026-06-01) で dashboard multi-series 描画崩れ fix (C20260601-002) 全工程 + 11th deploy → 直後に本番 collect が止まる**リグレッション (C20260601-003)** を検知し hotfix + 12th deploy で復旧。C20260601-002 の「1 run 単一 capturedAt」が複数 provider 同一 metric_key (ping/up + service-info/up) で unique conflict key 衝突 (SQLSTATE 21000) を露呈 → upsert 前 dedup で解消 (315 unit green、service-8mjrw1yig、smoke green)。
-- 進行中ターゲット: なし (C20260601-003 hotfix 12th deploy 完了)。**未確認: 本番 collect の実 insert 成功** (cron self-heal 00:00 UTC or admin「今すぐ pull」で確認) + **別事象 hana-memo/service-info/http_500** (収集復旧後に再観測して claim/fix 判断)
+- 進行中ターゲット: なし。**C20260601-003 hotfix 本番検証済** (2026-06-01T03:50 collect run=partial、DB insert error 消失 = 衝突解消確認、snapshots 挿入成功)。残 = **別事象 hana-memo/service-info/http_500** = hana-memo (producer) の `/api/hub/service-info` が 500 (service-hub は consumer として partial で正常吸収)。hana-memo 側 PJ の修正対象 (service-hub 側は対処不要)。
 - 最終更新セッション: D20260601_011_release_12th-deploy
 - 最終更新時刻: 2026-06-01 12:46
 - 完了フェーズ: [Phase1, Phase1.5, Phase2, Phase3 実装, Phase4 デプロイ(**12 回完了**): 1st-9th + 10th (biz-charts) + **11th=D-017 (fix C20260601-002 multi-series 描画、dpl_CyaSBioXMcbq1AorspNYX6tG12jx)** + **12th=D-020 (hotfix C20260601-003 snapshot conflict key 衝突復旧、service-8mjrw1yig)**、Clerk production instance / sk_live_* 稼働中]
 - デプロイ状況: ✅ 公開 URL = https://service-hub.givers.work (custom domain、Clerk production、live キー稼働中、**12th deploy = hotfix C20260601-003 本番反映済** = collect の同一 conflict key 衝突 (SQLSTATE 21000) を upsert 前 dedup で解消)。
-- 次の推奨コマンド: **本番 collect の実 insert 成功を確認** (daily cron 00:00 UTC self-heal or admin「今すぐ pull」)。確認後 P5 完了。並行して **hana-memo/service-info/http_500** (別事象) を収集復旧後に再観測 → 必要なら /flow:claim。
+- 次の推奨コマンド: **service-hub は P5 完了** (collect 復旧検証済)。残件 hana-memo/service-info/http_500 は**別 PJ (hana-memo) の producer 修正** = hana-memo で `/flow:claim` (service-hub 側作業なし)。
 - Open 論点: 001✅/002✅/003✅/004✅/005✅ 全 5 件解決済 (変更なし)。
 - 残ゲート: P4.4 Design ✅ green / P4.45 Wording ✅ defer (internal) / P4.46 Auth-impl 不発火 (単一 owner) / **P4.7 Release ✅ 12th deploy 完了** / P4.8 Promote 不発火 (非公開) / 既知 Low: queries.test.ts tsc TS2578 (deploy 非ブロッカー)。
 - release-pre 必須監査 (CF-009): fix C20260601-002 後 ✅ 2 段クリア (full audit AUDIT_20260601_1229 0/0 + secure SECURITY_REVIEW_20260601 新規 0)。hotfix C20260601-003 は pure code dedup (新 endpoint/dep/schema なし) のため直前監査有効とみなし即デプロイ (本番障害復旧優先)。
