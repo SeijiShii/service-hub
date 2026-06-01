@@ -47,6 +47,32 @@ describe("upsertSnapshots", () => {
     await upsertSnapshots(db, []);
     expect(await latestPerService(db)).toEqual([]);
   });
+
+  it("DB-FX-003: 同一 (service,metric,captured_at) を複数 provider が返しても insert 失敗しない (last-wins、C20260601-003 リグレッション)", async () => {
+    // fix C20260601-002 (1 run = 単一 capturedAt) 後、ping/up と service-info/up が同一 capturedAt になり
+    // 1 INSERT 内で conflict key (svc,up,at) が重複 → 修正前は Postgres
+    // "ON CONFLICT DO UPDATE cannot affect row a second time" で全 insert 失敗。
+    const at = "2026-06-01T03:36:35.639Z";
+    await upsertSnapshots(db, [
+      snap({
+        provider: "ping",
+        metricKey: "up",
+        metricValue: 1,
+        capturedAt: at,
+      }),
+      snap({
+        provider: "service-info",
+        metricKey: "up",
+        metricValue: 0,
+        capturedAt: at,
+      }),
+    ]);
+    const up = (await latestPerService(db)).filter(
+      (r) => r.serviceSlug === "svc-a" && r.metricKey === "up",
+    );
+    expect(up).toHaveLength(1); // 衝突せず 1 行に集約
+    expect(up[0].metricValue).toBe(0); // last-wins (service-info が後勝ち、upsert 意味論と一致)
+  });
 });
 
 describe("latestPerService", () => {
