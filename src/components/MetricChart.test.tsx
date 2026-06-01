@@ -200,6 +200,24 @@ describe("MetricChart (timeseries-topchart、multi-series 共通化、spec-revie
       );
     });
 
+    it("FB1: service slug が予約キーと紛らわしい 'x' でも epoch x と衝突しない", () => {
+      const series: MetricSeriesItem[] = [
+        {
+          slug: "x",
+          name: "Service X",
+          points: [
+            ptA("2026-05-01T00:00:00Z", 10),
+            ptA("2026-05-02T00:00:00Z", 20),
+          ],
+        },
+      ];
+      render(<MetricChart metricKey="mau" unit="count" series={series} />);
+      const figure = screen.getByTestId("chart-mau");
+      // 衝突回避 (予約キー __x) で 2 バケットが正しく保持される
+      expect(figure.getAttribute("data-points")).toBe("2");
+      expect(figure.getAttribute("data-series-count")).toBe("1");
+    });
+
     it("FX-B-03: 単一 service (service-detail 経路) → 1 本描画 (後方互換)", () => {
       const series: MetricSeriesItem[] = [
         {

@@ -68,8 +68,10 @@ function bucketEpoch(capturedAt: string): number {
  * x を分バケットの epoch ms (number) に正規化してから集約する。
  * これにより同一 run でミリ秒だけずれた service 間の点が同一 x 行へ整列し、
  * x 軸を連続時間軸 (type=number) として実間隔比例配置できる。
- * [{ x: epochMs, [slug1]: value, [slug2]: value, ... }, ...]
+ * [{ __x: epochMs, [slug1]: value, [slug2]: value, ... }, ...]
+ * x 値のキーは `__x` (service slug との衝突回避用の予約キー、fix C20260601-002 feedback FB1)。
  */
+const X_KEY = "__x";
 function mergeSeries(
   series: MetricSeriesItem[],
 ): Array<Record<string, number>> {
@@ -77,12 +79,12 @@ function mergeSeries(
   for (const s of series) {
     for (const p of s.points) {
       const x = bucketEpoch(p.capturedAt);
-      const row = byBucket.get(x) ?? { x };
+      const row = byBucket.get(x) ?? { [X_KEY]: x };
       row[s.slug] = p.value;
       byBucket.set(x, row);
     }
   }
-  return Array.from(byBucket.values()).sort((a, b) => a.x - b.x);
+  return Array.from(byBucket.values()).sort((a, b) => a[X_KEY] - b[X_KEY]);
 }
 
 /** x 軸 (capturedAt epoch) を分単位 M/D HH:mm に整形 (ミリ秒・秒を除去)。 */
@@ -123,7 +125,7 @@ export function MetricChart({
         <ResponsiveContainer width="100%" height={height}>
           <LineChart data={merged}>
             <XAxis
-              dataKey="x"
+              dataKey={X_KEY}
               type="number"
               scale="time"
               domain={["dataMin", "dataMax"]}
