@@ -132,6 +132,92 @@ describe("MetricChart (timeseries-topchart、multi-series 共通化、spec-revie
     });
   });
 
+  // ── fix C20260601-002: multi-series 整列マージ (時間軸化) ──────
+  describe("FX-U: multi-series 時刻正規化マージ (fix C20260601-002)", () => {
+    it("FX-U-02: ミリ秒だけ異なる同一論理時刻の 2 series → 同一バケットで 1 行にマージ", () => {
+      const series: MetricSeriesItem[] = [
+        { slug: "a", name: "A", points: [ptA("2026-05-01T00:00:00.000Z", 10)] },
+        { slug: "b", name: "B", points: [ptA("2026-05-01T00:00:00.789Z", 5)] },
+      ];
+      render(<MetricChart metricKey="mau" unit="count" series={series} />);
+      const figure = screen.getByTestId("chart-mau");
+      // 修正前: 文字列完全一致マージで data-points=2 (別 x に分裂) → 修正後: 1 バケット
+      expect(figure.getAttribute("data-points")).toBe("1");
+      expect(figure.getAttribute("data-series-count")).toBe("2");
+    });
+
+    it("FX-U-04: 疎データ (片 series のみの時刻) → 全時刻が x 行に存在、series 数維持", () => {
+      const series: MetricSeriesItem[] = [
+        {
+          slug: "a",
+          name: "A",
+          points: [
+            ptA("2026-05-01T00:00:00Z", 10),
+            ptA("2026-05-01T00:15:00Z", 12),
+          ],
+        },
+        { slug: "b", name: "B", points: [ptA("2026-05-01T00:00:00Z", 5)] }, // 00:15 欠落
+      ];
+      render(<MetricChart metricKey="mau" unit="count" series={series} />);
+      const figure = screen.getByTestId("chart-mau");
+      expect(figure.getAttribute("data-points")).toBe("2"); // 00:00 / 00:15 の 2 バケット
+      expect(figure.getAttribute("data-series-count")).toBe("2");
+    });
+
+    it("FX-U-05: 2 service 同一時刻重ね描き → 1 行に両 series 整列", () => {
+      const series: MetricSeriesItem[] = [
+        {
+          slug: "a",
+          name: "A",
+          points: [ptA("2026-05-01T00:00:00.100Z", 10)],
+        },
+        {
+          slug: "b",
+          name: "B",
+          points: [ptA("2026-05-01T00:00:00.200Z", 20)],
+        },
+      ];
+      render(<MetricChart metricKey="mau" unit="count" series={series} />);
+      const figure = screen.getByTestId("chart-mau");
+      expect(figure.getAttribute("data-points")).toBe("1");
+      expect(figure.getAttribute("data-series-count")).toBe("2");
+    });
+
+    it("FX-B-02: 別 run (分単位で離れた時刻) → 別 x バケットとして保持", () => {
+      const series: MetricSeriesItem[] = [
+        {
+          slug: "a",
+          name: "A",
+          points: [
+            ptA("2026-05-01T00:00:00Z", 10),
+            ptA("2026-05-01T00:15:00Z", 11),
+          ],
+        },
+      ];
+      render(<MetricChart metricKey="mau" unit="count" series={series} />);
+      expect(screen.getByTestId("chart-mau").getAttribute("data-points")).toBe(
+        "2",
+      );
+    });
+
+    it("FX-B-03: 単一 service (service-detail 経路) → 1 本描画 (後方互換)", () => {
+      const series: MetricSeriesItem[] = [
+        {
+          slug: "hana-memo",
+          name: "花メモ",
+          points: [
+            ptA("2026-05-01T00:00:00Z", 1),
+            ptA("2026-05-02T00:00:00Z", 1),
+          ],
+        },
+      ];
+      render(<MetricChart metricKey="up" unit="bool" series={series} />);
+      const figure = screen.getByTestId("chart-up");
+      expect(figure.getAttribute("data-points")).toBe("2");
+      expect(figure.getAttribute("data-series-count")).toBe("1");
+    });
+  });
+
   describe("TS-U-38: figcaption に metricKey + unit", () => {
     it("metricKey と unit が figcaption に表示される", () => {
       render(

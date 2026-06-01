@@ -25,8 +25,8 @@ describe("ServiceDetailView", () => {
               metricKey: "db_storage_bytes",
               unit: "bytes",
               points: [
-                { capturedAt: "t1", value: 1 },
-                { capturedAt: "t2", value: 2 },
+                { capturedAt: "2026-05-01T00:00:00Z", value: 1 },
+                { capturedAt: "2026-05-02T00:00:00Z", value: 2 },
               ],
             },
           ],

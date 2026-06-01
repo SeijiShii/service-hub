@@ -108,6 +108,26 @@ describe("runCollection", () => {
     expect(onCollected).toHaveBeenCalledOnce();
   });
 
+  // ── fix C20260601-002: 1 run = 単一 capturedAt 不変条件 ──────
+  it("FX-U-01: 可変クロック (呼ぶたびに進む now) でも 1 run の全 SnapshotRow が同一 capturedAt", async () => {
+    // 固定 now でなく per-call で進むクロックを注入し、本番の per-row ドリフトを再現。
+    let t = Date.parse("2026-06-01T00:00:00.000Z");
+    const now = () => new Date((t += 1)); // 呼ぶたびに +1ms
+    const saveSnapshots = vi.fn(async (_rows: SnapshotRow[]) => {});
+    await runCollection(
+      baseDeps({
+        loadServices: async () => [svc("a"), svc("b")],
+        getAdapters: () => [okAdapter("ping"), okAdapter("neon")],
+        saveSnapshots,
+        now,
+      }),
+    );
+    const rows = saveSnapshots.mock.calls[0][0];
+    expect(rows.length).toBe(4); // 2 svc × 2 adapter
+    const uniqueCapturedAt = new Set(rows.map((r) => r.capturedAt));
+    expect(uniqueCapturedAt.size).toBe(1); // run の論理時刻は 1 つ
+  });
+
   // ── favicon-projection (revise_favicon-projection_20260528) ──────
   it("FP-U-35: adapter が meta.iconUrl 返却 → deps.updateServiceMeta が (slug, meta) で呼ばれる", async () => {
     const updateServiceMeta = vi.fn(async () => {});

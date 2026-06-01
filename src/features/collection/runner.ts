@@ -55,7 +55,10 @@ export async function runCollection(deps: RunnerDeps): Promise<CollectionRun> {
             metricKey: m.key,
             metricValue: m.value,
             unit: m.unit,
-            capturedAt: now().toISOString(),
+            // fix C20260601-002: 1 run = 単一 capturedAt 不変条件。行ごとに now() を呼ぶと
+            // 本番 (api/cron/collect が now 未注入) で per-row ミリ秒ドリフトが起き chart が崩れる。
+            // run 開始時刻 startedAt を全 SnapshotRow で共有する。
+            capturedAt: startedAt,
           });
         }
         // adapter からの producer 申告メタを services テーブルへ永続化 (favicon-projection、spec-review R1)。

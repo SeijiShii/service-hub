@@ -55,24 +55,46 @@ function hasAnyPoints(series: MetricSeriesItem[]): boolean {
   return series.some((s) => s.points.length > 0);
 }
 
+/** capturedAt を分バケットの epoch ms に正規化 (fix C20260601-002)。 */
+const MINUTE_MS = 60_000;
+function bucketEpoch(capturedAt: string): number {
+  const t = new Date(capturedAt).getTime();
+  if (Number.isNaN(t)) return 0;
+  return Math.floor(t / MINUTE_MS) * MINUTE_MS;
+}
+
 /**
- * 多 series を recharts 用に merged data に変換:
- * [{capturedAt, [slug1]: value, [slug2]: value, ...}, ...]
+ * 多 series を recharts 用に merged data に変換 (fix C20260601-002):
+ * x を分バケットの epoch ms (number) に正規化してから集約する。
+ * これにより同一 run でミリ秒だけずれた service 間の点が同一 x 行へ整列し、
+ * x 軸を連続時間軸 (type=number) として実間隔比例配置できる。
+ * [{ x: epochMs, [slug1]: value, [slug2]: value, ... }, ...]
  */
 function mergeSeries(
   series: MetricSeriesItem[],
-): Array<Record<string, string | number>> {
-  const byTime = new Map<string, Record<string, string | number>>();
+): Array<Record<string, number>> {
+  const byBucket = new Map<number, Record<string, number>>();
   for (const s of series) {
     for (const p of s.points) {
-      const row = byTime.get(p.capturedAt) ?? { capturedAt: p.capturedAt };
+      const x = bucketEpoch(p.capturedAt);
+      const row = byBucket.get(x) ?? { x };
       row[s.slug] = p.value;
-      byTime.set(p.capturedAt, row);
+      byBucket.set(x, row);
     }
   }
-  return Array.from(byTime.values()).sort((a, b) =>
-    String(a.capturedAt).localeCompare(String(b.capturedAt)),
-  );
+  return Array.from(byBucket.values()).sort((a, b) => a.x - b.x);
+}
+
+/** x 軸 (capturedAt epoch) を分単位 M/D HH:mm に整形 (ミリ秒・秒を除去)。 */
+const xAxisFormatter = new Intl.DateTimeFormat("ja-JP", {
+  month: "numeric",
+  day: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+});
+function formatXAxis(v: number): string {
+  const d = new Date(v);
+  return Number.isNaN(d.getTime()) ? String(v) : xAxisFormatter.format(d);
 }
 
 export function MetricChart({
@@ -101,7 +123,11 @@ export function MetricChart({
         <ResponsiveContainer width="100%" height={height}>
           <LineChart data={merged}>
             <XAxis
-              dataKey="capturedAt"
+              dataKey="x"
+              type="number"
+              scale="time"
+              domain={["dataMin", "dataMax"]}
+              tickFormatter={formatXAxis}
               tick={{
                 fontFamily: "ui-monospace, monospace",
                 fontSize: 10,
@@ -124,27 +150,13 @@ export function MetricChart({
               }}
               labelStyle={{ color: "var(--text, #e5e7eb)" }}
               itemStyle={{ color: "var(--text, #e5e7eb)" }}
+              // label = x 軸値 (capturedAt epoch、全 metric 共通) → M/D HH:mm 整形 (fix C20260601-002)。
               labelFormatter={(v) => {
                 if (v === undefined || v === null || v === "") return "";
-                if (metricKey === "last_deploy_at") {
-                  const d = new Date(Number(v));
-                  return Number.isNaN(d.getTime())
-                    ? String(v)
-                    : new Intl.DateTimeFormat("ja-JP", {
-                        year: "numeric",
-                        month: "numeric",
-                        day: "numeric",
-                      }).format(d);
-                }
-                const d = new Date(String(v));
+                const d = new Date(Number(v));
                 return Number.isNaN(d.getTime())
                   ? String(v)
-                  : new Intl.DateTimeFormat("ja-JP", {
-                      month: "numeric",
-                      day: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    }).format(d);
+                  : xAxisFormatter.format(d);
               }}
             />
             <Legend />
@@ -156,6 +168,7 @@ export function MetricChart({
                 name={s.name}
                 stroke={chartSeriesColor(idx)}
                 dot={false}
+                connectNulls
                 isAnimationActive={false}
               />
             ))}
