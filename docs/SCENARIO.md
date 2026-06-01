@@ -1,6 +1,6 @@
 # service-hub 開発シナリオ
 
-**最終更新**: 2026-06-01 12:35
+**最終更新**: 2026-06-01 12:46
 **生成元**: /flow:concept (初回) / /flow:scenario (更新)
 **シナリオ種別**: 個人ツール（UI あり・内部・非公開）
 
@@ -52,10 +52,10 @@ flow で連発するマイクロサービス群の稼働/利用/コスト/障害
 ## 5. 現在地カーソル
 
 <!-- AUTO-GENERATED:BEGIN scenario-cursor -->
-- 現在フェーズ: **Phase 4 (Release gate ✅ 11th deploy 完了)** — 11 回 deploy 完了済。本 loop (2026-06-01) で **claim→fix→tdd→feedback→e2e→audit→secure→release を一気通貫** = dashboard multi-series 描画崩れ fix (C20260601-002) 全工程完了 + 11th deploy 成功 (runner capturedAt 不変条件 + chart 連続時間軸化、314 unit + E2E 15/15 green、dpl_CyaSBioXMcbq1AorspNYX6tG12jx、post-deploy smoke 全 green: / 200・/api 401 認証ゲート OK・favicon 200)。
-- 進行中ターゲット: なし (fix C20260601-002 11th deploy 完了)
-- 最終更新セッション: D20260601_010_release_11th-deploy
-- 最終更新時刻: 2026-06-01 12:35
+- 現在フェーズ: **Phase 4 (Release gate ✅ 12th deploy 完了)** — 12 回 deploy 完了済。本 loop (2026-06-01) で dashboard multi-series 描画崩れ fix (C20260601-002) 全工程 + 11th deploy → 直後に本番 collect が止まる**リグレッション (C20260601-003)** を検知し hotfix + 12th deploy で復旧。C20260601-002 の「1 run 単一 capturedAt」が複数 provider 同一 metric_key (ping/up + service-info/up) で unique conflict key 衝突 (SQLSTATE 21000) を露呈 → upsert 前 dedup で解消 (315 unit green、service-8mjrw1yig、smoke green)。
+- 進行中ターゲット: なし (C20260601-003 hotfix 12th deploy 完了)。**未確認: 本番 collect の実 insert 成功** (cron self-heal 00:00 UTC or admin「今すぐ pull」で確認) + **別事象 hana-memo/service-info/http_500** (収集復旧後に再観測して claim/fix 判断)
+- 最終更新セッション: D20260601_011_release_12th-deploy
+- 最終更新時刻: 2026-06-01 12:46
 - 完了フェーズ: [Phase1, Phase1.5, Phase2, Phase3 実装, Phase4 デプロイ(**11 回完了**): 1st-7th + 8th (timeseries-topchart) + 9th (last-deploy-col) + 10th (biz-charts) + **11th=D20260601-017 (fix C20260601-002 multi-series 描画、dpl_CyaSBioXMcbq1AorspNYX6tG12jx、24s build、smoke 全 green)**、Clerk production instance / sk_live_* 稼働中]
 - デプロイ状況: ✅ 公開 URL = https://service-hub.givers.work (custom domain、Clerk production、live キー稼働中、**11th deploy = fix C20260601-002 本番反映済** = 複数 service 重ね描きの線断裂/x ずれ/ミリ秒表示を解消、収集 runner の capturedAt を run 共有に)。
 - 次の推奨コマンド: **シナリオ完了 (P5、停止条件 §1 (1) 該当)**。残り user-driven = 監視運用 (cron 日次 collect で snapshots 蓄積) / 連動 PJ bousai-bag-checker producer revise (別 PJ、本 PJ 完了とは独立)。
