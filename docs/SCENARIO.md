@@ -1,6 +1,6 @@
 # service-hub 開発シナリオ
 
-**最終更新**: 2026-05-26 07:58
+**最終更新**: 2026-06-01 12:35
 **生成元**: /flow:concept (初回) / /flow:scenario (更新)
 **シナリオ種別**: 個人ツール（UI あり・内部・非公開）
 
@@ -52,17 +52,17 @@ flow で連発するマイクロサービス群の稼働/利用/コスト/障害
 ## 5. 現在地カーソル
 
 <!-- AUTO-GENERATED:BEGIN scenario-cursor -->
-- 現在フェーズ: **Phase 4 (Release gate ✅ 10th deploy 完了)** — 10 回 deploy 完了済。本 loop (2026-05-31) で **dashboard biz-charts revise 全工程完了 + 10th deploy 成功** (上部 chart をビジネス指標化: ユーザー数/課金額/コスト/採算、design→spec-review→unit→E2E→audit full→scenario→secure→release、全 307 unit + E2E 9/9 green、dpl_A1v4GA2yrduXehqUfPQT5CeEXfqz、post-deploy smoke 全 green)。
-- 進行中ターゲット: なし (biz-charts 10th deploy 完了)
-- 最終更新セッション: D20260531_008_release_10th-deploy
-- 最終更新時刻: 2026-05-31 06:35
-- 完了フェーズ: [Phase1, Phase1.5, Phase2, Phase3 実装, Phase4 デプロイ(**10 回完了**): 1st-7th + **8th (timeseries-topchart)** + **9th (last-deploy-col)** + **10th=D20260531-013 (biz-charts、dpl_A1v4GA2yrduXehqUfPQT5CeEXfqz、24s build、smoke 全 green)**、Clerk production instance / sk_live_* 稼働中]
-- デプロイ状況: ✅ 公開 URL = https://service-hub.givers.work (custom domain、Clerk production、live キー稼働中、**10th deploy = biz-charts 本番反映済** = 上部 chart をビジネス指標 4 枚 ユーザー数/課金額/コスト/採算 に)。
+- 現在フェーズ: **Phase 4 (Release gate ✅ 11th deploy 完了)** — 11 回 deploy 完了済。本 loop (2026-06-01) で **claim→fix→tdd→feedback→e2e→audit→secure→release を一気通貫** = dashboard multi-series 描画崩れ fix (C20260601-002) 全工程完了 + 11th deploy 成功 (runner capturedAt 不変条件 + chart 連続時間軸化、314 unit + E2E 15/15 green、dpl_CyaSBioXMcbq1AorspNYX6tG12jx、post-deploy smoke 全 green: / 200・/api 401 認証ゲート OK・favicon 200)。
+- 進行中ターゲット: なし (fix C20260601-002 11th deploy 完了)
+- 最終更新セッション: D20260601_010_release_11th-deploy
+- 最終更新時刻: 2026-06-01 12:35
+- 完了フェーズ: [Phase1, Phase1.5, Phase2, Phase3 実装, Phase4 デプロイ(**11 回完了**): 1st-7th + 8th (timeseries-topchart) + 9th (last-deploy-col) + 10th (biz-charts) + **11th=D20260601-017 (fix C20260601-002 multi-series 描画、dpl_CyaSBioXMcbq1AorspNYX6tG12jx、24s build、smoke 全 green)**、Clerk production instance / sk_live_* 稼働中]
+- デプロイ状況: ✅ 公開 URL = https://service-hub.givers.work (custom domain、Clerk production、live キー稼働中、**11th deploy = fix C20260601-002 本番反映済** = 複数 service 重ね描きの線断裂/x ずれ/ミリ秒表示を解消、収集 runner の capturedAt を run 共有に)。
 - 次の推奨コマンド: **シナリオ完了 (P5、停止条件 §1 (1) 該当)**。残り user-driven = 監視運用 (cron 日次 collect で snapshots 蓄積) / 連動 PJ bousai-bag-checker producer revise (別 PJ、本 PJ 完了とは独立)。
 - Open 論点: 001✅/002✅/003✅/004✅/005✅ 全 5 件解決済 (変更なし)。
-- 残ゲート: P4.4 Design ✅ biz-charts 視覚レビュー green (D20260531_005) / P4.45 Wording ✅ defer 確定 (internal) / **P4.7 Release ✅ 10th deploy 完了** / P4.8 Promote 不発火 (internal、非公開 PJ) / 既知 Low: queries.test.ts tsc TS2578 (deploy 非ブロッカー)。
-- release-pre 必須監査 (CF-009): biz-charts 完遂後 ✅ **2 段クリア** (full audit D20260531_006 AUDIT_20260531_0622 Critical 0/High 0 + secure D20260531_007 新規 SEC 0)。
-- audit 検出常習化 (CHRONIC 注記): SCENARIO drift は本 loop で reconcile → release-pre full audit (0622) で **検出 0 = CHRONIC 解除** (6 回連続後、トレンド改善)。
+- 残ゲート: P4.4 Design ✅ green / P4.45 Wording ✅ defer 確定 (internal) / P4.46 Auth-impl 不発火 (単一 owner 内部ツール、guest/匿名スコープ外) / **P4.7 Release ✅ 11th deploy 完了** / P4.8 Promote 不発火 (internal、非公開 PJ) / 既知 Low: queries.test.ts tsc TS2578 (deploy 非ブロッカー)。
+- release-pre 必須監査 (CF-009): fix C20260601-002 完遂後 ✅ **2 段クリア** (full audit D20260601_008 AUDIT_20260601_1229 Critical 0/High 0 + secure D20260601_009 新規 SEC 0)。
+- audit 検出常習化 (CHRONIC 注記): 0 件継続 (AUDIT 0622→1229 で Critical/High = 0 維持、CHRONIC 解除済)。
 <!-- AUTO-GENERATED:END scenario-cursor -->
 
 ## 6. 変更履歴
