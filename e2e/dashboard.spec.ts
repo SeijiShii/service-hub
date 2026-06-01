@@ -40,6 +40,52 @@ test("UC1-S1: 全サービス横断サマリ + down 前景化", async ({ page })
   });
 });
 
+test("FX-E2E-01 (C20260601-002): 2 service 同一 run の上部チャートが 2 series で整列描画", async ({
+  page,
+}) => {
+  // 同一 run 由来でミリ秒だけずれた capturedAt を持つ 2 service。
+  // 修正前: 文字列完全一致マージで 4 点に分裂。修正後: 分バケット整列で 2 点 (2 series)。
+  const multiSeriesVM = {
+    ...dashboardVM,
+    charts: [
+      {
+        metricKey: "mau",
+        label: "ユーザー数",
+        unit: "count",
+        series: [
+          {
+            slug: "hana-memo",
+            name: "hana-memo",
+            points: [
+              { capturedAt: "2026-05-27T00:00:00.123Z", value: 142 },
+              { capturedAt: "2026-05-28T00:00:00.123Z", value: 150 },
+            ],
+          },
+          {
+            slug: "naze-bako",
+            name: "naze-bako",
+            points: [
+              { capturedAt: "2026-05-27T00:00:00.789Z", value: 88 },
+              { capturedAt: "2026-05-28T00:00:00.789Z", value: 95 },
+            ],
+          },
+        ],
+      },
+      ...dashboardVM.charts.slice(1),
+    ],
+  };
+  await page.route("**/api/dashboard/summary", (r) =>
+    r.fulfill({ json: multiSeriesVM }),
+  );
+  await page.goto("/");
+  const chart = page.getByTestId("chart-mau");
+  await expect(chart).toBeVisible();
+  // 2 series 重ね描き
+  await expect(chart).toHaveAttribute("data-series-count", "2");
+  // ms 差の同一論理時刻が分バケットで整列 → 2 日 = 2 点 (4 に分裂しない)
+  await expect(chart).toHaveAttribute("data-points", "2");
+});
+
 test("UC1-S2: データなし → EmptyState", async ({ page }) => {
   await page.route("**/api/dashboard/summary", (r) =>
     r.fulfill({ json: emptyVM }),
