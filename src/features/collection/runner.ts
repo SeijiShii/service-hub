@@ -48,13 +48,23 @@ export async function runCollection(deps: RunnerDeps): Promise<CollectionRun> {
             message: res.error,
           });
         for (const m of res.metrics) {
+          // fix C20260607-002: producer 申告の不正値で batch insert 全体を壊さない (1 producer の
+          // 不備で全サービスの collect が落ちる事故を防ぐ、C20260601-003 と同系)。
+          // - unit 欠落 (非 string): NOT NULL カラムに undefined → SQL `default` → 制約違反。"" に矯正。
+          // - value 非有限 (NaN/Infinity/非数): 数値カラムを壊すため当該 metric を skip (警告)。
+          if (!Number.isFinite(m.value)) {
+            console.warn(
+              `skip non-finite metric: slug=${svc.slug} provider=${m.provider} key=${m.key}`,
+            );
+            continue;
+          }
           rows.push({
             id: newId(),
             serviceSlug: svc.slug,
             provider: m.provider,
             metricKey: m.key,
             metricValue: m.value,
-            unit: m.unit,
+            unit: typeof m.unit === "string" ? m.unit : "",
             // fix C20260601-002: 1 run = 単一 capturedAt 不変条件。行ごとに now() を呼ぶと
             // 本番 (api/cron/collect が now 未注入) で per-row ミリ秒ドリフトが起き chart が崩れる。
             // run 開始時刻 startedAt を全 SnapshotRow で共有する。

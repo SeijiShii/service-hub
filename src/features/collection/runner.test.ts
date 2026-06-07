@@ -5,6 +5,7 @@ import type {
   ServiceDescriptor,
   ProviderAdapter,
   SnapshotRow,
+  UsageMetric,
 } from "../../types/index.js";
 
 const svc = (
@@ -129,6 +130,46 @@ describe("runCollection", () => {
   });
 
   // ── favicon-projection (revise_favicon-projection_20260528) ──────
+  it("CO-RES-01: producer の unit 欠落は '' に矯正・非有限値は skip し batch を壊さない (C20260607-002)", async () => {
+    const saveSnapshots = vi.fn(async (_rows: SnapshotRow[]) => {});
+    const badAdapter: ProviderAdapter = {
+      kind: "service-info",
+      collect: async () => ({
+        metrics: [
+          // 契約違反: unit 欠落 (naze-bako の mau/users_total 等) → "" に矯正
+          {
+            provider: "service-info",
+            key: "mau",
+            value: 8,
+          } as unknown as UsageMetric,
+          {
+            provider: "service-info",
+            key: "revenue_total_yen",
+            value: 100,
+            unit: "jpy",
+          },
+          // 非有限値 → 当該 metric を skip (数値カラムを壊さない)
+          {
+            provider: "service-info",
+            key: "broken",
+            value: Number.NaN,
+            unit: "count",
+          },
+        ],
+      }),
+    };
+    const run = await runCollection(
+      baseDeps({ getAdapters: () => [badAdapter], saveSnapshots }),
+    );
+    expect(run.status).toBe("ok");
+    const rows = saveSnapshots.mock.calls[0][0];
+    expect(rows.find((r) => r.metricKey === "mau")!.unit).toBe("");
+    expect(rows.find((r) => r.metricKey === "revenue_total_yen")!.unit).toBe(
+      "jpy",
+    );
+    expect(rows.find((r) => r.metricKey === "broken")).toBeUndefined();
+  });
+
   it("FP-U-35: adapter が meta.iconUrl 返却 → deps.updateServiceMeta が (slug, meta) で呼ばれる", async () => {
     const updateServiceMeta = vi.fn(async () => {});
     const adapterWithMeta: ProviderAdapter = {
