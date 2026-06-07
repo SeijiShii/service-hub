@@ -17,6 +17,8 @@ const mono = {
 const fmt = (m?: { value: number; unit: string }) => (m ? `${m.value}` : "—");
 const usd = (v: number | null) => (v == null ? "—" : `$${v.toFixed(2)}`);
 const pct = (r: number | null) => (r == null ? "—" : `${Math.round(r * 100)}%`);
+// revenue-metrics-display: 未申告 (キーなし=undefined) は —、申告ありは 0 も有効値として表示。
+const yen = (m?: { value: number; unit: string }) => (m ? `¥${m.value}` : "—");
 
 /** 採算状態を状態色 (design-system 原則1: status-first) にマップ。 */
 const PROFIT_KIND: Record<Exclude<ProfitState, null>, StatusKind> = {
@@ -70,6 +72,13 @@ export function ServiceRow({ row }: { row: ServiceRowVM }) {
       {/* last-deploy-col: 最終デプロイ日時 (epoch_ms→JST、未収集/0 は —)。データは latestPerService 由来で chart と独立 (spec-review R2) */}
       <td style={mono} data-deploy-at>
         {formatDeployAt(row.metrics.last_deploy_at?.value)}
+      </td>
+      {/* revenue-metrics-display (C20260607-001): 累計収益 (producer 自己申告、寄付/売上等)。未申告は —、0 は有効値。jpy 固定 ¥表記、PII なし (O48)。旧 tip_* は adapter で revenue_* へ正規化 */}
+      <td style={mono} data-revenue-count>
+        {fmt(row.metrics.revenue_count)}
+      </td>
+      <td style={mono} data-revenue-yen>
+        {yen(row.metrics.revenue_total_yen)}
       </td>
     </tr>
   );

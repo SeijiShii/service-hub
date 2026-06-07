@@ -118,6 +118,31 @@ describe("buildDashboard", () => {
     expect(vm.rows[0].iconUrl).toBeUndefined();
   });
 
+  // revenue-metrics-display (C20260607-001): revenue_* は generic に VM へ投影される (回帰防止)
+  it("REV-DA-01: revenue_count / revenue_total_yen が ServiceRowVM.metrics に generic 投影される", () => {
+    const vm = buildDashboard(
+      [svc("a")],
+      [
+        snap({ metricKey: "revenue_count", metricValue: 1, unit: "count" }),
+        snap({
+          id: "s2",
+          metricKey: "revenue_total_yen",
+          metricValue: 100,
+          unit: "jpy",
+        }),
+      ],
+      [],
+    );
+    expect(vm.rows[0].metrics.revenue_count).toEqual({
+      value: 1,
+      unit: "count",
+    });
+    expect(vm.rows[0].metrics.revenue_total_yen).toEqual({
+      value: 100,
+      unit: "jpy",
+    });
+  });
+
   // ── biz-charts (revise_biz-charts_20260530) : ユーザー数/課金額/コスト/採算 ──
   it("BC-U-01: charts = 4 件、順序 [mau, revenue, cost, profit]、日本語 label", () => {
     const chartSnaps: SnapshotRow[] = [

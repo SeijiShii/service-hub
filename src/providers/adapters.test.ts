@@ -113,6 +113,78 @@ describe("service-info (PR-N6 / PR-B2)", () => {
       },
     ]);
   });
+  it("REV-AD-01: 旧 tip_count / tip_total_yen を canonical revenue_* へ正規化 (後方互換)", async () => {
+    const body = {
+      schemaVersion: 2,
+      service: "svc",
+      status: "ok",
+      metrics: [
+        { key: "tip_count", value: 1, unit: "count" },
+        { key: "tip_total_yen", value: 100, unit: "jpy" },
+      ],
+    };
+    const r = await createServiceInfoAdapter({
+      fetchImpl: mockFetch(200, body),
+      allowInternal: true,
+    }).collect(
+      svc({
+        serviceInfo: {
+          endpoint: "https://svc.example.com/api/hub/service-info",
+        },
+      }),
+    );
+    expect(r.metrics).toEqual([
+      { provider: "service-info", key: "up", value: 1, unit: "bool" },
+      {
+        provider: "service-info",
+        key: "revenue_count",
+        value: 1,
+        unit: "count",
+      },
+      {
+        provider: "service-info",
+        key: "revenue_total_yen",
+        value: 100,
+        unit: "jpy",
+      },
+    ]);
+  });
+  it("REV-AD-02: 新 revenue_* キーはそのまま emit (native 受理)", async () => {
+    const body = {
+      schemaVersion: 2,
+      service: "svc",
+      status: "ok",
+      metrics: [
+        { key: "revenue_count", value: 3, unit: "count" },
+        { key: "revenue_total_yen", value: 500, unit: "jpy" },
+      ],
+    };
+    const r = await createServiceInfoAdapter({
+      fetchImpl: mockFetch(200, body),
+      allowInternal: true,
+    }).collect(
+      svc({
+        serviceInfo: {
+          endpoint: "https://svc.example.com/api/hub/service-info",
+        },
+      }),
+    );
+    expect(r.metrics).toEqual([
+      { provider: "service-info", key: "up", value: 1, unit: "bool" },
+      {
+        provider: "service-info",
+        key: "revenue_count",
+        value: 3,
+        unit: "count",
+      },
+      {
+        provider: "service-info",
+        key: "revenue_total_yen",
+        value: 500,
+        unit: "jpy",
+      },
+    ]);
+  });
   it("PR-B2: unknown schemaVersion → 既知部分のみ (クラッシュなし)", async () => {
     const body = { schemaVersion: 99, service: "svc", status: "down" };
     const r = await createServiceInfoAdapter({

@@ -17,7 +17,12 @@ export type KnownMetricKey =
   | "paid_users"
   | "checkout_started_month"
   | "checkout_completed_month"
-  | "checkout_card_failed_month";
+  | "checkout_card_failed_month"
+  // 収益 (revenue-metrics-display, C20260607-001)。service-info 自己申告の累計収益 (jpy)。
+  // サービスにより寄付/売上/投げ銭等、源泉は様々だが汎用「収益」として集約。PII なし (O48)。
+  // 旧 tip_count / tip_total_yen は service-info adapter で本キーへ正規化 (後方互換、LEGACY_METRIC_KEY_ALIAS)。
+  | "revenue_count"
+  | "revenue_total_yen";
 
 /** open union: Phase2 でのメトリクス追加を破壊変更なく許容。 */
 export type MetricKey = KnownMetricKey | (string & {});

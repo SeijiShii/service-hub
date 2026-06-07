@@ -36,6 +36,11 @@ export interface ServiceInfoResponse {
   schemaVersion: number;
   service: string;
   status: ServiceInfoStatus;
+  /**
+   * 自己申告メトリクス。key は MetricKey (open union)。
+   * 収益 (revenue-metrics-display, C20260607-001): canonical = `revenue_count` / `revenue_total_yen` (jpy)。
+   * 旧 `tip_count` / `tip_total_yen` 名での申告も受理し、adapter で canonical へ正規化 (後方互換)。
+   */
   metrics?: Array<{ key: string; value: number; unit: string }>;
   version?: string;
   /** v2: producer の favicon 絶対 URL (https + 公開ホスト + 1024 chars 以内、SSRF 予防)。受信時 isSafePublicUrl で format check。 */

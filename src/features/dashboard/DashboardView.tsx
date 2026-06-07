@@ -139,6 +139,8 @@ export function DashboardView({ vm, onForcePull, forcePullState }: Props) {
               <th>errors</th>
               <th>alerts</th>
               <th>最終デプロイ</th>
+              <th>収益(件)</th>
+              <th>収益(¥)</th>
             </tr>
           </thead>
           <tbody>

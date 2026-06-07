@@ -5,6 +5,7 @@ import type {
   ServiceMeta,
   UsageMetric,
   ServiceInfoResponse,
+  MetricKey,
 } from "../types/index.js";
 import { safeFetch, type SafeFetchOpts } from "./fetch.js";
 import { isSafePublicUrl } from "../lib/safeUrl.js";
@@ -198,6 +199,18 @@ function pickServiceInfoIconUrl(
   return raw;
 }
 
+/**
+ * 旧メトリクスキーの正規化エイリアス (後方互換、revenue-metrics-display C20260607-001)。
+ * producer が旧名で申告しても HUB 側 canonical キーへ正規化して保存する。
+ * tip_count / tip_total_yen は当初 producer が tip 専用名で本番申告したが、収益源泉は
+ * サービスにより寄付/売上/投げ銭等さまざまなため汎用 revenue_* を契約 canonical とした。
+ * 旧名での申告は本マップで受理し続ける (producer の強制再デプロイを不要にする)。
+ */
+const LEGACY_METRIC_KEY_ALIAS: Record<string, MetricKey> = {
+  tip_count: "revenue_count",
+  tip_total_yen: "revenue_total_yen",
+};
+
 export const createServiceInfoAdapter = wrapWithMeta(
   "service-info",
   async (s, deps) => {
@@ -222,7 +235,7 @@ export const createServiceInfoAdapter = wrapWithMeta(
     for (const m of j.metrics ?? []) {
       metrics.push({
         provider: "service-info",
-        key: m.key,
+        key: LEGACY_METRIC_KEY_ALIAS[m.key] ?? m.key,
         value: m.value,
         unit: m.unit,
       });
