@@ -101,13 +101,14 @@ producer の強制再デプロイを不要にする。
 
 ## 9. 未決事項
 
-### [論点-001] 上部 chart への収益系列追加
-- **推奨**: 今回スコープ外（案A）。まず一覧で close、chart 化は需要を見て別 revise。
+### [論点-001] 上部 chart への収益系列追加 — ✅ 解決 (2026-06-07、案B 採用)
+- **決定**: ユーザー指摘「**大切なのは収益の推移**」を受け案A(スコープ外)を翻し、**収益(revenue_total_yen)推移 chart を上部に追加**。`DASHBOARD_CHARTS` 2 番目に `{revenue_total_yen,"収益",jpy}`、`DASHBOARD_CHART_SOURCE_METRICS` に `revenue_total_yen` 追加、`MetricChart` y 軸を ¥ 表記化。
+- **一覧**: 「**一覧にはこれまでの合計額**」→ 収益(¥)=`revenue_total_yen`(累計合計) を表示済。収益(件) は補助。
+- **備考**: 推移は revenue_total_yen snapshot 蓄積後 (adapter 正規化が効く post-deploy collect 以降) から描画。旧 tip_total_yen 履歴点は別キーのため本 chart 非対象 (前進的に構築)。
 
 ### [論点-002] producer (bousai-bag-checker) の tip_* → revenue_* 移行
 - **影響範囲**: producer service-info 実装（別 repo）
-- **詰めるべき問い**: 後方互換 alias がある今、producer を revenue_* に移行するか
-- **推奨**: cross-repo follow-up で**任意の cleanup として起票**（機能上は不要、ログ/契約のクリーンさのため推奨）。期限なし。
+- **決定 (2026-06-07)**: hana-memo が `sales_*` で契約違反していたのと同様、**producer 側で canonical `revenue_*` 申告へ修正する方針** (ユーザー: 「hana-memo 側で契約違反を修正しているのでこちらは対応しない」)。HUB は `sales_*` を alias しない。bousai の `tip_*` は既存の後方互換 alias で当面受理 (移行は producer 側で実施)。
 
 ## 10. 更新履歴
 | 日付 | 変更概要 | 実行者 |
