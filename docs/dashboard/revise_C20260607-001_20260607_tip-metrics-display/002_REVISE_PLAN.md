@@ -9,9 +9,11 @@
 
 | ファイル | 変更内容（概要） | リスク | 関連 SPEC § |
 |---|---|---|---|
-| `src/features/dashboard/ServiceRow.tsx` | 末尾に tip 2 セル追加。`yen()` ヘルパで `¥{value}`、未申告は `—`、0 は有効値。`data-tip-count` / `data-tip-yen` 属性付与 | 低（additive、既存セル不変） | §2.2 / §7.1 |
-| `src/features/dashboard/DashboardView.tsx` | thead に `<th>投げ銭</th><th>投げ銭(¥)</th>` を末尾追加 | 低（見出しのみ） | §2.2 |
-| `src/types/metric.ts` | `KnownMetricKey` に `tip_count` / `tip_total_yen` を追記（任意・推奨、open union で後方互換） | なし | §2.3 |
+| `src/providers/adapters.ts` | `LEGACY_METRIC_KEY_ALIAS`（tip_count→revenue_count / tip_total_yen→revenue_total_yen）を追加し、service-info adapter の key emit を正規化 | 低（旧名のみ写像、他キー素通り） | §2.2 / §7.3 |
+| `src/features/dashboard/ServiceRow.tsx` | 末尾に収益 2 セル追加。`yen()` ヘルパで `¥{value}`、未申告は `—`、0 は有効値。`data-revenue-count` / `data-revenue-yen` 属性付与 | 低（additive、既存セル不変） | §2.2 / §7.1 |
+| `src/features/dashboard/DashboardView.tsx` | thead に `<th>収益(件)</th><th>収益(¥)</th>` を末尾追加 | 低（見出しのみ） | §2.2 |
+| `src/types/metric.ts` | `KnownMetricKey` に `revenue_count` / `revenue_total_yen` を追記（canonical、open union で後方互換） | なし | §2.3 |
+| `src/types/service.ts` | `ServiceInfoResponse.metrics[]` doc に canonical=revenue_* + 旧 tip_* 受理を明記 | なし | §2.3 |
 
 ## 2. 新規ファイル一覧
 （なし）
@@ -30,9 +32,9 @@
 
 ## 5. 実装 Phase 分割（`/dev-tdd-phase` 連携）
 
-### Phase 1 (RED→GREEN→IMPROVE): tip 列表示
-- 対象: `ServiceRow.tsx`（tip 2 セル + `yen()` ヘルパ + 未申告/0 判定）、`DashboardView.tsx`（thead 2 列）、`metric.ts`（KnownMetricKey 追記）
-- ゴール: tip 申告ありで `¥100` / `1`、未申告で `—`、0 で `¥0` / `0` を表示。既存 8 セルはリグレッションなし。
+### Phase 1 (RED→GREEN→IMPROVE): 収益列表示 + 契約正規化
+- 対象: `metric.ts`（KnownMetricKey revenue_*）、`adapters.ts`（LEGACY_METRIC_KEY_ALIAS）、`service.ts`（doc）、`ServiceRow.tsx`（収益 2 セル + `yen()` + 未申告/0 判定）、`DashboardView.tsx`（thead 2 列）
+- ゴール: 申告（旧 tip_* / 新 revenue_* どちらも）で `¥100` / `1`、未申告で `—`、0 で `¥0` / `0`。adapter が旧名を canonical へ正規化。既存 8 セルはリグレッションなし。
 
 ## 6. 依存関係順序
 

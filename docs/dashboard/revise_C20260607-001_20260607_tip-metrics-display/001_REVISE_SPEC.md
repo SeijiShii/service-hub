@@ -1,7 +1,7 @@
-# dashboard 変更仕様書（投げ銭(tip)指標を一覧に表示）
+# dashboard 変更仕様書（収益(revenue)指標を一覧に表示 + 契約キー正規化）
 
-> **改修種別**: 機能拡張（表示追加・additive）
-> **issue / slug**: C20260607-001 / tip-metrics-display
+> **改修種別**: 機能拡張（表示追加）+ 契約キー改名（後方互換あり）
+> **issue / slug**: C20260607-001 / tip-metrics-display（収益化に伴い実体は revenue-metrics-display）
 > **基準 SPEC**: `../001_dashboard_SPEC.md`
 > **起点クレーム**: `../claim_C20260607-001_20260607_tip-metrics-display/001_TRIAGE.md`（判定: 仕様検討漏れ、decision D20260607-003）
 > **最終更新**: 2026-06-07
@@ -11,97 +11,106 @@
 
 ## 1. 変更概要
 
-producer (bousai-bag-checker) が service-info v2 の `metrics[]` に追加した投げ銭指標
-`tip_count` (件数) / `tip_total_yen` (累計金額・jpy) を、dashboard 一覧の各サービス行に表示する。
-収集・保存・VM 投影は既に汎用で tip_* を保持済（変更不要）。本改修は **表示層への列追加のみ**。
+producer が service-info で自己申告する累計収益（件数・金額）を dashboard 一覧の各サービス行に表示する。
+
+当初 producer (bousai-bag-checker) は `tip_count` / `tip_total_yen`（投げ銭）名で本番申告したが、
+**収益の源泉はサービスにより寄付・売上・投げ銭等さまざま**であり「投げ銭」は不適切（ユーザー指摘）。
+そのため service-hub（契約 SoT）の canonical キーを汎用 **`revenue_count` / `revenue_total_yen`** とし、
+表示ラベルも **「収益」** とする。**旧 `tip_*` キーでの申告は後方互換として adapter で canonical へ正規化**し、
+producer の強制再デプロイを不要にする。
 
 ## 2. 変更前 vs 変更後
 
 ### 2.1 UC 変更
 | UC ID | 変更前 | 変更後 | 理由 |
 |---|---|---|---|
-| 一覧サマリ | 各行に status/service/MAU/採算/離脱率/errors/alerts/最終デプロイ を表示 | 上記に加え **投げ銭(件数) / 投げ銭(¥)** の 2 列を additive 表示 | producer 申告の tip 指標を可視化（cross-repo CF-20260607-002） |
+| 一覧サマリ | status/service/MAU/採算/離脱率/errors/alerts/最終デプロイ | 上記に加え **収益(件) / 収益(¥)** を additive 表示 | producer 申告の収益指標を可視化 |
 
 ### 2.2 入出力変更
 | 対象 | 変更前 | 変更後 | 互換性 |
 |---|---|---|---|
-| dashboard テーブル (`DashboardView.tsx` thead) | 8 列（status〜最終デプロイ） | 10 列（末尾に 投げ銭件数 / 投げ銭¥ を追加） | 互換（additive、既存列の順序・内容不変） |
-| サービス行 (`ServiceRow.tsx` tr) | 8 セル | 10 セル（`row.metrics.tip_count` / `row.metrics.tip_total_yen` を参照） | 互換 |
-| 公開 API `/api/hub/service-info` / `/api/dashboard/summary` | — | **変更なし**（VM は既に tip_* を保持、API スキーマ不変） | 互換 |
+| `service-info` adapter (`adapters.ts`) | metrics[] の key をそのまま emit | 旧 `tip_count`→`revenue_count` / `tip_total_yen`→`revenue_total_yen` に正規化（`LEGACY_METRIC_KEY_ALIAS`）、それ以外は素通り | 互換（旧名・新名どちらの申告も受理） |
+| dashboard テーブル (`DashboardView.tsx` thead) | 8 列 | 10 列（末尾に 収益(件) / 収益(¥)） | 互換（additive） |
+| サービス行 (`ServiceRow.tsx`) | 8 セル | 10 セル（`revenue_count` / `revenue_total_yen` を参照、`data-revenue-count` / `data-revenue-yen`） | 互換 |
+| 公開 API `/api/dashboard/summary` | — | スキーマ不変（VM は generic に revenue_* を保持） | 互換 |
 
 ### 2.3 データモデル変更
 | エンティティ | 変更内容 | マイグレーション要否 |
 |---|---|---|
-| `usage_snapshots` | 変更なし（`metricKey: MetricKey` open union で tip_* を既に保存中） | 不要 |
-| `KnownMetricKey` (`src/types/metric.ts`) | **任意**: `tip_count` / `tip_total_yen` を列挙に追記（typo 防止・自己文書化）。open union のため後方互換 | 不要 |
+| `KnownMetricKey` (`metric.ts`) | `revenue_count` / `revenue_total_yen` を追記（canonical）。`tip_*` は **追加しない**（adapter で正規化されるため DB には現れない） | 不要 |
+| `ServiceInfoResponse` (`service.ts`) | metrics[] の doc に canonical=revenue_* + 旧 tip_* 受理（正規化）を明記。型構造は不変（key:string） | 不要 |
+| `usage_snapshots` | スキーマ不変。今後は canonical `revenue_*` で保存される（旧 tip_* で申告されても正規化後に保存） | 不要 |
+
+> **既存 tip_* スナップショットの扱い**: producer の本番投入が 2026-06-07 当日で、保存済の tip_* 行は最小（検証時の 1 件程度）。次回 collection で revenue_* が上書き蓄積される。過去 tip_* 行の遡及変換は不要（表示は最新 latestPerService 由来、旧キーは自然に陳腐化）。データ移行なし。
 
 ### 2.4 バリデーション・エラー変更
 | 対象 | 変更前 | 変更後 |
 |---|---|---|
-| tip 値の表示 | （列なし） | 未申告/欠落は `—`、`tip_total_yen` は `¥{value}` 形式（jpy 固定、整数前提）、`tip_count` は数値そのまま |
+| 収益値の表示 | （列なし） | 未申告/欠落は `—`、`revenue_total_yen` は `¥{value}`（jpy 固定）、`revenue_count` は数値。0 は有効値（`¥0`/`0`） |
 
 ## 3. 影響範囲
 
 | 対象 | 影響度 | 説明 |
 |---|---|---|
-| `src/features/dashboard/ServiceRow.tsx` | 高 | tip 2 セルを追加 |
-| `src/features/dashboard/DashboardView.tsx` | 中 | thead に 2 列見出しを追加 |
-| `src/types/metric.ts` | 低 | KnownMetricKey に tip_* 追記（任意） |
-| 収集 / DB / VM / 公開 API | なし | 既に汎用で tip_* を保持・投影済 |
+| `src/providers/adapters.ts` | 高 | 旧→canonical 正規化エイリアス追加 |
+| `src/features/dashboard/ServiceRow.tsx` | 高 | 収益 2 セル追加 |
+| `src/features/dashboard/DashboardView.tsx` | 中 | thead に 収益(件)/収益(¥) |
+| `src/types/metric.ts` | 中 | KnownMetricKey に revenue_* 追記 |
+| `src/types/service.ts` | 低 | ServiceInfoResponse doc 更新 |
+| 収集経路 / DB / VM / 公開 API スキーマ | なし | generic 保持・スキーマ不変 |
+| **producer (bousai-bag-checker)** | 低（任意） | tip_* → revenue_* への移行は**任意**（後方互換 alias により未移行でも機能）。クリーンアップとして推奨、cross-repo follow-up で起票 |
 
 ## 4. 後方互換性
 
 - **互換維持**: ✅
-- additive 列追加のみ。既存列・既存 API・DB スキーマは不変。tip を申告しないサービスは全行 `—` 表示で従来同等。
+- producer は旧 `tip_*` 名のまま申告し続けても、adapter が canonical `revenue_*` へ正規化するため表示は即時機能。
+- producer が将来 `revenue_*` に移行しても native 受理。**移行は強制ではない**（cross-repo の同期デプロイ不要）。
+- additive 列追加のみ。既存列・API・DB スキーマ不変。
 
 ## 5. ロールバック方針
 
-- **コード revert で戻せる**: ✅（表示層のみの変更、DB 変更なし）
-- **DB マイグレーションのロールバック**: 無（マイグレーションなし）
-- **手順**: 該当コミットを revert するだけ。データ・収集に影響なし。
+- **コード revert で戻せる**: ✅（表示層 + adapter alias + 型、DB 変更なし）
+- **DB マイグレーションのロールバック**: 無
+- **手順**: 該当コミットを revert。収集データ・producer に影響なし。
 
 ## 6. リリース戦略
 
-- **方式**: 一括（小規模 additive、フィーチャーフラグ不要）
-- **ロールアウト**: 通常デプロイ。producer は既に tip_* を本番申告済のため、デプロイ後ただちに bousai-bag-checker 行に `tip_count:1 / ¥100` が表示される。
+- **方式**: 一括（小規模 additive + alias、フラグ不要）
+- **ロールアウト**: 通常デプロイ。producer は既に tip_* を本番申告済 → デプロイ後ただちに当該サービス行に `収益(件)=1 / 収益(¥)=¥100` が正規化表示される。
 
 ## 7. 詳細仕様（新仕様）
 
-### 7.1 詳細 UC（新仕様）
-- 一覧画面 (`/`) の各サービス行末尾に「投げ銭(件数)」「投げ銭(¥)」の 2 列を表示。
-- 値は `ServiceRowVM.metrics.tip_count` / `.tip_total_yen`（buildDashboard が generic に投影済）。
-- 未申告（キーなし）または値 0/欠落の扱い:
-  - `tip_count`: 未申告は `—`。0 は `0` 表示（投げ銭ゼロを明示）。※ last_deploy_at と異なり 0 は有効値。
-  - `tip_total_yen`: 未申告は `—`。0 は `¥0`。
+### 7.1 詳細 UC
+- 一覧 (`/`) の各行末尾に「収益(件)」「収益(¥)」。値は `ServiceRowVM.metrics.revenue_count` / `.revenue_total_yen`。
+- 未申告（キーなし=undefined）は `—`。申告ありの 0 は有効値（`revenue_count`→`0`、`revenue_total_yen`→`¥0`）。
 
-> 補足: 「未申告(`—`)」と「0(`¥0`/`0`)」を区別する。tip_count/tip_total_yen が VM に存在するか (`row.metrics.tip_count !== undefined`) で判定。
+### 7.2 入出力
+- 表示のみ。`¥` 接頭は jpy 固定（producer の unit:jpy 前提）。整数表示。
 
-### 7.2 入出力（新仕様）
-- 表示のみ。入力なし。`¥` 接頭は jpy 固定（producer の unit:jpy 前提）。整数表示（小数なし）。
+### 7.3 データモデル
+- §2.3 の通り。adapter 正規化は `LEGACY_METRIC_KEY_ALIAS = { tip_count→revenue_count, tip_total_yen→revenue_total_yen }`。
 
-### 7.3 データモデル（新仕様）
-- 変更なし（§2.3）。
+### 7.4 バリデーション・エラー
+- unit が想定外でも値は表示（collection 層で正規化済、HUB は producer 申告を信頼）。¥ 固定。
 
-### 7.4 バリデーション・エラー（新仕様）
-- tip_total_yen の unit が想定外（jpy 以外）でも値は表示する（HUB は producer 申告を信頼、collection 層で既に正規化済）。表示は ¥ 固定。
-
-### 7.5 機能固有 NFR + 既存連携（新仕様）
-- 一覧性（design-system「数十サービスを 1 画面」）維持: tip 2 列追加で横幅増。compact 行の右寄せ mono 表記を踏襲。
-- PII なし（集計値のみ、O48）。
+### 7.5 機能固有 NFR + 既存連携
+- 一覧性維持（compact 行、右寄せ mono）。PII なし（集計値のみ、O48）。
 
 ## 8. タグ別追加項目（analytics）
-- 集計値のみ・PII なし。tip_total_yen/tip_count はサービス単位の累計で個人特定不可。
+- 集計値のみ・PII なし。
 
 ## 9. 未決事項
 
-### [論点-001] 上部 chart への tip 系列追加
-- **影響範囲**: `DASHBOARD_CHARTS` / `DASHBOARD_CHART_SOURCE_METRICS`
-- **詰めるべき問い**: 投げ銭金額の時系列を上部 chart にも出すか
-- **候補案**: 案A 今回スコープ外（一覧表示で close）/ 案B 同時に chart 系列追加
-- **推奨**: **案A**。まず一覧で可視化し close。chart 化は需要を見て別 revise（スコープ最小化・早期 close 優先）
-- **判断期限**: 本 revise 実装前（スコープ確定）
+### [論点-001] 上部 chart への収益系列追加
+- **推奨**: 今回スコープ外（案A）。まず一覧で close、chart 化は需要を見て別 revise。
+
+### [論点-002] producer (bousai-bag-checker) の tip_* → revenue_* 移行
+- **影響範囲**: producer service-info 実装（別 repo）
+- **詰めるべき問い**: 後方互換 alias がある今、producer を revenue_* に移行するか
+- **推奨**: cross-repo follow-up で**任意の cleanup として起票**（機能上は不要、ログ/契約のクリーンさのため推奨）。期限なし。
 
 ## 10. 更新履歴
 | 日付 | 変更概要 | 実行者 |
 |---|---|---|
-| 2026-06-07 | 初版作成（claim C20260607-001 からハンドオフ） | /flow:revise |
+| 2026-06-07 | 初版作成（claim ハンドオフ、当初は tip 表示のみ・契約変更不要の想定） | /flow:revise |
+| 2026-06-07 | ユーザー指摘で収益化: 表示ラベル 投げ銭→収益、契約 canonical を revenue_*、旧 tip_* は adapter で後方互換正規化。scope に契約改名 + adapter を追加 | /flow:tdd (feedback) |

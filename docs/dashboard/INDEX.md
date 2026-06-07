@@ -30,7 +30,7 @@
 | [claim_C20260601-002_20260601_chart-multiseries-render/](./claim_C20260601-002_20260601_chart-multiseries-render/) | claim | C20260601-002 | 判定完了 → fix 分岐 | チャート 3 症状(2値で線途切れ/同時刻 x ずれ/ミリ秒表示) → 判定=バグ(fix)/high。根本=時系列 x 軸とデータ整列の実装欠陥 | — |
 | [fix_C20260601-002_20260601_chart-multiseries-render/](./fix_C20260601-002_20260601_chart-multiseries-render/) | fix | C20260601-002 | 調査待ち (severity=high) | multi-series 重ね描き修正: runner 単一 capturedAt / MetricChart 時間軸化+分整形 / mergeSeries 量子化整列 / connectNulls 再評価 / service-detail 後方互換 | — |
 | [claim_C20260607-001_20260607_tip-metrics-display/](./claim_C20260607-001_20260607_tip-metrics-display/) | claim | C20260607-001 | 判定完了 → revise 分岐 | 投げ銭(tip_count/tip_total_yen)が dashboard に出ない。三項照合=収集/VM は汎用で保持済・表示層 ServiceRow が選択描画で tip 列なし → 判定=仕様検討漏れ(revise)/medium。表示追加のみで完結 (収集/保存変更不要、PII なし O48) | — |
-| [revise_C20260607-001_20260607_tip-metrics-display/](./revise_C20260607-001_20260607_tip-metrics-display/) | revise | C20260607-001 | 設計完了 (001-004、実装待ち) | dashboard 各サービス行に tip_total_yen(¥) / tip_count 列を additive 追加。任意で KnownMetricKey に tip_* 追記。互換維持・マイグレーション不要。起点=claim C20260607-001 (cross-repo CF-20260607-002) | [INDEX](./revise_C20260607-001_20260607_tip-metrics-display/INDEX.md) |
+| [revise_C20260607-001_20260607_tip-metrics-display/](./revise_C20260607-001_20260607_tip-metrics-display/) | revise | C20260607-001 | **実装完了 (2026-06-07、unit 323 green)** | dashboard 各サービス行に収益(件)/収益(¥)列を additive 追加。契約 canonical を汎用 revenue_count/revenue_total_yen に統一、旧 tip_* は adapter で後方互換正規化。互換維持・マイグレーション不要。E2E は /flow:e2e 待ち。producer 移行は任意(cross-repo follow-up)。起点=claim C20260607-001 | [INDEX](./revise_C20260607-001_20260607_tip-metrics-display/INDEX.md) |
 
 ## 関連
 - 親 concept: `../concept.md` §1.3.1 dashboard 行
