@@ -4,14 +4,16 @@ import type { DashboardVM } from "./summary.js";
 import type { ForcePullState } from "./forcePull.js";
 import type { CollectionRun } from "../../types/index.js";
 import { useFetch } from "../../lib/useFetch.js";
+import { DEFAULT_PERIOD, type ChartPeriod } from "./chartPeriod.js";
 
 /** dashboard `/` の Page。
- *  - GET /api/dashboard/summary で VM 取得
+ *  - GET /api/dashboard/summary?period=<all|30d|7d> で VM 取得 (period 変更で useFetch が url 変化→自動 refetch)
  *  - 「今すぐ pull」: POST /api/admin/collect (force-pull、D20260528-022 で /admin から relocation)
  */
 export function DashboardPage() {
+  const [chartPeriod, setChartPeriod] = useState<ChartPeriod>(DEFAULT_PERIOD);
   const { loading, data, error, refetch } = useFetch<DashboardVM>(
-    "/api/dashboard/summary",
+    `/api/dashboard/summary?period=${chartPeriod}`,
   );
   const [forcePull, setForcePull] = useState<ForcePullState>({});
 
@@ -55,6 +57,8 @@ export function DashboardPage() {
       vm={data}
       onForcePull={onForcePull}
       forcePullState={forcePull}
+      chartPeriod={chartPeriod}
+      onChartPeriodChange={setChartPeriod}
     />
   );
 }

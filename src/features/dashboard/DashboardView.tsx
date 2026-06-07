@@ -3,14 +3,24 @@ import { DashboardCharts } from "./DashboardCharts.js";
 import type { DashboardVM } from "./summary.js";
 import { formatLastUpdated } from "./lastUpdatedFormat.js";
 import type { ForcePullState } from "./forcePull.js";
+import type { ChartPeriod } from "./chartPeriod.js";
 
 interface Props {
   vm: DashboardVM;
   onForcePull?: () => void;
   forcePullState?: ForcePullState;
+  /** chart 表示期間 (chart-ux)。未指定なら DashboardCharts の既定 30d。 */
+  chartPeriod?: ChartPeriod;
+  onChartPeriodChange?: (period: ChartPeriod) => void;
 }
 
-export function DashboardView({ vm, onForcePull, forcePullState }: Props) {
+export function DashboardView({
+  vm,
+  onForcePull,
+  forcePullState,
+  chartPeriod,
+  onChartPeriodChange,
+}: Props) {
   const showAlert = vm.downCount > 0 || vm.lastRunStatus === "failed";
   const lastUpdatedText = formatLastUpdated(vm.lastUpdatedAt);
   const lastUpdatedFailed = vm.lastRunStatus === "failed";
@@ -122,7 +132,11 @@ export function DashboardView({ vm, onForcePull, forcePullState }: Props) {
             : "直近の収集に失敗があります"}
         </div>
       )}
-      <DashboardCharts charts={vm.charts} />
+      <DashboardCharts
+        charts={vm.charts}
+        period={chartPeriod}
+        onPeriodChange={onChartPeriodChange}
+      />
       {vm.rows.length === 0 ? (
         <p data-testid="empty-state">
           まだ収集データがありません（収集を待っています）

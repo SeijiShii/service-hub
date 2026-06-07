@@ -1,6 +1,7 @@
-import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
-import { DashboardCharts } from "./DashboardCharts.js";
+import { describe, it, expect, vi } from "vitest";
+import { render, screen, fireEvent } from "@testing-library/react";
+import { DashboardCharts, sharedXDomain } from "./DashboardCharts.js";
+import { bucketEpoch } from "../../components/MetricChart.js";
 import type { DashboardChart } from "./summary.js";
 
 const mkChart = (
@@ -19,76 +20,131 @@ const mkChart = (
   })),
 });
 
-describe("DashboardCharts (biz-charts)", () => {
-  it("BC-U-05: 4 chart render (ユーザー数/課金額/コスト/採算) — up/db_storage_bytes は除外", () => {
+describe("DashboardCharts (chart-ux 2026-06-08)", () => {
+  it("CX-U-10: 2 chart render (ユーザー数/収益) — usd 系 3 chart は不在", () => {
     const charts: DashboardChart[] = [
       mkChart("mau", "ユーザー数", "count", [
         ["a", [{ capturedAt: "2026-05-10T00:00:00Z", value: 100 }]],
       ]),
-      mkChart("revenue_month_usd", "課金額", "usd", [
-        ["a", [{ capturedAt: "2026-05-10T00:00:00Z", value: 50 }]],
-      ]),
-      mkChart("ai_cost_month_usd", "コスト", "usd", [
-        ["a", [{ capturedAt: "2026-05-10T00:00:00Z", value: 10 }]],
-      ]),
-      mkChart("profit", "採算", "usd", [
-        ["a", [{ capturedAt: "2026-05-10T00:00:00Z", value: 40 }]],
+      mkChart("revenue_total_yen", "収益", "jpy", [
+        ["a", [{ capturedAt: "2026-05-10T00:00:00Z", value: 200 }]],
       ]),
     ];
     render(<DashboardCharts charts={charts} />);
     expect(screen.getByTestId("chart-mau")).not.toBeNull();
-    expect(screen.getByTestId("chart-revenue_month_usd")).not.toBeNull();
-    expect(screen.getByTestId("chart-ai_cost_month_usd")).not.toBeNull();
-    expect(screen.getByTestId("chart-profit")).not.toBeNull();
-    // 日本語ラベルが見出しに出る
+    expect(screen.getByTestId("chart-revenue_total_yen")).not.toBeNull();
     const section = screen.getByTestId("dashboard-charts") as HTMLElement;
     expect(section.textContent).toContain("ユーザー数");
-    expect(section.textContent).toContain("課金額");
-    expect(section.textContent).toContain("コスト");
-    expect(section.textContent).toContain("採算");
-    // 旧 chart は不在
-    expect(screen.queryByTestId("chart-up")).toBeNull();
-    expect(screen.queryByTestId("chart-db_storage_bytes")).toBeNull();
+    expect(section.textContent).toContain("収益");
+    // 削除した usd 系 chart は不在
+    expect(screen.queryByTestId("chart-revenue_month_usd")).toBeNull();
+    expect(screen.queryByTestId("chart-ai_cost_month_usd")).toBeNull();
+    expect(screen.queryByTestId("chart-profit")).toBeNull();
   });
 
-  it("TS-U-31: section header「直近 30 日の推移」 + section testid", () => {
+  it("CX-U-11: 共有時間軸 — 全 chart に同一 data-domain (点範囲が異なっても揃う)", () => {
     const charts: DashboardChart[] = [
-      mkChart("mau", "ユーザー数", "count", []),
+      // mau は 05-10 のみ
+      mkChart("mau", "ユーザー数", "count", [
+        ["a", [{ capturedAt: "2026-05-10T00:00:00Z", value: 100 }]],
+      ]),
+      // 収益は 05-08 〜 05-12 (より広い)
+      mkChart("revenue_total_yen", "収益", "jpy", [
+        [
+          "a",
+          [
+            { capturedAt: "2026-05-08T00:00:00Z", value: 10 },
+            { capturedAt: "2026-05-12T00:00:00Z", value: 20 },
+          ],
+        ],
+      ]),
     ];
     render(<DashboardCharts charts={charts} />);
-    const section = screen.getByTestId("dashboard-charts") as HTMLElement;
-    expect(section).not.toBeNull();
-    expect(section.textContent).toContain("直近 30 日の推移");
-    // ⚠️ jsdom 制約: React inline style で CSS var (`var(--border, ...)`) を含む `borderBottom`
-    // shorthand は style attribute から完全に除去される (jsdom CSS parser が var() を弾く)。
-    // 実装側では正しく設定済 (本番ブラウザで適用)、jsdom テストでは visual style assertion は省略。
-    // h2 要素の存在で section header が正しく render されたことを担保
-    const heading = section.querySelector("h2");
-    expect(heading).not.toBeNull();
-    expect(heading!.textContent).toBe("直近 30 日の推移");
+    const d1 = screen.getByTestId("chart-mau").getAttribute("data-domain");
+    const d2 = screen
+      .getByTestId("chart-revenue_total_yen")
+      .getAttribute("data-domain");
+    // union [05-08, 05-12] が両方に渡る
+    const expected = `${bucketEpoch("2026-05-08T00:00:00Z")},${bucketEpoch(
+      "2026-05-12T00:00:00Z",
+    )}`;
+    expect(d1).toBe(expected);
+    expect(d2).toBe(expected);
+    expect(d1).toBe(d2);
   });
 
-  it("TS-U-32: 全 chart で series 空 → 各 chart で「データなし」表示、section 自体は render", () => {
+  it("CX-U-12: 全 series 空 → 各 chart「データなし」、data-domain なし、section は render", () => {
     const charts: DashboardChart[] = [
       mkChart("mau", "ユーザー数", "count", []),
-      mkChart("revenue_month_usd", "課金額", "usd", []),
-      mkChart("ai_cost_month_usd", "コスト", "usd", []),
-      mkChart("profit", "採算", "usd", []),
+      mkChart("revenue_total_yen", "収益", "jpy", []),
     ];
     render(<DashboardCharts charts={charts} />);
     expect(screen.getByTestId("dashboard-charts")).not.toBeNull();
     expect(screen.getByTestId("chart-empty-mau")).not.toBeNull();
-    expect(screen.getByTestId("chart-empty-revenue_month_usd")).not.toBeNull();
-    expect(screen.getByTestId("chart-empty-ai_cost_month_usd")).not.toBeNull();
-    expect(screen.getByTestId("chart-empty-profit")).not.toBeNull();
-    expect(screen.queryByTestId("chart-empty-up")).toBeNull();
+    expect(screen.getByTestId("chart-empty-revenue_total_yen")).not.toBeNull();
+    expect(
+      screen.getByTestId("chart-mau").getAttribute("data-domain"),
+    ).toBeNull();
   });
 
-  it("TS-U-32b: charts=[] (空配列) でも section + header は render (チャート部分のみ空)", () => {
+  it("CX-U-13: charts=[] (空配列) でも section + header は render", () => {
     render(<DashboardCharts charts={[]} />);
     expect(screen.getByTestId("dashboard-charts")).not.toBeNull();
-    expect(screen.getByTestId("dashboard-charts").textContent).toContain(
-      "直近 30 日の推移",
+    const heading = screen
+      .getByTestId("dashboard-charts")
+      .querySelector("h2");
+    expect(heading).not.toBeNull();
+  });
+
+  // ── 期間セレクタ (Phase 3) ──
+  it("CX-U-20: 期間セレクタ (全期間/30日/7日) が render、選択中 period が active", () => {
+    render(
+      <DashboardCharts charts={[]} period="30d" onPeriodChange={() => {}} />,
+    );
+    const selector = screen.getByTestId("chart-period-selector");
+    expect(selector).not.toBeNull();
+    expect(selector.textContent).toContain("全期間");
+    expect(selector.textContent).toContain("30日");
+    expect(selector.textContent).toContain("7日");
+    expect(
+      screen.getByTestId("chart-period-30d").getAttribute("aria-pressed"),
+    ).toBe("true");
+    expect(
+      screen.getByTestId("chart-period-7d").getAttribute("aria-pressed"),
+    ).toBe("false");
+  });
+
+  it("CX-U-21: 期間ボタン click → onPeriodChange が選択 period で呼ばれる", () => {
+    const onChange = vi.fn();
+    render(
+      <DashboardCharts charts={[]} period="30d" onPeriodChange={onChange} />,
+    );
+    fireEvent.click(screen.getByTestId("chart-period-7d"));
+    expect(onChange).toHaveBeenCalledWith("7d");
+    fireEvent.click(screen.getByTestId("chart-period-all"));
+    expect(onChange).toHaveBeenCalledWith("all");
+  });
+});
+
+describe("sharedXDomain (chart-ux)", () => {
+  it("CX-U-30: 全 chart points の min/max を bucketEpoch で算出", () => {
+    const charts: DashboardChart[] = [
+      mkChart("mau", "ユーザー数", "count", [
+        ["a", [{ capturedAt: "2026-05-10T00:00:30Z", value: 1 }]],
+      ]),
+      mkChart("revenue_total_yen", "収益", "jpy", [
+        ["a", [{ capturedAt: "2026-05-12T00:00:45Z", value: 2 }]],
+      ]),
+    ];
+    expect(sharedXDomain(charts)).toEqual([
+      bucketEpoch("2026-05-10T00:00:30Z"),
+      bucketEpoch("2026-05-12T00:00:45Z"),
+    ]);
+  });
+
+  it("CX-U-31: 点ゼロ → undefined", () => {
+    expect(sharedXDomain([mkChart("mau", "ユーザー数", "count", [])])).toBe(
+      undefined,
     );
   });
 });
