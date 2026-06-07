@@ -7,6 +7,10 @@ import {
   recentSnapshots,
 } from "../../src/db/index.js";
 import { DASHBOARD_CHART_SOURCE_METRICS } from "../../src/features/dashboard/summary.js";
+import {
+  parsePeriod,
+  periodToSinceIso,
+} from "../../src/features/dashboard/chartPeriod.js";
 import { loadServices } from "../../src/registry/index.js";
 import { buildDashboard } from "../../src/features/dashboard/summary.js";
 import {
@@ -25,10 +29,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
   const db = createDb();
   const services = await loadServices(db, { onlyActive: true });
-  // biz-charts: recentSnapshots を既存 Promise.all に並列追加。
-  // 過去 30 日 + chart source metric (mau/revenue_month_usd/ai_cost_month_usd) に絞って軽量化。
-  // 採算(profit)は buildCharts が revenue−cost から派生するため取得キーには含めない。
-  const sinceIso = new Date(Date.now() - 30 * 864e5).toISOString();
+  // chart-ux: 期間セレクタ (?period=all|30d|7d、既定/不正は 30d) で chart 取得 since を切替。
+  // chart source metric (mau/revenue_total_yen) に絞って軽量化。all は epoch0 起点 (全期間)。
+  const period = parsePeriod(
+    Array.isArray(req.query.period) ? req.query.period[0] : req.query.period,
+  );
+  const sinceIso = periodToSinceIso(period, Date.now());
   const [latest, alerts, runs, chartSnaps] = await Promise.all([
     latestPerService(db),
     openAlerts(db),
