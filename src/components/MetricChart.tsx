@@ -28,6 +28,12 @@ export interface MetricChartProps {
   unit: string;
   series: MetricSeriesItem[];
   height?: number;
+  /**
+   * X 軸 (時間軸) の固定 domain [minEpochMs, maxEpochMs] (chart-ux 2026-06-08)。
+   * 複数 chart を縦並びする dashboard で共有 domain を渡し時間軸を揃える用途。
+   * 未指定なら従来どおり ["dataMin","dataMax"] (各 chart 独立、service-detail 単体利用は未指定で後方互換)。
+   */
+  domain?: [number, number];
 }
 
 /**
@@ -61,7 +67,7 @@ function hasAnyPoints(series: MetricSeriesItem[]): boolean {
 
 /** capturedAt を分バケットの epoch ms に正規化 (fix C20260601-002)。 */
 const MINUTE_MS = 60_000;
-function bucketEpoch(capturedAt: string): number {
+export function bucketEpoch(capturedAt: string): number {
   const t = new Date(capturedAt).getTime();
   if (Number.isNaN(t)) return 0;
   return Math.floor(t / MINUTE_MS) * MINUTE_MS;
@@ -109,6 +115,7 @@ export function MetricChart({
   unit,
   series,
   height = 160,
+  domain,
 }: MetricChartProps) {
   const empty = !hasAnyPoints(series);
   const merged = empty ? [] : mergeSeries(series);
@@ -119,6 +126,7 @@ export function MetricChart({
       data-testid={`chart-${metricKey}`}
       data-points={merged.length}
       data-series-count={series.length}
+      data-domain={domain ? `${domain[0]},${domain[1]}` : undefined}
     >
       <figcaption style={{ fontFamily: "ui-monospace, monospace" }}>
         {label ?? metricKey} ({unit})
@@ -132,7 +140,7 @@ export function MetricChart({
               dataKey={X_KEY}
               type="number"
               scale="time"
-              domain={["dataMin", "dataMax"]}
+              domain={domain ?? ["dataMin", "dataMax"]}
               tickFormatter={formatXAxis}
               tick={{
                 fontFamily: "ui-monospace, monospace",

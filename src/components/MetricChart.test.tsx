@@ -236,6 +236,35 @@ describe("MetricChart (timeseries-topchart、multi-series 共通化、spec-revie
     });
   });
 
+  describe("CX-U: domain prop で共有時間軸 (chart-ux 2026-06-08)", () => {
+    it("CX-U-01: domain 指定 → figure に data-domain が反映される", () => {
+      const series: MetricSeriesItem[] = [
+        { slug: "a", name: "A", points: [ptA("2026-05-01T00:00:00Z", 10)] },
+      ];
+      render(
+        <MetricChart
+          metricKey="mau"
+          unit="count"
+          series={series}
+          domain={[1000, 2000]}
+        />,
+      );
+      expect(screen.getByTestId("chart-mau").getAttribute("data-domain")).toBe(
+        "1000,2000",
+      );
+    });
+
+    it("CX-U-02: domain 未指定 → data-domain なし (従来 dataMin/dataMax fallback)", () => {
+      const series: MetricSeriesItem[] = [
+        { slug: "a", name: "A", points: [ptA("2026-05-01T00:00:00Z", 10)] },
+      ];
+      render(<MetricChart metricKey="mau" unit="count" series={series} />);
+      expect(
+        screen.getByTestId("chart-mau").getAttribute("data-domain"),
+      ).toBeNull();
+    });
+  });
+
   describe("TS-U-38: figcaption に metricKey + unit", () => {
     it("metricKey と unit が figcaption に表示される", () => {
       render(
