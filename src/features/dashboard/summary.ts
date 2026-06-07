@@ -5,11 +5,7 @@ import type {
   CollectionRun,
   MetricKey,
 } from "../../types/index.js";
-import {
-  computeProfitability,
-  profitAt,
-  type Profitability,
-} from "./profitability.js";
+import { computeProfitability, type Profitability } from "./profitability.js";
 import { computeFunnel, type FunnelRates } from "../service-detail/funnel.js";
 
 export type FreeTierState = "ok" | "warn" | "over" | null;
@@ -58,21 +54,21 @@ export interface DashboardChart {
 }
 
 /**
- * 上部 chart が recentSnapshots で**取得する** source metric (biz-charts)。
- * profit(採算) は保存メトリクスでなく revenue−cost の派生のため取得キーには含めない。
+ * 上部 chart が recentSnapshots で**取得する** source metric (chart-ux 2026-06-08)。
+ * usd 系 (revenue_month_usd 課金額 / ai_cost_month_usd コスト / profit 採算) は表示削除に伴い取得対象外。
+ * ※ usage_snapshots への収集自体は継続 (DB に残るため将来 usd 系 chart 復活が可能、revise [論点-001])。
  * up(死活) は一覧 status 列、db_storage_bytes はリソース系で chart 対象外 (収集は継続、一覧/将来用)。
  */
 export const DASHBOARD_CHART_SOURCE_METRICS: readonly MetricKey[] = [
   "mau",
   "revenue_total_yen",
-  "revenue_month_usd",
-  "ai_cost_month_usd",
 ] as const;
 
 /**
- * 上部 chart の定義 (固定順序、biz-charts、ユーザー確定 2026-05-30)。
- * 上から: ユーザー数 → 課金額 → コスト → 採算。
- * profit は derived=true (buildCharts が revenue−cost を profitAt で合成、spec-review R1)。
+ * 上部 chart の定義 (固定順序、chart-ux 2026-06-08、ユーザー確定)。
+ * 上から: ユーザー数 → 収益(¥)。
+ * usd 系 3 chart (課金額/コスト/採算) は「課金額が未取得で収益と同義」のため削除
+ * (採算は課金額を収益源とする派生で、収益¥とコスト$の単位不整合で再ベース不能のため一括削除)。
  */
 export const DASHBOARD_CHARTS: ReadonlyArray<{
   metricKey: MetricKey;
@@ -84,9 +80,6 @@ export const DASHBOARD_CHARTS: ReadonlyArray<{
   // 収益 (revenue-metrics-display, C20260607-001)。累計収益 (jpy) の推移。
   // producer 自己申告 (寄付/売上等)。旧 tip_total_yen は adapter で revenue_total_yen へ正規化済。
   { metricKey: "revenue_total_yen", label: "収益", unit: "jpy" },
-  { metricKey: "revenue_month_usd", label: "課金額", unit: "usd" },
-  { metricKey: "ai_cost_month_usd", label: "コスト", unit: "usd" },
-  { metricKey: "profit", label: "採算", unit: "usd", derived: true },
 ] as const;
 
 export interface DashboardVM {
@@ -98,18 +91,17 @@ export interface DashboardVM {
   /** 直近 run の finishedAt (実行中なら startedAt、無しなら null)、ISO 8601。 */
   lastUpdatedAt: string | null;
   /**
-   * dashboard 上部 chart 用のビジネス metric × 全 service 時系列 (biz-charts、required)。
-   * 常に 4 件 (DASHBOARD_CHARTS の順: ユーザー数/課金額/コスト/採算)、空 chartSnapshots でも各 chart.series に
-   * 全 service の {slug,name,points:[]} を含む (UI で「データなし」 fallback)。採算は派生。
+   * dashboard 上部 chart 用のビジネス metric × 全 service 時系列 (chart-ux、required)。
+   * 常に 2 件 (DASHBOARD_CHARTS の順: ユーザー数/収益¥)、空 chartSnapshots でも各 chart.series に
+   * 全 service の {slug,name,points:[]} を含む (UI で「データなし」 fallback)。
    */
   charts: DashboardChart[];
 }
 
 /**
- * chartSnapshots から DashboardChart[] を集約 (biz-charts)。
- * DASHBOARD_CHARTS の定義順 (ユーザー数/課金額/コスト/採算) で全 service 重ね描き series を生成。
- * 採算(profit)は保存メトリクスでなく、各 service の revenue−cost を capturedAt で整合させた派生系列
- * (profitAt 共通化、spec-review R1)。空 chartSnapshots でも各 chart.series に全 service の points=[] を含む。
+ * chartSnapshots から DashboardChart[] を集約 (chart-ux 2026-06-08)。
+ * DASHBOARD_CHARTS の定義順 (ユーザー数/収益¥) で全 service 重ね描き series を生成。
+ * 空 chartSnapshots でも各 chart.series に全 service の points=[] を含む (UI で「データなし」 fallback)。
  */
 function buildCharts(
   services: ServiceDescriptor[],
@@ -138,30 +130,6 @@ function buildCharts(
   }
 
   return DASHBOARD_CHARTS.map((def) => {
-    if (def.derived && def.metricKey === "profit") {
-      // 採算 = revenue − cost の派生系列 (revenue の capturedAt 起点、cost は同 capturedAt を lookup、無→0)
-      const series: DashboardChartSeries[] = services.map((svc) => {
-        const rev = pointsByKey.get(`revenue_month_usd|${svc.slug}`) ?? [];
-        const costPts = pointsByKey.get(`ai_cost_month_usd|${svc.slug}`) ?? [];
-        const costByCapturedAt = new Map(
-          costPts.map((p) => [p.capturedAt, p.value]),
-        );
-        return {
-          slug: svc.slug,
-          name: svc.name,
-          points: rev.map((r) => ({
-            capturedAt: r.capturedAt,
-            value: profitAt(r.value, costByCapturedAt.get(r.capturedAt)),
-          })),
-        };
-      });
-      return {
-        metricKey: def.metricKey,
-        label: def.label,
-        unit: def.unit,
-        series,
-      };
-    }
     const series: DashboardChartSeries[] = services.map((svc) => ({
       slug: svc.slug,
       name: svc.name,
