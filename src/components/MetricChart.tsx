@@ -44,6 +44,10 @@ function tickFormatterForMetric(
     });
     return (v: number) => fmt.format(new Date(v));
   }
+  // 収益 (revenue-metrics-display): jpy 軸を ¥ 表記 (一覧の ¥ と整合)。
+  if (metricKey === "revenue_total_yen") {
+    return (v: number) => `¥${v}`;
+  }
   return undefined; // recharts default
 }
 

@@ -144,13 +144,20 @@ describe("buildDashboard", () => {
   });
 
   // ── biz-charts (revise_biz-charts_20260530) : ユーザー数/課金額/コスト/採算 ──
-  it("BC-U-01: charts = 4 件、順序 [mau, revenue, cost, profit]、日本語 label", () => {
+  it("BC-U-01: charts = 5 件、順序 [mau, revenue_total_yen, revenue_month_usd, cost, profit]、日本語 label", () => {
     const chartSnaps: SnapshotRow[] = [
       snap({
         serviceSlug: "a",
         metricKey: "mau",
         metricValue: 100,
         unit: "count",
+        capturedAt: "2026-05-10T00:00:00.000Z",
+      }),
+      snap({
+        serviceSlug: "a",
+        metricKey: "revenue_total_yen",
+        metricValue: 200,
+        unit: "jpy",
         capturedAt: "2026-05-10T00:00:00.000Z",
       }),
       snap({
@@ -169,18 +176,25 @@ describe("buildDashboard", () => {
       }),
     ];
     const vm = buildDashboard([svc("a")], [], [], undefined, chartSnaps);
-    expect(vm.charts).toHaveLength(4);
+    expect(vm.charts).toHaveLength(5);
     expect(vm.charts.map((c) => c.metricKey)).toEqual([
       "mau",
+      "revenue_total_yen",
       "revenue_month_usd",
       "ai_cost_month_usd",
       "profit",
     ]);
     expect(vm.charts.map((c) => c.label)).toEqual([
       "ユーザー数",
+      "収益",
       "課金額",
       "コスト",
       "採算",
+    ]);
+    // 収益 chart に revenue_total_yen series が点を持つ (推移)
+    const rev = vm.charts.find((c) => c.metricKey === "revenue_total_yen")!;
+    expect(rev.series[0].points).toEqual([
+      { capturedAt: "2026-05-10T00:00:00.000Z", value: 200 },
     ]);
     // up / db_storage_bytes は chart 対象外 (一覧 status 列・収集は別)
     expect(vm.charts.map((c) => c.metricKey)).not.toContain("up");
@@ -258,9 +272,9 @@ describe("buildDashboard", () => {
     expect(profit.series[0].points).toEqual([]);
   });
 
-  it("BC-U-11: 全欠落 → charts 4 件、各 series points = []", () => {
+  it("BC-U-11: 全欠落 → charts 5 件、各 series points = []", () => {
     const vm = buildDashboard([svc("a")], [], []); // chartSnapshots 省略
-    expect(vm.charts).toHaveLength(4);
+    expect(vm.charts).toHaveLength(5);
     expect(vm.charts.every((c) => c.series.length === 1)).toBe(true);
     expect(vm.charts.every((c) => c.series[0].points.length === 0)).toBe(true);
   });
@@ -354,12 +368,12 @@ describe("buildDashboard", () => {
       }),
     ];
     const vm = buildDashboard([svc("a")], [], [], undefined, chartSnaps);
-    expect(vm.charts).toHaveLength(4);
+    expect(vm.charts).toHaveLength(5);
     expect(vm.charts.map((c) => c.metricKey)).not.toContain("up");
     expect(vm.charts.map((c) => c.metricKey)).not.toContain("db_storage_bytes");
   });
 
-  it("BC-U-61: 0 service + chartSnapshots 有 → charts = 4 件、各 series=[]", () => {
+  it("BC-U-61: 0 service + chartSnapshots 有 → charts = 5 件、各 series=[]", () => {
     const chartSnaps: SnapshotRow[] = [
       snap({
         serviceSlug: "a",
@@ -368,14 +382,14 @@ describe("buildDashboard", () => {
       }),
     ];
     const vm = buildDashboard([], [], [], undefined, chartSnaps);
-    expect(vm.charts).toHaveLength(4);
+    expect(vm.charts).toHaveLength(5);
     expect(vm.charts.every((c) => c.series.length === 0)).toBe(true);
   });
 
   it("TS-M-03: 既存呼び出し (4 引数) でも charts required で必ず含む (後方互換確認)", () => {
     const vm = buildDashboard([svc("a")], [], []);
     expect(vm.charts).toBeDefined();
-    expect(vm.charts).toHaveLength(4);
+    expect(vm.charts).toHaveLength(5);
   });
 
   it("BC-U-30: 採算チャート最新点 = 一覧採算列 (computeProfitability) の一致 (spec-review R1)", () => {

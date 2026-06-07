@@ -64,6 +64,7 @@ export interface DashboardChart {
  */
 export const DASHBOARD_CHART_SOURCE_METRICS: readonly MetricKey[] = [
   "mau",
+  "revenue_total_yen",
   "revenue_month_usd",
   "ai_cost_month_usd",
 ] as const;
@@ -80,6 +81,9 @@ export const DASHBOARD_CHARTS: ReadonlyArray<{
   derived?: boolean;
 }> = [
   { metricKey: "mau", label: "ユーザー数", unit: "count" },
+  // 収益 (revenue-metrics-display, C20260607-001)。累計収益 (jpy) の推移。
+  // producer 自己申告 (寄付/売上等)。旧 tip_total_yen は adapter で revenue_total_yen へ正規化済。
+  { metricKey: "revenue_total_yen", label: "収益", unit: "jpy" },
   { metricKey: "revenue_month_usd", label: "課金額", unit: "usd" },
   { metricKey: "ai_cost_month_usd", label: "コスト", unit: "usd" },
   { metricKey: "profit", label: "採算", unit: "usd", derived: true },
