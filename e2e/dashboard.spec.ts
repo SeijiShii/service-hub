@@ -127,6 +127,57 @@ test("FX-E2E-01 (C20260601-002): 2 service 同一 run の上部チャートが 2
   await expect(chart).toHaveAttribute("data-points", "2");
 });
 
+test("CC-E2E-01 (chart-colors): 2 service の上部チャート line が暖寒交互 palette で区別される", async ({
+  page,
+}) => {
+  // 旧 palette は先頭が青→シアン→緑のクール域固まり + シアン/緑 near-dup で
+  // 少数 service だと「青と緑だけ」に見えた。新 palette は idx0 青 / idx1 橙 (暖色) で交互。
+  const multiSeriesVM = {
+    ...dashboardVM,
+    charts: [
+      {
+        metricKey: "mau",
+        label: "ユーザー数",
+        unit: "count",
+        series: [
+          {
+            slug: "hana-memo",
+            name: "hana-memo",
+            points: [
+              { capturedAt: "2026-05-27T00:00:00.000Z", value: 142 },
+              { capturedAt: "2026-05-28T00:00:00.000Z", value: 150 },
+            ],
+          },
+          {
+            slug: "naze-bako",
+            name: "naze-bako",
+            points: [
+              { capturedAt: "2026-05-27T00:00:00.000Z", value: 88 },
+              { capturedAt: "2026-05-28T00:00:00.000Z", value: 95 },
+            ],
+          },
+        ],
+      },
+      ...dashboardVM.charts.slice(1),
+    ],
+  };
+  await page.route("**/api/dashboard/summary*", (r) =>
+    r.fulfill({ json: multiSeriesVM }),
+  );
+  await page.goto("/");
+  const lines = page.locator(
+    '[data-testid="chart-mau"] path.recharts-line-curve',
+  );
+  await expect(lines).toHaveCount(2);
+  const stroke0 = await lines.nth(0).getAttribute("stroke");
+  const stroke1 = await lines.nth(1).getAttribute("stroke");
+  // 2 series の色は相異なる (near-dup でない)
+  expect(stroke0).not.toBe(stroke1);
+  // idx0 = 青 (寒)、idx1 = 橙 #fb923c (暖) — 「青と緑だけ」でないことを示す
+  expect(stroke0).toContain("#5b9cf5");
+  expect(stroke1).toContain("#fb923c");
+});
+
 test("UC1-S2: データなし → EmptyState", async ({ page }) => {
   await page.route("**/api/dashboard/summary*", (r) =>
     r.fulfill({ json: emptyVM }),
