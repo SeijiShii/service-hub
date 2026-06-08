@@ -2,7 +2,7 @@
 
 **issue / slug**: chart-ux / axis-period-usd-cleanup
 **実施日**: 2026-06-08
-**状態**: 実装完了 (2026-06-08、unit 331 green / E2E 待ち)
+**状態**: 実装完了 + E2E green (2026-06-08、unit 331 / E2E 16 pass)
 
 <!-- auto-generated-start -->
 
@@ -15,6 +15,7 @@
 | 004 | [004_REVISE_E2E_TEST.md](./004_REVISE_E2E_TEST.md) | E2E テスト計画 | 2026-06-08 |
 | 101 | [101_REVISE_IMPL_REPORT.md](./101_REVISE_IMPL_REPORT.md) | 実装レポート | 2026-06-08 |
 | 102 | [102_REVISE_UNIT_TEST_REPORT.md](./102_REVISE_UNIT_TEST_REPORT.md) | 単体テストレポート | 2026-06-08 |
+| 103 | [103_REVISE_E2E_REPORT.md](./103_REVISE_E2E_REPORT.md) | E2E テストレポート | 2026-06-08 |
 
 ## 関連
 - 親機能 INDEX: `../INDEX.md`
