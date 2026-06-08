@@ -17,19 +17,25 @@ export const STATUS_SHAPE: Record<StatusKind, string> = {
 };
 
 /**
- * service 別 chart line palette (timeseries-topchart、CSS var + fallback、dark テーマ向け色相環 8 色)。
+ * service 別 chart line palette (CSS var + fallback、dark テーマ向け 8 色)。
  * dashboard 上部 chart で複数 service 重ね描き時の line stroke。8 service 超は循環使用。
- * 色相環: 青 → シアン → 緑 → 黄緑 → 黄 → 橙 → 赤 → ピンク (saturation 60% / lightness 65%)。
+ *
+ * 並び順 (revise chart-colors 2026-06-08): **暖色/寒色を交互配置**。
+ * 旧版は色相環の自然順 (青→シアン→緑→黄緑…) で先頭3色が青〜緑のクール域に固まり、
+ * service が 2〜3 個だと「青と緑だけ」に見えていた。さらに旧 idx1 シアン #34d3a0 は
+ * idx2 緑 #34d399 とほぼ同色 (near-dup) で見分けづらかった。
+ * → 暖寒交互順に並べ替え、near-dup を明瞭なシアン #22d3ee へ差替、末尾に紫を追加し、
+ *   少数 service でも先頭から色相が明確に分かれるようにした。idx0 の青は据置 (既存互換)。
  */
 export const CHART_SERIES_COLORS: readonly string[] = [
-  "var(--chart-series-0, #5b9cf5)", // 青
-  "var(--chart-series-1, #34d3a0)", // シアン
-  "var(--chart-series-2, #34d399)", // 緑
-  "var(--chart-series-3, #a3e635)", // 黄緑
-  "var(--chart-series-4, #fbbf24)", // 黄
-  "var(--chart-series-5, #fb923c)", // 橙
-  "var(--chart-series-6, #f87171)", // 赤
-  "var(--chart-series-7, #ec4899)", // ピンク
+  "var(--chart-series-0, #5b9cf5)", // 青 (寒)
+  "var(--chart-series-1, #fb923c)", // 橙 (暖)
+  "var(--chart-series-2, #34d399)", // 緑 (寒)
+  "var(--chart-series-3, #ec4899)", // ピンク (暖)
+  "var(--chart-series-4, #fbbf24)", // 黄 (暖)
+  "var(--chart-series-5, #22d3ee)", // シアン (寒、旧 #34d3a0 の near-dup を解消)
+  "var(--chart-series-6, #f87171)", // 赤 (暖)
+  "var(--chart-series-7, #a78bfa)", // 紫 (寒、追加)
 ] as const;
 
 /** index → palette 色 (8 超は循環)。 */
