@@ -37,3 +37,12 @@
   chosen_type: auto-recommended
   depends_on: [D20260608-009]
   context: chart-ux に 101 (実装完了) + 004_REVISE_E2E_TEST 存在・103 不在 → P4.5 E2E gate。chart 件数 5→2 + 期間セレクタで既存 e2e/dashboard.spec の更新が必要。ローカル headless = Class A。
+- id: D20260608-013
+  timestamp: 2026-06-08T12:35:00+09:00
+  command: /flow:auto
+  phase: Step 3 反復 3 — Class B 境界で保留
+  question: chart-ux テスト完了 (unit+E2E green) 後の next-step
+  chosen: P4.7 Release gate = 本番デプロイ (Class B) → ユーザー認可待ちで loop 保留
+  chosen_type: explicit-choice
+  depends_on: [D20260608-012]
+  context: chart-ux は 101/102/103 全 green = テスト完了。残るは本番(givers.work)への 15th deploy のみ。production deploy は Class B (不可逆・外向き) のため §4.5.1#2 で loop 保留しユーザー確認。確認後は release-pre full audit + secure → /flow:release。
