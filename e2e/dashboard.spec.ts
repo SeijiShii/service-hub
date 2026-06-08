@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { dashboardVM, emptyVM, detailVM } from "./fixtures.js";
 
 test("UC1-S1: 全サービス横断サマリ + down 前景化", async ({ page }) => {
-  await page.route("**/api/dashboard/summary", (r) =>
+  await page.route("**/api/dashboard/summary*", (r) =>
     r.fulfill({ json: dashboardVM }),
   );
   await page.goto("/");
@@ -26,18 +26,59 @@ test("UC1-S1: 全サービス横断サマリ + down 前景化", async ({ page })
   await expect(
     page.locator('tr[data-slug="sanpo-log"] [data-deploy-at]'),
   ).toHaveText("—");
-  // biz-charts: 上部チャートは 4 ビジネス指標 (日本語ラベル)、旧 up/db_storage chart は不在
+  // chart-ux: 上部チャートは 2 件 (ユーザー数/収益¥)、usd 系 3 chart (課金額/コスト/採算) は不在
   const chartsSection = page.getByTestId("dashboard-charts");
   await expect(chartsSection).toContainText("ユーザー数");
-  await expect(chartsSection).toContainText("課金額");
-  await expect(chartsSection).toContainText("コスト");
-  await expect(chartsSection).toContainText("採算");
-  await expect(page.getByTestId("chart-profit")).toBeVisible();
+  await expect(chartsSection).toContainText("収益");
+  await expect(page.getByTestId("chart-mau")).toBeVisible();
+  await expect(page.getByTestId("chart-revenue_total_yen")).toBeVisible();
+  await expect(page.getByTestId("chart-revenue_month_usd")).toHaveCount(0);
+  await expect(page.getByTestId("chart-ai_cost_month_usd")).toHaveCount(0);
+  await expect(page.getByTestId("chart-profit")).toHaveCount(0);
   await expect(page.getByTestId("chart-up")).toHaveCount(0);
   await expect(page.getByTestId("chart-db_storage_bytes")).toHaveCount(0);
+  // chart-ux: 共有時間軸 — 2 chart に同一 data-domain
+  const d1 = await page.getByTestId("chart-mau").getAttribute("data-domain");
+  const d2 = await page
+    .getByTestId("chart-revenue_total_yen")
+    .getAttribute("data-domain");
+  expect(d1).not.toBeNull();
+  expect(d1).toBe(d2);
   await expect(page).toHaveScreenshot("dashboard-happy.png", {
     maxDiffPixels: 200,
   });
+});
+
+test("CX-E2E-01 (chart-ux): 期間セレクタ (全期間/30日/7日) — 既定 30日 active + クリックで再取得", async ({
+  page,
+}) => {
+  const seen: string[] = [];
+  await page.route("**/api/dashboard/summary*", (r) => {
+    seen.push(new URL(r.request().url()).searchParams.get("period") ?? "");
+    return r.fulfill({ json: dashboardVM });
+  });
+  await page.goto("/");
+  const selector = page.getByTestId("chart-period-selector");
+  await expect(selector).toBeVisible();
+  await expect(selector).toContainText("全期間");
+  await expect(selector).toContainText("30日");
+  await expect(selector).toContainText("7日");
+  // 既定は 30d が押下状態 + 初回取得は period=30d
+  await expect(page.getByTestId("chart-period-30d")).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  expect(seen).toContain("30d");
+  // 7日に切替 → period=7d で再取得 + 押下状態が移る
+  await page.getByTestId("chart-period-7d").click();
+  await expect(page.getByTestId("chart-period-7d")).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await expect.poll(() => seen).toContain("7d");
+  // 全期間に切替 → period=all で再取得
+  await page.getByTestId("chart-period-all").click();
+  await expect.poll(() => seen).toContain("all");
 });
 
 test("FX-E2E-01 (C20260601-002): 2 service 同一 run の上部チャートが 2 series で整列描画", async ({
@@ -74,7 +115,7 @@ test("FX-E2E-01 (C20260601-002): 2 service 同一 run の上部チャートが 2
       ...dashboardVM.charts.slice(1),
     ],
   };
-  await page.route("**/api/dashboard/summary", (r) =>
+  await page.route("**/api/dashboard/summary*", (r) =>
     r.fulfill({ json: multiSeriesVM }),
   );
   await page.goto("/");
@@ -87,7 +128,7 @@ test("FX-E2E-01 (C20260601-002): 2 service 同一 run の上部チャートが 2
 });
 
 test("UC1-S2: データなし → EmptyState", async ({ page }) => {
-  await page.route("**/api/dashboard/summary", (r) =>
+  await page.route("**/api/dashboard/summary*", (r) =>
     r.fulfill({ json: emptyVM }),
   );
   await page.goto("/");
@@ -95,7 +136,7 @@ test("UC1-S2: データなし → EmptyState", async ({ page }) => {
 });
 
 test("UC1-S5: 直近 run failed → AlertBanner", async ({ page }) => {
-  await page.route("**/api/dashboard/summary", (r) =>
+  await page.route("**/api/dashboard/summary*", (r) =>
     r.fulfill({ json: { ...emptyVM, lastRunStatus: "failed" } }),
   );
   await page.goto("/");
@@ -103,7 +144,7 @@ test("UC1-S5: 直近 run failed → AlertBanner", async ({ page }) => {
 });
 
 test("DA-NAV (nav-and-pull): 管理リンクが /admin を指す", async ({ page }) => {
-  await page.route("**/api/dashboard/summary", (r) =>
+  await page.route("**/api/dashboard/summary*", (r) =>
     r.fulfill({ json: dashboardVM }),
   );
   await page.goto("/");
@@ -116,7 +157,7 @@ test("DA-NAV (nav-and-pull): 管理リンクが /admin を指す", async ({ page
 test("DA-FP (force-pull/refresh-cadence): 今すぐ pull → 結果サマリ表示", async ({
   page,
 }) => {
-  await page.route("**/api/dashboard/summary", (r) =>
+  await page.route("**/api/dashboard/summary*", (r) =>
     r.fulfill({ json: dashboardVM }),
   );
   await page.route("**/api/admin/collect", (r) =>
@@ -131,7 +172,7 @@ test("DA-FP (force-pull/refresh-cadence): 今すぐ pull → 結果サマリ表�
 });
 
 test("UC1-S4: 行クリックで詳細へ遷移", async ({ page }) => {
-  await page.route("**/api/dashboard/summary", (r) =>
+  await page.route("**/api/dashboard/summary*", (r) =>
     r.fulfill({ json: dashboardVM }),
   );
   await page.route("**/api/services/hana-memo/timeseries", (r) =>

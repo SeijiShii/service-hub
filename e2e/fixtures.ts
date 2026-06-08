@@ -7,8 +7,8 @@ const noBiz = {
   funnel: { started: null, abandonmentRate: null, cardFailureRate: null },
 } as const;
 
-// biz-charts: charts はビジネス 4 件 (ユーザー数/課金額/コスト/採算、label 付き、採算は派生済み)。
-// route-mock は buildCharts をバイパスするため、本番 buildCharts の出力形 (label + profit 派生) を再現。
+// chart-ux (2026-06-08): charts は 2 件 (ユーザー数/mau + 収益/revenue_total_yen)。
+// usd 系 3 chart (課金額/コスト/採算) は削除済。route-mock は buildCharts をバイパスするため出力形を再現。
 const fixtureCharts: DashboardVM["charts"] = [
   {
     metricKey: "mau",
@@ -26,46 +26,16 @@ const fixtureCharts: DashboardVM["charts"] = [
     ],
   },
   {
-    metricKey: "revenue_month_usd",
-    label: "課金額",
-    unit: "usd",
+    metricKey: "revenue_total_yen",
+    label: "収益",
+    unit: "jpy",
     series: [
       {
         slug: "hana-memo",
         name: "hana-memo",
         points: [
-          { capturedAt: "2026-05-26T00:00:00.000Z", value: 40 },
-          { capturedAt: "2026-05-27T00:00:00.000Z", value: 50 },
-        ],
-      },
-    ],
-  },
-  {
-    metricKey: "ai_cost_month_usd",
-    label: "コスト",
-    unit: "usd",
-    series: [
-      {
-        slug: "hana-memo",
-        name: "hana-memo",
-        points: [
-          { capturedAt: "2026-05-26T00:00:00.000Z", value: 8 },
-          { capturedAt: "2026-05-27T00:00:00.000Z", value: 10 },
-        ],
-      },
-    ],
-  },
-  {
-    metricKey: "profit",
-    label: "採算",
-    unit: "usd",
-    series: [
-      {
-        slug: "hana-memo",
-        name: "hana-memo",
-        points: [
-          { capturedAt: "2026-05-26T00:00:00.000Z", value: 32 }, // 40 - 8
-          { capturedAt: "2026-05-27T00:00:00.000Z", value: 40 }, // 50 - 10
+          { capturedAt: "2026-05-26T00:00:00.000Z", value: 8000 },
+          { capturedAt: "2026-05-27T00:00:00.000Z", value: 12000 },
         ],
       },
     ],
