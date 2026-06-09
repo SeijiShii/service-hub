@@ -327,6 +327,7 @@ service-hub が定義する service-info エンドポイント契約（[論点-0
 3. **第一弾サービスへの retrofit**: 確定後、**hana-memo** に service-info エンドポイント（MAU 自己申告を含む）を追加実装し、共通シークレットに合わせる（hana-memo 側で `/flow:revise`）。登録は HUB の admin write で seiji が行うため、hana-memo 側に HUB への登録呼び出しは不要。
 4. **flow 系コマンドへの標準組み込み**: 以後 flow で作る全マイクロサービスが新規時点でこのエンドポイント（MAU 自己申告 + 共通シークレット）を備えるよう、**共有 SoT（perspectives.md O48）を本契約に合わせて更新**する。これにより `/flow:concept` `/flow:feature` `/flow:onboard` が各サービス設計時に自動で考慮する。
 5. **後方互換**: 契約はバージョニングし、未実装サービスは PaaS API pull のみにフォールバック（[論点-003] 案 A）。
+6. **契約 v3 = 短文サマリ（summary）配信（2026-06-10、shipyard リブランド、[論点-006]）**: service-info 契約に `summary?: string`（サービスの短文紹介 1-2 文）を 1st-class field 追加（perspectives O48 v3）。各サービス（producer）が自己申告 → **ServiceHUB が受け取り**（consumer）→ **showcase サイト shipyard（givers.work）へ配信**する。⚠️ **ServiceHUB 自身は summary を画面表示しない（配信専用）が、配線は必須**: producer が summary を出すだけでは shipyard に流れず、HUB 側が (a) `_shared/types` `ServiceInfoResponse` に summary 追加 (b) 受信パイプラインで取り込み (c) **公開 status API `GET /api/public/status` の安全サブセットに summary を露出**（shipyard が read する）まで配線して初めて配信が成立する。この consumer 側追従が [論点-006]。HUB 側の追従漏れは O48（producer 契約、HUB を skip）では検出されず **perspectives O63（consumer 契約追従）+ audit #4 項目 3.7 が検出**する。
 
 > **登録（descriptor）とメトリクス収集は別物**: 登録は HUB の DB に admin write（[D20260528-001]、サービス起点 push ではない）、メトリクス収集は引き続き HUB→各 PaaS / service-info の **pull**（D20260526-002 維持）。この方向性が service-hub の運用上の肝。**契約は「連発前提で各サービスが軽く実装できる最小スキーマ」を維持する**こと。
 
@@ -418,6 +419,20 @@ service-hub が定義する service-info エンドポイント契約（[論点-0
 - **判断期限**: 次回 release / ユーザー確認時
 - **担当**: seiji
 - **L4 レポート**: `./SECURITY_DEPS_20260527.md`
+
+### [論点-006] [REQ] service-info summary v3 の consumer 側追従（shipyard 配信、★★★必須・accepted-as-requirement）
+- **status**: `open` ⏳ **未実装（2026-06-10 登録、shipyard リブランド契約 v3）** — audit-hittable な要件として登録。実装で close。
+- **種別**: accepted-as-requirement（論点ではなく確定要件。perspectives O63 + audit #4 項目 3.7 が未実装を検出する）
+- **影響範囲**: `_shared/types`（`ServiceInfoResponse`）, `_shared/providers`（service-info adapter 受信）, `collection`（取り込み）, `api/public/status.ts` + `src/features/public-status/buildPublicStatus.ts`（公開再配信）, §6.1
+- **要件**: service-info 契約 v3（[論点-006] / O48 v3）で追加された `summary?: string`（サービス短文紹介 1-2 文）を、**ServiceHUB が consumer として受信し shipyard（givers.work）へ配信する**。ServiceHUB 自身は表示しない（配信専用）。
+- **detect signal（audit がこれで未実装を検出）**: コードベースに以下が**全て**存在すること（不足 = High 追従 drift、perspectives O63 `required_signals`）:
+  1. `_shared/types` `ServiceInfoResponse` に `summary` field（optional、後方互換）
+  2. `api/public/status.ts` + `buildPublicStatus.ts` の安全サブセットに `summary` が含まれる（shipyard が read する公開 API）
+- **現状（2026-06-10 監査）**: `ServiceInfoResponse` は v2（`iconUrl`）止まり、`summary` は types / public-status いずれにも**未実装** → audit #4 項目 3.7 で **High consumer 追従 drift** として surface する。
+- **推奨修正アクション**: `/flow:revise _shared/types`（or public-status）で summary を types + 受信 + 公開 status API 安全サブセットに配線（Class A、後方互換 optional）。下流 shipyard 側の一覧表示は別 repo の tracked follow-up。
+- **判断期限**: 次回 service-hub 改修サイクル（実装で close）
+- **担当**: seiji
+- **由来**: seiji [flow] 2026-06-10（shipyard リブランド service-info 契約 v3）/ CF-20260610-005 / perspectives O48 v3・O63
 
 ## 9. 法務・コンプライアンス書類
 **個人・内部ツール / 非公開のため法務書類不要（2026-05-26 判断）**。エンドユーザーの個人情報を扱わない（seiji 自身のインフラ運用データと read-only プロバイダトークンのみ）。
