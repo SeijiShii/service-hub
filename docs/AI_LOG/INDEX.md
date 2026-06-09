@@ -12,6 +12,7 @@
 ## セッション一覧（新しい順）
 | ファイル | 実行日 | コマンド | 対象 | decision 範囲 | 状態 |
 |---|---|---|---|---|---|
+| [D20260610_001_audit_light.md](./D20260610_001_audit_light.md) | 2026-06-10 | /flow:audit | light 監査 (#1-#4)。Critical 0 / High 1 (SCENARIO §5 drift 再発 12th→16th) / Low 2 (AI_LOG INDEX 表記漏れ / §8 解消済み未移動)。release-blocking なし。AUDIT_20260610_0805.md | D20260610-001〜003 | 完了 |
 | [D20260608_001_revise_dashboard_chart-ux.md](./D20260608_001_revise_dashboard_chart-ux.md) | 2026-06-08 | /flow:revise | dashboard chart-ux: 上部 chart の (1) X 時間軸を共有 domain で統一 / (2) 期間セレクタ(全期間/30日/7日、`?period`) / (3) usd 系 3 chart(課金額/コスト/採算) 削除 → mau+収益¥ の2枚集約。DB/公開API不変・migration 不要 | D20260608-001〜006 | 完了 (設計、tdd 待ち) |
 | [D20260530_013_tdd_dashboard_revise_biz-charts.md](./D20260530_013_tdd_dashboard_revise_biz-charts.md) | 2026-05-30 | /flow:tdd | dashboard biz-charts 実装 (Phase1 chart 定義分離+label+取得キー / Phase2 profitAt 共通化+profit 派生、全 307 green、新規 tsc 0) | D20260530-050〜052 | 完了 (E2E 待ち) |
 | [D20260530_012_spec-review_dashboard.md](./D20260530_012_spec-review_dashboard.md) | 2026-05-30 | /flow:spec-review | dashboard biz-charts 設計レビュー (auto-pick、Critical/High 0・Medium 2 R1 採算共通化/R2 label 後方互換・Low 3・Info 1、P87 学習、905 生成、001-003 反映) | D20260530-043〜049 | 完了 (tdd 着手可) |
