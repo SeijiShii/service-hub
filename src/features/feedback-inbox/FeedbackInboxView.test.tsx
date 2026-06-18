@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import { FeedbackInboxView } from "./FeedbackInboxView.js";
 import type { FeedbackInboxVM, FeedbackInboxItem } from "./inbox.js";
 
@@ -14,11 +14,17 @@ const item = (over: Partial<FeedbackInboxItem> = {}): FeedbackInboxItem => ({
   ...over,
 });
 
-const vm = (over: Partial<FeedbackInboxVM> = {}): FeedbackInboxVM => ({
-  items: [],
-  services: [{ slug: "hana-memo", name: "ハナメモ" }],
-  ...over,
-});
+const vm = (over: Partial<FeedbackInboxVM> = {}): FeedbackInboxVM => {
+  const items = over.items ?? [];
+  const byKind = { feedback: 0, bug: 0, inquiry: 0 };
+  for (const i of items) byKind[i.kind] += 1;
+  return {
+    items,
+    services: [{ slug: "hana-memo", name: "ハナメモ" }],
+    counts: { total: items.length, byKind },
+    ...over,
+  };
+};
 
 const noop = () => {};
 const baseProps = {
@@ -92,5 +98,40 @@ describe("FeedbackInboxView", () => {
     );
     fireEvent.click(screen.getByText("クレーム文をコピー"));
     expect(writeText).toHaveBeenCalledWith(expect.stringContaining("落ちる"));
+  });
+
+  it("RU-03: 件数サマリ (全 N 件) を表示", () => {
+    render(
+      <FeedbackInboxView
+        {...baseProps}
+        vm={vm({
+          items: [
+            item({ externalId: "a", kind: "bug" }),
+            item({ externalId: "b", kind: "feedback" }),
+            item({ externalId: "c", kind: "feedback" }),
+          ],
+        })}
+      />,
+    );
+    expect(screen.getByTestId("count-summary").textContent).toContain(
+      "全 3 件",
+    );
+  });
+
+  it("RU-05: kind segmented chips で onKindChange (すべて→空文字)", () => {
+    const onKindChange = vi.fn();
+    render(
+      <FeedbackInboxView
+        {...baseProps}
+        onKindChange={onKindChange}
+        vm={vm({ items: [item()] })}
+      />,
+    );
+    // 種別グループ内の「不具合」chip をクリック
+    const group = screen.getByRole("group", { name: "種別で絞り込む" });
+    fireEvent.click(within(group).getByText("不具合"));
+    expect(onKindChange).toHaveBeenCalledWith("bug");
+    fireEvent.click(within(group).getByText("すべて"));
+    expect(onKindChange).toHaveBeenCalledWith("");
   });
 });

@@ -20,10 +20,18 @@ export interface FeedbackInboxItem extends FeedbackItemRow {
   serviceName: string;
 }
 
+/** 表示中 items の件数サマリ (統合インボックスを明示、revise inbox-ux)。 */
+export interface FeedbackCounts {
+  total: number;
+  byKind: Record<FeedbackKind, number>;
+}
+
 export interface FeedbackInboxVM {
   items: FeedbackInboxItem[];
   /** フィルタ用サービス一覧 (active)。 */
   services: { slug: string; name: string }[];
+  /** 表示中 items の件数 (全 N 件 + kind 別内訳)。 */
+  counts: FeedbackCounts;
 }
 
 const KIND_SET = new Set<string>(FEEDBACK_KINDS);
@@ -36,7 +44,10 @@ const first = (v: string | string[] | undefined): string | undefined =>
  * クエリから取得フィルタを構築。`period` (all/30d/7d、既定 30d) を since に変換。
  * service/kind は妥当な値のみ採用 (不正値は無視)。
  */
-export function parseFeedbackFilter(query: Query, nowMs: number): FeedbackFilter {
+export function parseFeedbackFilter(
+  query: Query,
+  nowMs: number,
+): FeedbackFilter {
   const filter: FeedbackFilter = {};
   const service = first(query.service);
   if (service) filter.service = service;
@@ -58,17 +69,24 @@ export function buildClaimText(item: FeedbackInboxItem): string {
   return lines.join("\n");
 }
 
-/** 取得済み行 + サービス一覧から inbox VM を構築。 */
+/** 取得済み行 + サービス一覧から inbox VM を構築 (件数サマリ含む)。 */
 export function buildInboxVM(
   rows: FeedbackItemRow[],
   services: Pick<ServiceDescriptor, "slug" | "name">[],
 ): FeedbackInboxVM {
   const nameBySlug = new Map(services.map((s) => [s.slug, s.name]));
+  const byKind: Record<FeedbackKind, number> = {
+    feedback: 0,
+    bug: 0,
+    inquiry: 0,
+  };
+  for (const r of rows) byKind[r.kind] += 1;
   return {
     items: rows.map((r) => ({
       ...r,
       serviceName: nameBySlug.get(r.serviceSlug) ?? r.serviceSlug,
     })),
     services: services.map((s) => ({ slug: s.slug, name: s.name })),
+    counts: { total: rows.length, byKind },
   };
 }

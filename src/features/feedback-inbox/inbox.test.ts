@@ -56,12 +56,35 @@ describe("feedback-inbox view model", () => {
 
   it("buildInboxVM: slug→name 解決 + サービス一覧", () => {
     const vm = buildInboxVM(
-      [row({ serviceSlug: "hana-memo" }), row({ serviceSlug: "unknown", externalId: "x" })],
+      [
+        row({ serviceSlug: "hana-memo" }),
+        row({ serviceSlug: "unknown", externalId: "x" }),
+      ],
       [{ slug: "hana-memo", name: "ハナメモ" }],
     );
     expect(vm.items[0].serviceName).toBe("ハナメモ");
     // 未登録 slug は slug をそのまま
     expect(vm.items[1].serviceName).toBe("unknown");
     expect(vm.services).toEqual([{ slug: "hana-memo", name: "ハナメモ" }]);
+  });
+
+  it("RU-01: buildInboxVM counts (total + kind 別内訳)", () => {
+    const vm = buildInboxVM(
+      [
+        row({ externalId: "a", kind: "feedback" }),
+        row({ externalId: "b", kind: "feedback" }),
+        row({ externalId: "c", kind: "bug" }),
+        row({ externalId: "d", kind: "inquiry" }),
+      ],
+      [{ slug: "hana-memo", name: "ハナメモ" }],
+    );
+    expect(vm.counts.total).toBe(4);
+    expect(vm.counts.byKind).toEqual({ feedback: 2, bug: 1, inquiry: 1 });
+  });
+
+  it("RU-02: buildInboxVM counts (空)", () => {
+    const vm = buildInboxVM([], []);
+    expect(vm.counts.total).toBe(0);
+    expect(vm.counts.byKind).toEqual({ feedback: 0, bug: 0, inquiry: 0 });
   });
 });
