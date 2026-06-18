@@ -129,3 +129,13 @@ stop 条件#1 により正当に終了 (= ✅ 適切な停止)。その後 commi
     (最新 full AUDIT=1139 が feedback-inbox 前 → HEAD ≠ 参照 commit) を発火: /flow:audit --scope=full。
     secure は bdd51f0 で fresh (以降 code 変更なし=doc のみ) のため再 run 不要 (同一 action 回避)。
     full audit C0/H0 確認後 /flow:release を dispatch → release が Class B deploy で 1-decision pause。
+
+- id: D20260618-008-10
+  question: 反復9 結果 + 反復10 auto-pick (P4.7 Release gate)
+  chosen: /flow:release (feedback-inbox prod 反映 = db:push feedback_items + redeploy、Class B)
+  chosen_type: auto-recommended
+  context: |
+    反復9 (release-pre full audit) 完了 — C0/H0/M0/L1、release blocker 0、commit 5683498。secure fresh
+    (bdd51f0)。release-pre ハードゲート充足。§4.5.1#0 step4: no-key Class A 枯渇 + prod 反映要 (新 feedback_items
+    テーブルを prod Neon へ db:push + redeploy) → 停止せず /flow:release dispatch。release は Class B deploy の
+    瞬間に 1-decision pause (条件2、ユーザー YES/NO 承認待ち)。これが loop の正当な人間ゲート。
