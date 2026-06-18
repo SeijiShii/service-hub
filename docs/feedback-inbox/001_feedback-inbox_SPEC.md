@@ -199,13 +199,12 @@ interface FeedbackResponse {        // GET /api/hub/feedback の戻り
 - **判断期限**: 実装時 (案 A 前提)
 - **担当**: seiji
 
-### [論点-FI-4] Shipyard 専用 adapter（follow-up、本 MVP スコープ外）
-- **影響範囲**: 新規 shipyard-feedback adapter, shipyard 側 contact API (別 repo)
-- **詰めるべき問い**: Shipyard (givers.work) の contact form 問い合わせ取り込みの API 契約形状
-- **候補案**: shipyard 側 contact API 設計確定後にこちらの取り込み adapter を設計 (標準 `/api/hub/feedback` 契約に乗らないため専用)
-- **推奨**: shipyard concept §2.5 で contact API を設計してから本 HUB 側 adapter を `/flow:feature` or `/flow:revise` で追加。本 feature では標準契約のみ実装 (ユーザー 2026-06-18 決定)。
-- **判断期限**: shipyard 側 contact API 設計後
-- **担当**: seiji
+### [論点-FI-4] Shipyard 専用 adapter（**closed = 不要、2026-06-18**）
+- **status**: `closed` ✅ **不要 (2026-06-18、claim C20260618-001 で確定)** — shipyard を**標準 O66 producer 化**する方針にユーザー決定。shipyard 側 (別 repo) で `GET /api/hub/feedback` を実装し contact メッセージを `FeedbackItem[]` 形式で返す → HUB の既存標準 pull がそのまま取り込むため、**HUB 側に専用 adapter は不要**。
+- **影響範囲**: (旧) 新規 shipyard-feedback adapter, shipyard 側 contact API (別 repo)
+- **当初の問い**: Shipyard (givers.work) の contact form 問い合わせ取り込みの API 契約形状
+- **確定 (claim C20260618-001)**: shipyard contact を標準 `FeedbackItem` 契約に乗せる (kind=inquiry/feedback)。専用 adapter は作らない。**残作業 = (別 repo) shipyard で O66 `GET /api/hub/feedback` 実装 + (admin) HUB の services に shipyard 登録**。service-hub 側のコード改修は不要。
+- **担当**: seiji (shipyard repo + HUB admin)
 
 ## 9. 更新履歴
 | 日付 | 変更概要 | 実行者 |
