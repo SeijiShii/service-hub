@@ -116,3 +116,16 @@ stop 条件#1 により正当に終了 (= ✅ 適切な停止)。その後 commi
     /api/hub/feedback から pull → 保存 → 運営者画面に表示) を追加 = 新 trust boundary。設計レベル secure
     レビュー (入力検証 / PII / XSS / authz) を回す。Class A、auto-execute。完了後 残は Class B prod 反映
     (db:push) + Class C wording (internal defer) = 人間ゲート → Step 5.1 で次の一手を提示。
+
+- id: D20260618-008-09
+  question: 反復8 結果 + 反復9 (§3.0c release-pre 必須監査)
+  chosen: /flow:audit --scope=full (release-pre ハードゲート)
+  chosen_type: auto-recommended
+  context: |
+    反復8 (/flow:secure design) 完了 — 新規 SEC 0、commit bdd51f0。§4.5.1#0: feedback-inbox の no-key
+    Class A 作業を完遂 (design/code/unit/E2E/visual/audit-standard/secure すべて green)。残 = prod 反映
+    (db:push feedback_items + redeploy = Class B = P4.7)。P4.45 Wording は internal tool で defer 継続
+    (SCENARIO §5 standing decision、新画面も同方針)。P4.7 接近のため §3.0c release-pre 必須監査
+    (最新 full AUDIT=1139 が feedback-inbox 前 → HEAD ≠ 参照 commit) を発火: /flow:audit --scope=full。
+    secure は bdd51f0 で fresh (以降 code 変更なし=doc のみ) のため再 run 不要 (同一 action 回避)。
+    full audit C0/H0 確認後 /flow:release を dispatch → release が Class B deploy で 1-decision pause。
