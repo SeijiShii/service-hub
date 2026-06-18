@@ -105,3 +105,14 @@ stop 条件#1 により正当に終了 (= ✅ 適切な停止)。その後 commi
     SCENARIO §5 (進行中ターゲット/Open論点/残ゲート/次推奨) を feedback-inbox 実装完了 + db:push 残ゲートに
     reconcile。機械的 status 更新 (Class A、git tracked) のため targeted edit で実施。
     残: prod 反映 db:push (Class B) + secure 新 surface 再評価 (§3.0c、次反復)。
+
+- id: D20260618-008-08
+  question: 反復7 結果 + 反復8 auto-pick
+  chosen: /flow:secure (§3.0c 新 endpoint・新外部入力)
+  chosen_type: auto-recommended
+  context: |
+    反復7 (drift-shoot concept+SCENARIO) 完了 — [論点-007] closed、commit 48e335c。§3.0c secure トリガ:
+    feedback-inbox が新 authed endpoint /api/feedback/inbox + 新外部入力 (producer の feedback body を
+    /api/hub/feedback から pull → 保存 → 運営者画面に表示) を追加 = 新 trust boundary。設計レベル secure
+    レビュー (入力検証 / PII / XSS / authz) を回す。Class A、auto-execute。完了後 残は Class B prod 反映
+    (db:push) + Class C wording (internal defer) = 人間ゲート → Step 5.1 で次の一手を提示。
