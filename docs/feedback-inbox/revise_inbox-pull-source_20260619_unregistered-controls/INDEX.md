@@ -2,9 +2,9 @@
 
 **issue / slug**: inbox-pull-source
 **実施日**: 2026-06-19
-**状態**: 実装 + E2E green (2026-06-19) — unit 409 + E2E 7、デプロイ待ち
+**状態**: 本番反映済 (2026-06-19、21st deploy) — unit 409 + E2E 7 green、shipyard pull 有効化済
 
-<!-- ticket-status: implemented | updated: 20260619 | ref: 101 -->
+<!-- ticket-status: shipped | updated: 20260619 | ref: dpl_Ar2eAqyuYNM4ybkoScFAiiJywoEa (21st deploy) -->
 
 <!-- auto-generated-start -->
 
