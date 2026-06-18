@@ -1,0 +1,13 @@
+# Vercel deploy から除外するファイル (.gitignore 同様の glob)。
+# ⚠️ api/**/*.ts は vercel.json の functions glob にマッチし「1 ファイル = 1 Serverless Function」
+# として数えられる。colocated テスト (api/**/*.test.ts) も対象になり Hobby 上限 (12 関数) を圧迫する。
+# テスト/スペックはランタイム不要なのでデプロイから除外し、関数カウントを実エンドポイントのみにする
+# (CF-20260529-015、feedback-inbox 追加で 14 関数 → 12 超過 deploy_failed の是正)。
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+
+# E2E / テスト成果物 (ランタイム不要)
+e2e/
+playwright.config.ts
