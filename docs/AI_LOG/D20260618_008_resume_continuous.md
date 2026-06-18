@@ -81,3 +81,15 @@ stop 条件#1 により正当に終了 (= ✅ 適切な停止)。その後 commi
     不発火 (var(--*) トークン適用済) だが、新画面の視覚レビューセッションが無いため faithful に評価。
     「UI は後で」で skip しない (anti-pattern)。Class A (ローカル headless スクショ視覚レビュー)。
     auto-pick + auto-invoke。
+
+- id: D20260618-008-06
+  question: 反復5 結果 + 反復6 auto-pick
+  chosen: /flow:audit (§3.0c 鮮度トリガ = 新機能 + 新 endpoint)
+  chosen_type: auto-recommended
+  context: |
+    反復5 (/flow:design --review-only) 完了 — D-R1 絵文字除去 + D-R2 nav 導線追加、視覚レビュー green、
+    commit 412e13e。feedback-inbox は code+unit+E2E+視覚 すべて green (no-key Class A 機能作業を完遂)。
+    §3.0c 鮮度トリガ (P1-P5 前に評価): 最新 AUDIT_20260618_1139 以降に feedback-inbox 新機能 (大型 commit) +
+    新 authed endpoint /api/feedback/inbox + 新外部 pull (feedback adapter) → audit standard で #4 O67
+    consumer-signal カバレッジ (/api/hub/feedback + FeedbackItem が実装され PASS するか) + 構造 + drift を検証。
+    Class A、auto-execute。続いて新 surface の secure 再評価 (§3.0c) → 残は Class B prod 反映 (db:push) + Class C wording。
