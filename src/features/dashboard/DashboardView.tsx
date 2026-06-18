@@ -62,7 +62,20 @@ export function DashboardView({
             {lastUpdatedFailed && " · failed"}
           </p>
         </div>
-        <nav>
+        <nav style={{ display: "flex", gap: 8 }}>
+          <a
+            href="/feedback"
+            data-testid="feedback-link"
+            style={{
+              color: "var(--text, #e6e9ef)",
+              textDecoration: "none",
+              padding: "6px 12px",
+              border: "1px solid var(--border, #2a2f3a)",
+              borderRadius: 6,
+            }}
+          >
+            フィードバック
+          </a>
           <a
             href="/admin"
             data-testid="admin-link"

@@ -69,3 +69,15 @@ stop 条件#1 により正当に終了 (= ✅ 適切な停止)。その後 commi
     commit 7699b09 (code) + 94dbe0e (reports)。再評価: P1(SEC0)/P2(中断なし)/P3.7(充足)/P4.2(なし)/
     P4.46 Auth-impl(単一ユーザー internal で不発火)。feedback-inbox は 004 E2E 計画あり + 101 (unit 完了) +
     103 不在 → P4.5 E2E gate HIT。ローカル headless E2E = Class A。auto-pick + auto-invoke。
+
+- id: D20260618-008-05
+  question: 反復4 結果 + 反復5 auto-pick
+  chosen: /flow:design --review-only (P4.4 Design gate b)
+  chosen_type: auto-recommended
+  context: |
+    反復4 (/flow:e2e feedback-inbox) 完了 — Playwright 3 spec green (flaky なし)、commit 93d73d8。
+    feedback-inbox は unit + E2E 両 green。再評価 (top-down): P4.4 Design gate(b) = 新規 UI 画面
+    /feedback を last design review 以降に追加 → 視覚レビュー未 green。machine backstop (素 HTML) は
+    不発火 (var(--*) トークン適用済) だが、新画面の視覚レビューセッションが無いため faithful に評価。
+    「UI は後で」で skip しない (anti-pattern)。Class A (ローカル headless スクショ視覚レビュー)。
+    auto-pick + auto-invoke。

@@ -5,11 +5,11 @@ import type { ChartPeriod } from "../dashboard/chartPeriod.js";
 import { CHART_PERIODS } from "../dashboard/chartPeriod.js";
 import { buildClaimText, type FeedbackInboxVM } from "./inbox.js";
 
-/** kind ごとのバッジ色 (色覚補助に絵文字も併記)。 */
+/** kind ごとのバッジ色 + ラベル (絵文字は使わない=design 原則#4、色 + 文言で区別)。 */
 const KIND_BADGE: Record<FeedbackKind, { bg: string; label: string }> = {
-  feedback: { bg: "#2d6cdf", label: "💬 ひとこと" },
-  bug: { bg: "#c0392b", label: "🐞 不具合" },
-  inquiry: { bg: "#8e44ad", label: "✉️ 問い合わせ" },
+  feedback: { bg: "#2d6cdf", label: "ひとこと" },
+  bug: { bg: "#c0392b", label: "不具合" },
+  inquiry: { bg: "#8e44ad", label: "問い合わせ" },
 };
 
 export interface FeedbackInboxViewProps {
@@ -106,11 +106,17 @@ export function FeedbackInboxView({
       </section>
 
       {vm.items.length === 0 ? (
-        <p data-testid="empty-state" style={{ padding: "24px 0", textAlign: "center" }}>
+        <p
+          data-testid="empty-state"
+          style={{ padding: "24px 0", textAlign: "center" }}
+        >
           まだ届いていません
         </p>
       ) : (
-        <ul data-testid="feedback-list" style={{ listStyle: "none", padding: 0 }}>
+        <ul
+          data-testid="feedback-list"
+          style={{ listStyle: "none", padding: 0 }}
+        >
           {vm.items.map((item) => {
             const id = `${item.serviceSlug}:${item.externalId}`;
             const badge = KIND_BADGE[item.kind];
@@ -143,12 +149,18 @@ export function FeedbackInboxView({
                   </span>
                   <time
                     dateTime={item.createdAt}
-                    style={{ marginLeft: "auto", color: "var(--text-muted, #8a94a6)", fontSize: 12 }}
+                    style={{
+                      marginLeft: "auto",
+                      color: "var(--text-muted, #8a94a6)",
+                      fontSize: 12,
+                    }}
                   >
                     {item.createdAt.slice(0, 10)}
                   </time>
                 </div>
-                <p style={{ margin: "8px 0", whiteSpace: "pre-wrap" }}>{item.body}</p>
+                <p style={{ margin: "8px 0", whiteSpace: "pre-wrap" }}>
+                  {item.body}
+                </p>
                 <button
                   type="button"
                   onClick={() => onTriage(id, buildClaimText(item))}

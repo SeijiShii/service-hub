@@ -2,7 +2,7 @@
 
 **最終更新**: 2026-06-18
 **生成元**: /flow:concept → /flow:feature → /flow:spec-review → /flow:tdd → /flow:e2e
-**状態**: 実装 + E2E green (unit 37 + E2E 3、prod DB 反映=db:push 待ち=Class B)
+**状態**: 実装 + E2E green + 視覚レビュー green (unit 37 + E2E 3、prod DB 反映=db:push 待ち=Class B)
 
 <!-- auto-generated-start -->
 
