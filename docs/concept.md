@@ -343,6 +343,7 @@ service-hub が定義する service-info エンドポイント契約（[論点-0
 | 2026-05-28 | **秘密ゼロ化**: HUB のサービス固有シークレット（per-service Clerk secret / service-info secret）を撤廃。Clerk MAU は各サービスが service-info で自己申告（D20260526-005 の Clerk API pull 部分を置換）、service-info 秘密は全サービス共通 1 本に統一。結果 HUB の `.env` は新サービス追加で不変（アカウント単位トークン + 共通 service-info 秘密 + HUB 自身の Clerk のみ） | seiji（.env 追記の解消） | §1.1, §1.2, §3.X, §5.1, §6, §6.1 | [D20260528-002](./AI_LOG/D20260528_001_concept_update_20260528.md#decisions) |
 | 2026-05-26 | MVP pull 対象 = uptime ping + Vercel + Neon + Clerk（Sentry/R2 は Phase 2） | auto-pick | §1.2, §6 | [D20260526-005](./AI_LOG/D20260526_001_concept_initial.md#decisions) |
 | 2026-05-26 | アプリ層は各サービスの標準 service-info エンドポイントを HUB が pull（service-hub が契約 SoT）。確定後 hana-memo に retrofit + flow 標準化 | seiji 追加指示 | §1.2, §6.1, §8 論点-003 | [D20260526-009](./AI_LOG/D20260526_001_concept_initial.md#decisions) |
+| 2026-06-18 | **service-info summary v3 consumer 追従を実装完了**（[論点-006] closed）。`summary?:string` を types(`ServiceInfoResponse`/`PublicServiceStatus`) + buildPublicStatus 安全投影 + api/public/status に配線（shipyard 配信用、HUB 非表示）。+16 tests green。prod 反映（db:push）は Class B として SCENARIO §5 残ゲート | revise summary-projection (D20260618_001) + audit AUDIT_20260618_1139 #4 O63 PASS | §6.1, §8 論点-006, `_shared/types`, public-status | [D20260618-001](./AI_LOG/D20260618_001_resume_continuous.md#decisions) |
 
 ## 8. 未決事項（論点リスト）
 
@@ -421,7 +422,8 @@ service-hub が定義する service-info エンドポイント契約（[論点-0
 - **L4 レポート**: `./SECURITY_DEPS_20260527.md`
 
 ### [論点-006] [REQ] service-info summary v3 の consumer 側追従（shipyard 配信、★★★必須・accepted-as-requirement）
-- **status**: `open` ⏳ **未実装（2026-06-10 登録、shipyard リブランド契約 v3）** — audit-hittable な要件として登録。実装で close。
+- **status**: `closed` ✅ **実装完了（2026-06-18、commit 8e97a26）** — types/buildPublicStatus/api-public-status に summary を配線、+16 tests green。audit AUDIT_20260618_1139 #4 O63 consumer 追従 PASS で確認。**prod 反映（`db:push` で `services.summary` 列 + redeploy）は別途 Class B = SCENARIO §5 残ゲートで追跡**（コード実装の充足は確定のため status=closed）。
+- **status 履歴**: 2026-06-10 open（CF-20260610-005、shipyard リブランド契約 v3 登録） → 2026-06-18 closed（revise summary-projection 実装完了、commit 8e97a26、+16 tests green、D20260618_001）。
 - **種別**: accepted-as-requirement（論点ではなく確定要件。perspectives O63 + audit #4 項目 3.7 が未実装を検出する）
 - **影響範囲**: `_shared/types`（`ServiceInfoResponse`）, `_shared/providers`（service-info adapter 受信）, `collection`（取り込み）, `api/public/status.ts` + `src/features/public-status/buildPublicStatus.ts`（公開再配信）, §6.1
 - **要件**: service-info 契約 v3（[論点-006] / O48 v3）で追加された `summary?: string`（サービス短文紹介 1-2 文）を、**ServiceHUB が consumer として受信し shipyard（givers.work）へ配信する**。ServiceHUB 自身は表示しない（配信専用）。
