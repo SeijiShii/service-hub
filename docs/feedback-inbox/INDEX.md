@@ -26,7 +26,8 @@
 ## サブフォルダ（改修・バグ修正・クレーム判定履歴）
 | パス | 種別 | issue/slug | 状態 | 概要 | INDEX |
 |---|---|---|---|---|---|
-| [revise_inbox-ux_20260618_unified-list-and-styling](./revise_inbox-ux_20260618_unified-list-and-styling/) | revise | inbox-ux | 設計完了 | 統合一覧の明示 + token styling (件数サマリ/絞り込みバー) | [INDEX](./revise_inbox-ux_20260618_unified-list-and-styling/INDEX.md) |
+| [revise_inbox-ux_20260618_unified-list-and-styling](./revise_inbox-ux_20260618_unified-list-and-styling/) | revise | inbox-ux | shipped (20th deploy) | 統合一覧の明示 + token styling (件数サマリ/絞り込みバー) | [INDEX](./revise_inbox-ux_20260618_unified-list-and-styling/INDEX.md) |
+| [claim_C20260618-001_20260618_shipyard-feedback-not-loading](./claim_C20260618-001_20260618_shipyard-feedback-not-loading/) | claim | C20260618-001 | 判定完了 (cross-repo 判断待ち) | shipyard feedback 未表示 = [論点-FI-4] Shipyard adapter 未実装 (バグでない) | [INDEX](./claim_C20260618-001_20260618_shipyard-feedback-not-loading/INDEX.md) |
 
 ## 関連
 - 親 concept: `../concept.md` §1.3.1 feedback-inbox 行 / §6.2
