@@ -1,8 +1,8 @@
 # feedback-inbox ドキュメントインデックス
 
 **最終更新**: 2026-06-18
-**生成元**: /flow:concept → /flow:feature → /flow:spec-review → /flow:tdd
-**状態**: 実装完了 (unit 37 green、prod DB 反映=db:push 待ち=Class B)
+**生成元**: /flow:concept → /flow:feature → /flow:spec-review → /flow:tdd → /flow:e2e
+**状態**: 実装 + E2E green (unit 37 + E2E 3、prod DB 反映=db:push 待ち=Class B)
 
 <!-- auto-generated-start -->
 
@@ -19,6 +19,7 @@
 | 905 | [905_feedback-inbox_SPEC_REVIEW.md](./905_feedback-inbox_SPEC_REVIEW.md) | SPEC_REVIEW | 完了 | 2026-06-18 | High1/Med2/Low2 (R1責務分離=feedbackRunner別関数) |
 | 101 | [101_feedback-inbox_IMPL_REPORT.md](./101_feedback-inbox_IMPL_REPORT.md) | IMPL_REPORT | 完了 | 2026-06-18 | 型/DB/adapter/feedbackRunner/API/UI |
 | 102 | [102_feedback-inbox_UNIT_TEST_REPORT.md](./102_feedback-inbox_UNIT_TEST_REPORT.md) | UNIT_TEST_REPORT | 完了 | 2026-06-18 | 37 green / 全390 (回帰なし) |
+| 103 | [103_feedback-inbox_E2E_REPORT.md](./103_feedback-inbox_E2E_REPORT.md) | E2E_REPORT | 完了 | 2026-06-18 | Playwright 3 green (一覧/空/フィルタ + visual L1/L2) |
 
 ## サブフォルダ（改修・バグ修正・クレーム判定履歴）
 | パス | 種別 | issue/slug | 状態 | 概要 | INDEX |

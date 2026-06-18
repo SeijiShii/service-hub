@@ -59,3 +59,13 @@ stop 条件#1 により正当に終了 (= ✅ 適切な停止)。その後 commi
     不発火)/P4.2(pending fix_·revise_ なし)。feedback-inbox は 001-004+905 完成 + 101 不在 →
     P4 次フェーズ = TDD 実装着手。Class A (実装+テスト、git tracked、可逆)。auto-pick + auto-invoke。
     PLAN 5 Phase (型+DB → adapter → feedbackRunner+cron → API+VM → UI)。
+
+- id: D20260618-008-04
+  question: 反復3 結果 + 反復4 auto-pick
+  chosen: /flow:e2e feedback-inbox (P4.5 E2E gate)
+  chosen_type: auto-recommended
+  context: |
+    反復3 (/flow:tdd feedback-inbox) 完了 — 5 Phase 実装、本機能 37 tests + 全 390 green (回帰なし)、
+    commit 7699b09 (code) + 94dbe0e (reports)。再評価: P1(SEC0)/P2(中断なし)/P3.7(充足)/P4.2(なし)/
+    P4.46 Auth-impl(単一ユーザー internal で不発火)。feedback-inbox は 004 E2E 計画あり + 101 (unit 完了) +
+    103 不在 → P4.5 E2E gate HIT。ローカル headless E2E = Class A。auto-pick + auto-invoke。
