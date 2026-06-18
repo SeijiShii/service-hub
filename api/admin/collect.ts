@@ -16,6 +16,7 @@ import { fetchFeedback } from "../../src/providers/feedback.js";
 import {
   runCollection,
   runFeedbackCollection,
+  loadFeedbackTargets,
 } from "../../src/features/collection/index.js";
 import { evaluate, notify } from "../../src/features/alerts/index.js";
 import {
@@ -77,7 +78,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     let feedback;
     try {
       feedback = await runFeedbackCollection({
-        loadServices: () => loadServices(db, { onlyActive: true }),
+        // registered active services ∪ 無登録 env ソース (HUB_FEEDBACK_SOURCES、shipyard 等)。
+        loadServices: () =>
+          loadFeedbackTargets(
+            () => loadServices(db, { onlyActive: true }),
+            process.env,
+          ),
         fetchFeedback: (s) => fetchFeedback(s, { env: process.env }),
         saveFeedback: (rows) => upsertFeedbackItems(db, rows),
       });
