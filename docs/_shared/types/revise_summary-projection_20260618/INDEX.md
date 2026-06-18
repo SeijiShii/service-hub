@@ -1,7 +1,7 @@
 # revise_summary-projection_20260618 — 公開 status API に summary を含める [論点-011]
 
-**状態**: implemented (unit green、未デプロイ改修)
-<!-- ticket-status: implemented | updated: 20260618 | ref: src/features/public-status/buildPublicStatus.ts summary projection -->
+**状態**: shipped (17th deploy 本番反映済、services.summary 列 db:push 済、smoke green)
+<!-- ticket-status: shipped | updated: 20260618 | ref: dpl_4bUadnQGfUGwoPHxpaajQjkxLnZT (17th deploy) -->
 
 **種別**: revise (_shared/types + public-status + db — O48 v3 summary consumer 追従)
 **起点**: shipyard concept §8 [論点-011] (cross-PJ 上流) / perspectives O48 v3 (CF-20260610-004)

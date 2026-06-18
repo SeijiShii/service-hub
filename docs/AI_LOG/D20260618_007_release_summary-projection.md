@@ -1,8 +1,15 @@
 # D20260618_007_release_summary-projection — /flow:release (summary prod 反映)
 
-**状態**: 進行中 (Class B deploy 承認待ち)
+**状態**: 完了 (17th deploy green)
 **開始**: 2026-06-18
 **dispatch元**: /flow:auto (D20260618_002, P4.7 Release gate)
+**metrics**: { deploy_target: production, deployed_url: "https://service-hub.givers.work", deployment_id: "dpl_4bUadnQGfUGwoPHxpaajQjkxLnZT", check_result: "public-status 200 + frontend 200", paid_confirmed: "N/A (課金経路なし)", collected_vars: 0 }
+
+## 完了記録 (Class B 承認後実行)
+
+- ユーザー承認「YES」→ ① `bash scripts/db-push-prod.sh` で本番 Neon に services.summary 列追加 ([✓] Changes applied) → ② `bash scripts/deploy-prod.sh` で 17th deploy (dpl_4bUadnQGfUGwoPHxpaajQjkxLnZT、READY、aliased givers.work)。
+- post-deploy smoke: /api/public/status HTTP 200 (safe-subset 構造正常、summary は producer 未申告のため未出現=正常)、frontend HTTP 200。
+- [論点-006] 完全 closed (code + prod 反映)。P4.7 Release gate ✅ 通過。
 
 ## サマリ
 
