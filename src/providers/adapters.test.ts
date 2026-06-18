@@ -417,6 +417,116 @@ describe("service-info (PR-N6 / PR-B2)", () => {
       warn.mockRestore();
     });
   });
+
+  describe("summary 抽出 + sanitize (summary-projection、[論点-011]/O48 v3)", () => {
+    const ep = {
+      serviceInfo: {
+        endpoint: "https://svc.example.com/api/hub/service-info",
+      },
+    };
+    const runAdapter = async (body: unknown) =>
+      createServiceInfoAdapter({
+        fetchImpl: mockFetch(200, body),
+        allowInternal: true,
+      }).collect(svc(ep));
+
+    it("SM-U-01: v3 response 正常 summary 抽出 → meta.summary 返却", async () => {
+      const r = await runAdapter({
+        schemaVersion: 3,
+        service: "svc",
+        status: "ok",
+        summary: "草花を撮るだけでAIが名前を教えてくれる発見ノートです。",
+      });
+      expect(r.meta?.summary).toBe(
+        "草花を撮るだけでAIが名前を教えてくれる発見ノートです。",
+      );
+      expect(r.metrics[0]?.key).toBe("up");
+    });
+
+    it("SM-U-02: v1/v2 producer (summary 無し) → meta.summary 未含有", async () => {
+      const r = await runAdapter({
+        schemaVersion: 2,
+        service: "svc",
+        status: "ok",
+        iconUrl: "https://svc.example.com/favicon.svg",
+      });
+      expect(r.meta?.summary).toBeUndefined();
+      expect(r.meta?.iconUrl).toBe("https://svc.example.com/favicon.svg");
+    });
+
+    it("SM-U-03: iconUrl と summary を同時申告 → 両方 meta に載る", async () => {
+      const r = await runAdapter({
+        schemaVersion: 3,
+        service: "svc",
+        status: "ok",
+        iconUrl: "https://svc.example.com/favicon.svg",
+        summary: "短い紹介文です。",
+      });
+      expect(r.meta?.iconUrl).toBe("https://svc.example.com/favicon.svg");
+      expect(r.meta?.summary).toBe("短い紹介文です。");
+    });
+
+    it("SM-U-04: summary non-string (number) → 無視 + stderr 警告 (reason=type)", async () => {
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const r = await runAdapter({
+        schemaVersion: 3,
+        service: "svc",
+        status: "ok",
+        summary: 123,
+      });
+      expect(r.meta).toBeUndefined();
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringMatching(
+          /service-info summary rejected: slug=.* reason=type/,
+        ),
+      );
+      warn.mockRestore();
+    });
+
+    it("SM-U-05: summary 空白のみ → 無視 (reason=empty)", async () => {
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const r = await runAdapter({
+        schemaVersion: 3,
+        service: "svc",
+        status: "ok",
+        summary: "   ",
+      });
+      expect(r.meta).toBeUndefined();
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringMatching(
+          /service-info summary rejected: slug=.* reason=empty/,
+        ),
+      );
+      warn.mockRestore();
+    });
+
+    it("SM-U-06: summary 長すぎ (>200) → 無視 (reason=length)", async () => {
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const r = await runAdapter({
+        schemaVersion: 3,
+        service: "svc",
+        status: "ok",
+        summary: "あ".repeat(201),
+      });
+      expect(r.meta).toBeUndefined();
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringMatching(
+          /service-info summary rejected: slug=.* reason=length/,
+        ),
+      );
+      warn.mockRestore();
+    });
+
+    it("SM-U-07: 改行・制御文字は空白へ畳む (showcase 1 行表示の安全化)", async () => {
+      const r = await runAdapter({
+        schemaVersion: 3,
+        service: "svc",
+        status: "ok",
+        summary: "1行目\n\t2行目  3行目",
+      });
+      expect(r.meta?.summary).toBe("1行目 2行目 3行目");
+    });
+  });
 });
 
 describe("errors (PR-E1/E2/E3/E4)", () => {

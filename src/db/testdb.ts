@@ -8,6 +8,7 @@ const DDL = `
     slug text PRIMARY KEY, name text NOT NULL, url text NOT NULL, subdomain text,
     status text NOT NULL DEFAULT 'active', providers jsonb, service_info jsonb, thresholds jsonb,
     icon_url text,
+    summary text,
     created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
   );
   CREATE TABLE usage_snapshots (

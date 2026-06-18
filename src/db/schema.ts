@@ -28,6 +28,9 @@ export const services = pgTable("services", {
   // favicon-projection (revise_favicon-projection_20260528): producer 自己申告の favicon 絶対 URL。
   // 書き込みは service-info adapter 経由のみ (admin write 不可、SoT 一貫性、spec-review R2)。
   iconUrl: text("icon_url"),
+  // summary-projection ([論点-011]/O48 v3、2026-06-10): producer 自己申告の showcase 用短文。
+  // 書き込みは service-info adapter 経由のみ (iconUrl と同じ、admin write 不可)。公開 status API が露出。
+  summary: text("summary"),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

@@ -167,6 +167,46 @@ describe("buildPublicStatus (public-status-api Phase 1)", () => {
       iconUrl: "https://hana-memo.example.com/favicon.svg",
     });
   });
+  // ── summary-projection ([論点-011]/O48 v3) ──────
+  it("SM-PS-01: services に summary 有 + up=1 → DTO に summary 含む", () => {
+    const r = buildPublicStatus(
+      [svc({ summary: "草花を撮るだけの発見ノートです。" })],
+      [snap({ metricKey: "up", metricValue: 1 })],
+    );
+    expect(r[0]!.summary).toBe("草花を撮るだけの発見ノートです。");
+    expect(r[0]!.status).toBe("up");
+  });
+
+  it("SM-PS-02: services に summary 無し → DTO に summary キー含有しない", () => {
+    const r = buildPublicStatus(
+      [svc({ summary: undefined })],
+      [snap({ metricKey: "up", metricValue: 1 })],
+    );
+    expect(r[0]!.summary).toBeUndefined();
+    expect(Object.keys(r[0]!)).not.toContain("summary");
+  });
+
+  it("SM-PS-03: summary + iconUrl 同時 → 両方 DTO に含む (公開安全フィールドのみ)", () => {
+    const r = buildPublicStatus(
+      [
+        svc({
+          summary: "短い紹介文。",
+          iconUrl: "https://hana-memo.example.com/favicon.svg",
+        }),
+      ],
+      [snap({ metricKey: "up", metricValue: 1 })],
+    );
+    expect(JSON.parse(JSON.stringify(r))[0]).toEqual({
+      slug: "hana-memo",
+      name: "hana-memo",
+      url: "https://hana-memo.example.com",
+      status: "up",
+      lastCheckedAt: "2026-05-27T00:00:00.000Z",
+      iconUrl: "https://hana-memo.example.com/favicon.svg",
+      summary: "短い紹介文。",
+    });
+  });
+
   it("PS-B1: active 0 件 → []", () => {
     expect(buildPublicStatus([], [])).toEqual([]);
   });

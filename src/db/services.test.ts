@@ -173,3 +173,57 @@ describe("updateServiceMeta + iconUrl SoT 一貫性 (favicon-projection)", () =>
     ).resolves.toBeUndefined();
   });
 });
+
+// ── summary-projection ([論点-011]/O48 v3) ──────
+describe("updateServiceMeta + summary SoT 一貫性 (summary-projection)", () => {
+  it("SM-U-10: 新規セット → services.summary 更新 + round-trip", async () => {
+    await upsertService(db, svc({ slug: "a" }));
+    await updateServiceMeta(db, "a", { summary: "草花の発見ノート。" });
+    expect((await getService(db, "a"))?.summary).toBe("草花の発見ノート。");
+  });
+
+  it("SM-U-11: summary 既設定 + 空 meta → 既存値保持 (保持セマンティクス)", async () => {
+    await upsertService(db, svc({ slug: "a" }));
+    await updateServiceMeta(db, "a", { summary: "紹介文。" });
+    await updateServiceMeta(db, "a", {});
+    expect((await getService(db, "a"))?.summary).toBe("紹介文。");
+  });
+
+  it("SM-U-12: summary だけ更新 → iconUrl は消えない (片側申告で他方を保持)", async () => {
+    await upsertService(db, svc({ slug: "a" }));
+    await updateServiceMeta(db, "a", {
+      iconUrl: "https://a.example/favicon.svg",
+    });
+    await updateServiceMeta(db, "a", { summary: "紹介文。" });
+    const got = await getService(db, "a");
+    expect(got?.iconUrl).toBe("https://a.example/favicon.svg");
+    expect(got?.summary).toBe("紹介文。");
+  });
+
+  it("SM-U-13: iconUrl だけ更新 → summary は消えない (片側申告で他方を保持)", async () => {
+    await upsertService(db, svc({ slug: "a" }));
+    await updateServiceMeta(db, "a", { summary: "紹介文。" });
+    await updateServiceMeta(db, "a", {
+      iconUrl: "https://a.example/favicon.svg",
+    });
+    const got = await getService(db, "a");
+    expect(got?.summary).toBe("紹介文。");
+    expect(got?.iconUrl).toBe("https://a.example/favicon.svg");
+  });
+
+  it("SM-U-14: iconUrl+summary 同時申告 → 両方 update", async () => {
+    await upsertService(db, svc({ slug: "a" }));
+    await updateServiceMeta(db, "a", {
+      iconUrl: "https://a.example/favicon.svg",
+      summary: "紹介文。",
+    });
+    const got = await getService(db, "a");
+    expect(got?.iconUrl).toBe("https://a.example/favicon.svg");
+    expect(got?.summary).toBe("紹介文。");
+  });
+
+  it("SM-U-15: admin write (upsertService) で summary を渡しても無視 (SoT 一貫性、SET 句不含)", async () => {
+    await upsertService(db, svc({ slug: "a", summary: "注入試行" }));
+    expect((await getService(db, "a"))?.summary).toBeUndefined();
+  });
+});

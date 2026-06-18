@@ -200,6 +200,45 @@ function pickServiceInfoIconUrl(
 }
 
 /**
+ * summary sanitize + silent reject with stderr 警告 (summary-projection、[論点-011]/O48 v3)。
+ * 値はログしない (PII ではないが一貫性のため)、rejection 理由のメタ情報のみ stderr へ。
+ * - 非 string / 空 (trim 後) → undefined (申告なし扱い、既存値保持)
+ * - 改行・制御文字は空白へ畳み、前後 trim (showcase 1 行表示の安全化)
+ * - SUMMARY_MAX_LEN (200) 超は length reject (producer 側契約は ~120 字、余裕を見て 200 で cap)
+ */
+const SUMMARY_MAX_LEN = 200;
+function pickServiceInfoSummary(
+  slug: string,
+  raw: unknown,
+): string | undefined {
+  if (raw === undefined) return undefined; // key 無しは silent (rejection ではない)
+  if (typeof raw !== "string") {
+    console.warn(
+      `service-info summary rejected: slug=${slug} reason=type rawType=${typeof raw}`,
+    );
+    return undefined;
+  }
+  // 制御文字 (改行/タブ等) を空白へ畳み、連続空白を 1 つに、前後 trim。
+  const cleaned = raw
+    .replace(/[\u0000-\u001f\u007f]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (cleaned.length === 0) {
+    console.warn(
+      `service-info summary rejected: slug=${slug} reason=empty rawType=string`,
+    );
+    return undefined;
+  }
+  if (cleaned.length > SUMMARY_MAX_LEN) {
+    console.warn(
+      `service-info summary rejected: slug=${slug} reason=length len=${cleaned.length}`,
+    );
+    return undefined;
+  }
+  return cleaned;
+}
+
+/**
  * 旧メトリクスキーの正規化エイリアス (後方互換、revenue-metrics-display C20260607-001)。
  * producer が旧名で申告しても HUB 側 canonical キーへ正規化して保存する。
  * tip_count / tip_total_yen は当初 producer が tip 専用名で本番申告したが、収益源泉は
@@ -240,10 +279,15 @@ export const createServiceInfoAdapter = wrapWithMeta(
         unit: m.unit,
       });
     }
-    // v2: iconUrl 抽出 + format check (favicon-projection)。失敗時は meta 含めない (silent reject + stderr 警告)。
+    // v2: iconUrl 抽出 + format check (favicon-projection) / v3: summary 抽出 + sanitize ([論点-011])。
+    // 失敗 (申告なし/reject) した field は meta に含めない (silent reject、既存値保持)。
+    const meta: ServiceMeta = {};
     const iconUrl = pickServiceInfoIconUrl(s.slug, j.iconUrl);
-    if (iconUrl !== undefined) {
-      return { metrics, meta: { iconUrl } };
+    if (iconUrl !== undefined) meta.iconUrl = iconUrl;
+    const summary = pickServiceInfoSummary(s.slug, j.summary);
+    if (summary !== undefined) meta.summary = summary;
+    if (meta.iconUrl !== undefined || meta.summary !== undefined) {
+      return { metrics, meta };
     }
     return { metrics };
   },

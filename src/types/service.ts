@@ -29,13 +29,17 @@ export interface ServiceInfoRef {
 /**
  * service-info レスポンス契約 ([論点-003]/[論点-T1]、最小固定 + extra)。
  * **v2 (favicon-projection、2026-05-28)**: `iconUrl?: string` を 1st-class field として追加 (schemaVersion=2 bump 推奨)。
- * 受信側は v1 (iconUrl 無し) も完全許容、producer 順次対応可能。format check は src/lib/safeUrl.ts。
+ * **v3 (summary-projection、2026-06-10、[論点-011]/O48 v3)**: `summary?: string` を追加 (showcase 一覧用の一般向け短文)。
+ * 受信側は v1 (iconUrl/summary 無し) / v2 (summary 無し) も完全許容、producer 順次対応可能。
+ * iconUrl の format check は src/lib/safeUrl.ts、summary の sanitize は adapter (pickServiceInfoSummary)。
  */
 export type ServiceInfoStatus = "ok" | "degraded" | "down";
 export interface ServiceInfoResponse {
   schemaVersion: number;
   service: string;
   status: ServiceInfoStatus;
+  /** v3: showcase 一覧用の一般向け短文 (技術用語なし、~120 字)。受信時 length cap + sanitize。 */
+  summary?: string;
   /**
    * 自己申告メトリクス。key は MetricKey (open union)。
    * 収益 (revenue-metrics-display, C20260607-001): canonical = `revenue_count` / `revenue_total_yen` (jpy)。
@@ -55,6 +59,8 @@ export interface ServiceInfoResponse {
  */
 export interface ServiceMeta {
   iconUrl?: string;
+  /** v3 (summary-projection、2026-06-10、[論点-011]): producer 自己申告の showcase 用短文。runner で services.summary へ永続化。 */
+  summary?: string;
 }
 
 /** 無料枠アラート閾値 (任意、メトリクス別)。 */
@@ -78,4 +84,9 @@ export interface ServiceDescriptor {
    * 本フィールドは ServiceDescriptor 型 = DB レコード全体表現として持つ (zod schema 出力型との意図的不整合、P78)。
    */
   iconUrl?: string;
+  /**
+   * 公開短文紹介 (summary-projection、2026-06-10、[論点-011]/O48 v3)。**書き込みは service-info adapter 経由のみ** (iconUrl と同じ SoT 一貫性)。
+   * admin write 経路では受け付けない。showcase (givers.work) が公開 status API から消費して一覧に表示する。
+   */
+  summary?: string;
 }

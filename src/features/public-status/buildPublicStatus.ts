@@ -12,6 +12,8 @@ export interface PublicServiceStatus {
   status: "up" | "down" | "unknown";
   lastCheckedAt?: string;
   iconUrl?: string;
+  /** v3 (summary-projection、[論点-011]/O48 v3): producer 自己申告の showcase 用短文。公開安全 (一般向け紹介文、内部指標でない)。 */
+  summary?: string;
 }
 
 /**
@@ -55,6 +57,8 @@ export function buildPublicStatus(
       if (up) out.lastCheckedAt = up.at;
       // favicon-projection (2026-05-28): services.icon_url を公開 DTO に投影 (有 → 含む / 無 → キー含有しない)
       if (svc.iconUrl) out.iconUrl = svc.iconUrl;
+      // summary-projection ([論点-011]): services.summary を公開 DTO に投影 (有 → 含む / 無 → キー含有しない)
+      if (svc.summary) out.summary = svc.summary;
       return out;
     });
 }
