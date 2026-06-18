@@ -107,3 +107,59 @@ test("RE-UC1-S1: 件数サマリ (全 N 件) を表示", async ({ page }) => {
   await page.goto("/feedback");
   await expect(page.getByTestId("count-summary")).toContainText("全 3 件");
 });
+
+test("RE-N1: ホームへ戻るリンク (href=/)", async ({ page }) => {
+  await page.route("**/api/feedback/inbox**", (r) => r.fulfill({ json: vm }));
+  await page.goto("/feedback");
+  const home = page.getByTestId("home-link");
+  await expect(home).toBeVisible();
+  await expect(home).toHaveAttribute("href", "/");
+});
+
+test("RE-P1/P3: 今すぐ pull → collect 呼出 + inbox refetch で新着反映", async ({
+  page,
+}) => {
+  let pulled = false;
+  // pull 後は shipyard の新着 1 件を加えた VM を返す (refetch を検証)。
+  await page.route("**/api/feedback/inbox**", (r) => {
+    const items = pulled
+      ? [
+          {
+            serviceSlug: "shipyard",
+            serviceName: "Shipyard",
+            externalId: "sy-1",
+            kind: "inquiry" as const,
+            body: "shipyard からの問い合わせです",
+            createdAt: "2026-06-19T00:00:00.000Z",
+            pulledAt: "2026-06-19T00:00:00.000Z",
+          },
+          ...vm.items,
+        ]
+      : vm.items;
+    return r.fulfill({ json: withCounts(items, services) });
+  });
+  // 無登録ソース pull を担う POST /api/admin/collect を mock。
+  await page.route("**/api/admin/collect", (r) => {
+    pulled = true;
+    return r.fulfill({
+      json: { status: "ok", servicesCount: 1, errors: [], feedback: {} },
+    });
+  });
+
+  await page.goto("/feedback");
+  await expect(page.getByTestId("feedback-item")).toHaveCount(3);
+  await page.getByRole("button", { name: "今すぐ pull" }).click();
+  await expect(page.getByTestId("feedback-item")).toHaveCount(4);
+  await expect(page.getByText("shipyard からの問い合わせです")).toBeVisible();
+});
+
+test("RE-P2: pull が 401 ならエラー表示・一覧は不変", async ({ page }) => {
+  await page.route("**/api/feedback/inbox**", (r) => r.fulfill({ json: vm }));
+  await page.route("**/api/admin/collect", (r) =>
+    r.fulfill({ status: 401, json: { error: "unauthorized" } }),
+  );
+  await page.goto("/feedback");
+  await page.getByRole("button", { name: "今すぐ pull" }).click();
+  await expect(page.getByRole("alert")).toContainText("http_401");
+  await expect(page.getByTestId("feedback-item")).toHaveCount(3);
+});
