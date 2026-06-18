@@ -48,3 +48,14 @@ stop 条件#1 により正当に終了 (= ✅ 適切な停止)。その後 commi
     再評価: P1 (open SEC 0) / P2 (中断なし)。feedback-inbox は 001-004 完成 + 905_SPEC_REVIEW.md
     不在 + tdd 未着手 (101 不在) → P3.7 Spec-review gate HIT。tdd 着手前の実装前設計レビュー。
     Class A (905 レポート生成 + 001-004 Edit + AI_LOG、可逆)。auto-pick + auto-invoke。
+
+- id: D20260618-008-03
+  question: 反復2 結果 + 反復3 auto-pick
+  chosen: /flow:tdd feedback-inbox (P4 次フェーズ = 実装着手)
+  chosen_type: auto-recommended
+  context: |
+    反復2 (/flow:spec-review feedback-inbox) 完了 — 905 生成 (High1/Med2/Low2)、001/002/003 反映、
+    review-perspectives P92 追加、commit fa1a812。再評価: P1(SEC0)/P2(中断なし)/P3.7(905 充足で
+    不発火)/P4.2(pending fix_·revise_ なし)。feedback-inbox は 001-004+905 完成 + 101 不在 →
+    P4 次フェーズ = TDD 実装着手。Class A (実装+テスト、git tracked、可逆)。auto-pick + auto-invoke。
+    PLAN 5 Phase (型+DB → adapter → feedbackRunner+cron → API+VM → UI)。
