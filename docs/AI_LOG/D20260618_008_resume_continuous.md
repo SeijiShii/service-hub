@@ -1,6 +1,6 @@
 # D20260618_008_resume_continuous — /flow:auto ([論点-007] feedback-inbox feature 設計着手)
 
-**状態**: 進行中
+**状態**: 完了
 **モード**: continuous
 **開始**: 2026-06-18
 
@@ -139,3 +139,30 @@ stop 条件#1 により正当に終了 (= ✅ 適切な停止)。その後 commi
     (bdd51f0)。release-pre ハードゲート充足。§4.5.1#0 step4: no-key Class A 枯渇 + prod 反映要 (新 feedback_items
     テーブルを prod Neon へ db:push + redeploy) → 停止せず /flow:release dispatch。release は Class B deploy の
     瞬間に 1-decision pause (条件2、ユーザー YES/NO 承認待ち)。これが loop の正当な人間ゲート。
+
+- id: D20260618-008-11
+  question: 反復10 結果 + P5 完了判定 (stop 条件#1)
+  chosen: 18th deploy 成功 → service-hub P5 完了 → loop 終了
+  chosen_type: auto-recommended
+  context: |
+    反復10 (/flow:release) 完了 — ユーザー「YES」承認 → git push → db:push feedback_items ([✓] applied) →
+    deploy 初回が Hobby 12 関数超過で fail → .vercelignore で test 除外 (8 関数) → 18th deploy 成功
+    (dpl_7rAUwePWVhy3jdw99BfBtTRa3dqj) → smoke green (frontend 200 / public-status 200 / feedback-inbox
+    401 authed / dashboard 401)。feedback-inbox [論点-007]/O67 完全 closed (code + prod)。
+    全ゲート通過: P3.7✅/P4.4✅/P4.45 defer(internal)/P4.46 N/A/P4.5✅/P4.7✅18th/P4.8 N/A(非公開)、
+    audit full C0/H0 + secure SEC0 fresh、公開ドメイン✅ (custom domain)、no-key Class A 枯渇、不足キーなし。
+    → §4.5.1 stop 条件#1 (全フェーズ完了) 成立。.flow-loop-active marker 削除して loop 終了。
+    残は別 PJ/別 repo (producer O66 / Shipyard adapter [論点-FI-4] / shipyard [論点-010])。
+
+## 反復サマリ (10 反復)
+
+1. /flow:feature feedback-inbox — 設計 4 文書 (commit 5acb229)
+2. /flow:spec-review feedback-inbox — 905 + R1 責務分離 + P92 (fa1a812)
+3. /flow:tdd feedback-inbox — 5 Phase 実装、37 tests + 全 390 green (7699b09/94dbe0e)
+4. /flow:e2e feedback-inbox — Playwright 3 green (93d73d8)
+5. /flow:design --review-only — 絵文字除去 + nav 導線 (D-R1/D-R2)、視覚 green (412e13e)
+6. /flow:audit standard — O67 PASS、[論点-007] status drift 検出 (31b0d72)
+7. drift-shoot — [論点-007] closed + SCENARIO reconcile (48e335c)
+8. /flow:secure design — 新規 SEC 0 (bdd51f0)
+9. /flow:audit full (release-pre) — C0/H0、release blocker 0 (5683498)
+10. /flow:release — 18th deploy (feedback_items + /api/feedback/inbox LIVE、smoke green、63c5a1f)
