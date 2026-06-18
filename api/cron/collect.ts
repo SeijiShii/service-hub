@@ -8,10 +8,15 @@ import {
   markAlertNotified,
   openAlerts,
   updateServiceMeta,
+  upsertFeedbackItems,
 } from "../../src/db/index.js";
 import { loadServices } from "../../src/registry/index.js";
 import { getAdapters } from "../../src/providers/index.js";
-import { runCollection } from "../../src/features/collection/index.js";
+import { fetchFeedback } from "../../src/providers/feedback.js";
+import {
+  runCollection,
+  runFeedbackCollection,
+} from "../../src/features/collection/index.js";
 import { checkCronSecret } from "../../src/features/collection/index.js";
 import { evaluate, notify } from "../../src/features/alerts/index.js";
 
@@ -48,5 +53,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       );
     },
   });
-  return res.status(200).json(run);
+  // feedback 収集 ([論点-007]/O67、spec-review R1): metrics 収集とは別 orchestration。
+  // 失敗しても metrics run のレスポンスは返す (feedback は補助、独自サマリで可視化)。
+  let feedback;
+  try {
+    feedback = await runFeedbackCollection({
+      loadServices: () => loadServices(db, { onlyActive: true }),
+      fetchFeedback: (s) => fetchFeedback(s, { env: process.env }),
+      saveFeedback: (rows) => upsertFeedbackItems(db, rows),
+    });
+  } catch (e) {
+    feedback = {
+      servicesCount: 0,
+      itemsPulled: 0,
+      errors: [
+        { serviceSlug: "*", message: e instanceof Error ? e.message : "error" },
+      ],
+    };
+  }
+  return res.status(200).json({ ...run, feedback });
 }

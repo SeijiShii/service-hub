@@ -28,6 +28,13 @@ const DDL = `
     id text PRIMARY KEY, started_at timestamptz NOT NULL, finished_at timestamptz,
     status text NOT NULL, services_count integer NOT NULL, errors_json jsonb
   );
+  CREATE TABLE feedback_items (
+    id text PRIMARY KEY, service_slug text NOT NULL, external_id text NOT NULL,
+    kind text NOT NULL, body text NOT NULL, rating double precision, context jsonb,
+    status text, created_at timestamptz NOT NULL, pulled_at timestamptz NOT NULL DEFAULT now()
+  );
+  CREATE UNIQUE INDEX uniq_feedback_svc_external ON feedback_items (service_slug, external_id);
+  CREATE INDEX idx_feedback_svc_created ON feedback_items (service_slug, created_at);
 `;
 
 /** テスト用: in-memory pglite + drizzle。DDL は schema.ts と一致させる。 */

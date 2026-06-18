@@ -91,5 +91,44 @@ export const collectionRuns = pgTable("collection_runs", {
   errorsJson: jsonb("errors_json"),
 });
 
-export const schema = { services, usageSnapshots, alertEvents, collectionRuns };
+// feedback-inbox ([論点-007]/O67): 各サービスの GET /api/hub/feedback を pull して保存する
+// consumer 行。id = `${serviceSlug}:${externalId}` 合成キー、(serviceSlug, externalId) で冪等 upsert。
+// metrics (usage_snapshots) とは別責務 (spec-review R1) のため別テーブル。
+export const feedbackItems = pgTable(
+  "feedback_items",
+  {
+    id: text("id").primaryKey(),
+    serviceSlug: text("service_slug").notNull(),
+    externalId: text("external_id").notNull(),
+    kind: text("kind").notNull(),
+    body: text("body").notNull(),
+    rating: doublePrecision("rating"),
+    context: jsonb("context").$type<Record<string, unknown>>(),
+    status: text("status"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+    pulledAt: timestamp("pulled_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => ({
+    // 横断一覧 (サービス別フィルタ + createdAt 降順) 用
+    bySvcCreated: index("idx_feedback_svc_created").on(
+      t.serviceSlug,
+      t.createdAt,
+    ),
+    // upsert 冪等キー (producer item の取り込み重複吸収)
+    uniqSvcExternal: uniqueIndex("uniq_feedback_svc_external").on(
+      t.serviceSlug,
+      t.externalId,
+    ),
+  }),
+);
+
+export const schema = {
+  services,
+  usageSnapshots,
+  alertEvents,
+  collectionRuns,
+  feedbackItems,
+};
 export type Schema = typeof schema;
