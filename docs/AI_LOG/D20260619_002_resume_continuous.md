@@ -12,6 +12,8 @@
 |---|---|---|---|
 | D20260619-010 | 前回停止の適切性 (retrospective) | 適切 (§4.5.1 条件1: 前回 loop は revise inbox-ux 20th deploy で P5 完了停止) | auto-recommended |
 | D20260619-011 | 優先度判定 + auto-pick (反復1) | P4.2 Fix/Revise-impl gate → /flow:tdd feedback-inbox inbox-pull-source | auto-recommended |
+| D20260619-015 | auto-pick (反復2) | P4.5 E2E gate → /flow:e2e (inbox) — 7 green | auto-recommended |
+| D20260619-016 | auto-pick (反復3) | P4.7 Release gate → /flow:release (21st deploy + HUB_FEEDBACK_SOURCES env、Class B/C 境界) | auto-recommended |
 
 ## 依存関係
 - 直前 revise: `D20260619_001_revise_feedback-inbox_inbox-pull-source.md` (設計 4 文書、tdd 待ち)
