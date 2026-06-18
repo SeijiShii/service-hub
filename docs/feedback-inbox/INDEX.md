@@ -26,7 +26,7 @@
 ## サブフォルダ（改修・バグ修正・クレーム判定履歴）
 | パス | 種別 | issue/slug | 状態 | 概要 | INDEX |
 |---|---|---|---|---|---|
-| (なし。`/flow:revise` / `/flow:fix` / `/flow:claim` で生成) |
+| [revise_inbox-ux_20260618_unified-list-and-styling](./revise_inbox-ux_20260618_unified-list-and-styling/) | revise | inbox-ux | 設計完了 | 統合一覧の明示 + token styling (件数サマリ/絞り込みバー) | [INDEX](./revise_inbox-ux_20260618_unified-list-and-styling/INDEX.md) |
 
 ## 関連
 - 親 concept: `../concept.md` §1.3.1 feedback-inbox 行 / §6.2
