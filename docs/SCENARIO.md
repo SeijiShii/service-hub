@@ -53,14 +53,14 @@ flow で連発するマイクロサービス群の稼働/利用/コスト/障害
 
 <!-- AUTO-GENERATED:BEGIN scenario-cursor -->
 - 現在フェーズ: **Phase 4 (Release gate ✅ 17th deploy 完了)** — 17 回 deploy 完了済、本番 https://service-hub.givers.work 稼働中 (internal tool)。13th〜16th deploy (2026-06-07/08) = 収益指標 / 収益推移chart+collect hotfix / chart-ux / chart-colors。**17th deploy (2026-06-18) = summary-projection [論点-011] 本番反映** (services.summary 列 db:push 済 + dpl_4bUadnQGfUGwoPHxpaajQjkxLnZT、smoke green = /api/public/status 200 + frontend 200)。
-- 進行中ターゲット: **なし** — service-hub 側は summary-projection [論点-011] 本番反映完了 (commit 8e97a26 → 17th deploy)。summary は producer 自己申告が来れば次 collect で /api/public/status に surface する (現状未申告 = 構造正常)。下流 = shipyard [論点-010] consumer (別 PJ) が公開 API から summary を read して表示。
+- 進行中ターゲット: **feedback-inbox ([論点-007]/O67) consumer 実装完了 (コード)** — feedback pull adapter + `FeedbackItem` 型 + `feedback_items` テーブル + `runFeedbackCollection` (cron 配線) + 運営者インボックス `/feedback` + nav 導線。unit 37 + E2E 3 + 視覚レビュー green (commit 7699b09〜412e13e)。**残作業 = prod 反映 (`db:push` で `feedback_items` テーブル + redeploy = Class B = P4.7 Release gate)**。summary-projection [論点-011] は 17th deploy 反映済。
 - 最終更新セッション: D20260618_007_release_summary-projection
 - 最終更新時刻: 2026-06-18
 - 完了フェーズ: [Phase1, Phase1.5, Phase2, Phase3 実装, Phase4 デプロイ(**17 回完了**): 1st-12th + 13th (収益指標 C20260607-001) + 14th (収益推移chart+collect hotfix C20260607-002) + 15th (chart-ux) + 16th (chart-colors) + **17th=D20260618_007 (summary-projection [論点-011]、services.summary db:push + dpl_4bUadnQGfUGwoPHxpaajQjkxLnZT)**、Clerk production instance / sk_live_* 稼働中]
 - デプロイ状況: ✅ 公開 URL = https://service-hub.givers.work (custom domain、Clerk production、live キー稼働中、**17th deploy = summary-projection 本番反映済**、services.summary 列 db:push 済、post-deploy smoke green = /api/public/status 200 + frontend 200)。
-- 次の推奨コマンド: **service-hub は P5 完了** (summary-projection 本番反映済)。次の一手は別 PJ = (1) shipyard [論点-010] consumer (公開 API から summary read + 表示)、(2) 各 producer が service-info で summary 自己申告 (= summary が実際に流れ始める)。service-hub 側に残作業なし。
-- Open 論点: 001✅/002✅/003✅/004✅/005✅/**006✅ 全 6 件解決済** (006 = service-info summary v3 consumer 追従、8e97a26 実装 + 17th deploy 本番反映で closed)。
-- 残ゲート: P4.4 Design ✅ green / P4.45 Wording ✅ defer (internal) / P4.46 Auth-impl 不発火 (単一 owner) / **P4.7 Release ✅ 17th deploy 完了** / P4.8 Promote 不発火 (非公開) / 既知 Low: queries.test.ts tsc TS2578 (deploy 非ブロッカー)。
+- 次の推奨コマンド: **feedback-inbox の prod 反映 = `/flow:release`** (db:push で `feedback_items` テーブル + redeploy = Class B、ユーザー承認要)。コードは consumer 実装完了 + 全テスト green。release-pre 必須監査は本番反映直前に full audit + secure を回す (§3.0c)。別 PJ の follow-up = (1) producer 各サービスが `GET /api/hub/feedback` 実装 (O66、各サービス `/flow:revise`)、(2) Shipyard 専用 adapter ([論点-FI-4])、(3) shipyard [論点-010] summary consumer。
+- Open 論点: 001✅/002✅/003✅/004✅/005✅/006✅/**007✅ 全 7 件解決済** (007 = feedback-inbox consumer 追従、commit 7699b09〜412e13e で consumer 実装完了→closed。prod 反映 db:push は Class B 残ゲート)。
+- 残ゲート: P3.7 Spec-review ✅ (feedback-inbox 905) / P4.4 Design ✅ green (feedback-inbox 視覚レビュー green、絵文字除去+nav 導線) / P4.45 Wording ✅ defer (internal) / P4.46 Auth-impl 不発火 (単一 owner) / P4.5 E2E ✅ (feedback-inbox 3 green) / **P4.7 Release: feedback-inbox の prod 反映 (db:push feedback_items + redeploy) が残 = Class B ユーザー承認待ち** (summary-projection は 17th deploy 済) / P4.8 Promote 不発火 (非公開) / 既知 Low: queries.test.ts tsc TS2578 (deploy 非ブロッカー)。
 - release-pre 必須監査 (CF-009): summary prod 反映前に ✅ 2段クリア (AUDIT_20260618_1139 full Critical 0/High 0 + SECURITY_REVIEW_20260618_1140 新規 SEC 0、最新 AUDIT 参照 = HEAD)。
 - audit 検出常習化 (CHRONIC 注記): SCENARIO §5 drift が AUDIT_20260610_0805 で再発 (High) → 2026-06-18 reconcile で解消、以降 17th deploy まで同期維持。
 <!-- AUTO-GENERATED:END scenario-cursor -->

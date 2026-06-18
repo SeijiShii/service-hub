@@ -93,3 +93,15 @@ stop 条件#1 により正当に終了 (= ✅ 適切な停止)。その後 commi
     新 authed endpoint /api/feedback/inbox + 新外部 pull (feedback adapter) → audit standard で #4 O67
     consumer-signal カバレッジ (/api/hub/feedback + FeedbackItem が実装され PASS するか) + 構造 + drift を検証。
     Class A、auto-execute。続いて新 surface の secure 再評価 (§3.0c) → 残は Class B prod 反映 (db:push) + Class C wording。
+
+- id: D20260618-008-07
+  question: 反復6 結果 + 反復7 (drift-shoot)
+  chosen: concept §8 [論点-007] closed 化 + SCENARIO §5 reconcile (§3.0c drift-shooting)
+  chosen_type: auto-recommended
+  context: |
+    反復6 (/flow:audit standard) 完了 — C0/H0/M1 (O67 PASS、[論点-007] status drift)、AUDIT_20260618_2010、
+    commit 31b0d72。Medium drift = Class A reconcile (§3.0c drift-shooting): [論点-007] は consumer
+    実装完了 (unit37+E2E3+視覚 green) だが §8 open。[論点-006] と同パターンで concept §8 を closed 化 +
+    SCENARIO §5 (進行中ターゲット/Open論点/残ゲート/次推奨) を feedback-inbox 実装完了 + db:push 残ゲートに
+    reconcile。機械的 status 更新 (Class A、git tracked) のため targeted edit で実施。
+    残: prod 反映 db:push (Class B) + secure 新 surface 再評価 (§3.0c、次反復)。

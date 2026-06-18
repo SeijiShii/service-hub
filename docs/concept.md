@@ -449,8 +449,8 @@ service-hub が定義する service-info エンドポイント契約（[論点-0
 - **由来**: seiji [flow] 2026-06-10（shipyard リブランド service-info 契約 v3）/ CF-20260610-005 / perspectives O48 v3・O63
 
 ### [論点-007] [REQ] ユーザーフィードバック/問い合わせの ServiceHUB 運営者インボックス（pull 契約 + Shipyard 専用 adapter、★★★必須・accepted-as-requirement）
-- **status**: `open` 🔲 **未実装（2026-06-18 登録）** — perspectives O66/O67 を SoT 化し PJ 側に audit-hittable 登録した段階。実装（pull adapter + 型 + 運営者画面 + Shipyard adapter）は未着手。
-- **status 履歴**: 2026-06-18 open（CF-20260618-006、seiji [flow]「フィードバック/問い合わせを ServiceHUB で閲覧、Shipyard 専用 API、ServiceHUB 契約修正、audit 検知」）。
+- **status**: `closed` ✅ **実装完了（2026-06-18、commit 7699b09〜412e13e）** — consumer 側 (O67) を実装: feedback pull adapter (`src/providers/feedback.ts`、`/api/hub/feedback` を `HUB_SERVICE_INFO_SECRET` で pull) + `FeedbackItem`/`FeedbackResponse` 型 + `feedback_items` テーブル + 別 orchestration `runFeedbackCollection` (cron 配線) + 運営者インボックス画面 `/feedback` (横断一覧/フィルタ/claim 導線) + dashboard nav 導線。unit 37 + E2E 3 + 視覚レビュー green。audit AUDIT_20260618_2010 #4 で O67 `required_signals` (`/api/hub/feedback` + `FeedbackItem`) PASS 確認。**残: (1) prod 反映（`db:push` で `feedback_items` 列 + redeploy）は Class B = SCENARIO §5 残ゲート、(2) Shipyard 専用 adapter は [論点-FI-4]（feedback-inbox SPEC §8）で follow-up、(3) producer 各サービスの `GET /api/hub/feedback` 実装は O66 で各サービス `/flow:revise`**（コード consumer 実装の充足は確定のため status=closed）。
+- **status 履歴**: 2026-06-18 open（CF-20260618-006、seiji [flow]「フィードバック/問い合わせを ServiceHUB で閲覧、Shipyard 専用 API、ServiceHUB 契約修正、audit 検知」） → 2026-06-18 closed（/flow:feature→spec-review→tdd→e2e→design で consumer 実装完了、D20260618_009〜013）。
 - **種別**: accepted-as-requirement（確定要件。perspectives O67 consumer + audit #4 が未実装を検出する）
 - **影響範囲**: `_shared/types`（`FeedbackItem`）, `_shared/providers`（feedback pull adapter）, `collection`（取り込み）, `docs/feedback-inbox/`（運営者画面 + 取得 API）, §6.2
 - **要件**: 各サービスが O40 で収集する feedback/問い合わせを、**ServiceHUB が consumer として pull し運営者が横断閲覧する**。転送モデルは service-info（§6.1）と同型の pull / 共有シークレット（O66 producer ↔ O67 consumer）。ServiceHUB は表示する（service-detail/dashboard とは別の専用インボックス画面）。
