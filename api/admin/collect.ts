@@ -8,10 +8,15 @@ import {
   markAlertNotified,
   openAlerts,
   updateServiceMeta,
+  upsertFeedbackItems,
 } from "../../src/db/index.js";
 import { loadServices } from "../../src/registry/index.js";
 import { getAdapters } from "../../src/providers/index.js";
-import { runCollection } from "../../src/features/collection/index.js";
+import { fetchFeedback } from "../../src/providers/feedback.js";
+import {
+  runCollection,
+  runFeedbackCollection,
+} from "../../src/features/collection/index.js";
 import { evaluate, notify } from "../../src/features/alerts/index.js";
 import {
   requireSeiji,
@@ -66,7 +71,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         );
       },
     });
-    return res.status(200).json(run);
+    // feedback も手動 pull で取り込む (cron 版 api/cron/collect.ts と対称、claim C20260618-001)。
+    // これが無いと「今すぐ pull」で metrics だけ更新され feedback は日次 cron 待ちになり、
+    // shipyard 等 producer の動作確認が即できない。失敗しても metrics run は返す (feedback は補助)。
+    let feedback;
+    try {
+      feedback = await runFeedbackCollection({
+        loadServices: () => loadServices(db, { onlyActive: true }),
+        fetchFeedback: (s) => fetchFeedback(s, { env: process.env }),
+        saveFeedback: (rows) => upsertFeedbackItems(db, rows),
+      });
+    } catch (e) {
+      feedback = {
+        servicesCount: 0,
+        itemsPulled: 0,
+        errors: [
+          {
+            serviceSlug: "*",
+            message: e instanceof Error ? e.message : "error",
+          },
+        ],
+      };
+    }
+    return res.status(200).json({ ...run, feedback });
   } catch (e) {
     // 詳細は stderr のみ (admin/services と同パターン、漏洩防止)。
     console.error("admin/collect error:", e);
