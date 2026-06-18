@@ -118,6 +118,55 @@ describe("FeedbackInboxView", () => {
     );
   });
 
+  it("RE-N1: ホームへ戻るリンク (href=/) を表示", () => {
+    render(<FeedbackInboxView {...baseProps} vm={vm({ items: [item()] })} />);
+    const home = screen.getByTestId("home-link");
+    expect(home.getAttribute("href")).toBe("/");
+  });
+
+  it("RE-P1: onForcePull 指定時に「今すぐ pull」ボタン + click でコールバック", () => {
+    const onForcePull = vi.fn();
+    render(
+      <FeedbackInboxView
+        {...baseProps}
+        onForcePull={onForcePull}
+        vm={vm({ items: [item()] })}
+      />,
+    );
+    fireEvent.click(screen.getByText("今すぐ pull"));
+    expect(onForcePull).toHaveBeenCalled();
+  });
+
+  it("RE-P1b: forcePullState.running で disabled + 実行中…", () => {
+    render(
+      <FeedbackInboxView
+        {...baseProps}
+        onForcePull={() => {}}
+        forcePullState={{ running: true }}
+        vm={vm({ items: [item()] })}
+      />,
+    );
+    const btn = screen.getByText("実行中…") as HTMLButtonElement;
+    expect(btn.disabled).toBe(true);
+  });
+
+  it("RE-P2: forcePullState.error を表示", () => {
+    render(
+      <FeedbackInboxView
+        {...baseProps}
+        onForcePull={() => {}}
+        forcePullState={{ error: "http_401" }}
+        vm={vm({ items: [item()] })}
+      />,
+    );
+    expect(screen.getByText("http_401")).toBeTruthy();
+  });
+
+  it("RE-P3: onForcePull 未指定時は pull ボタン非表示", () => {
+    render(<FeedbackInboxView {...baseProps} vm={vm({ items: [item()] })} />);
+    expect(screen.queryByText("今すぐ pull")).toBeNull();
+  });
+
   it("RU-05: kind segmented chips で onKindChange (すべて→空文字)", () => {
     const onKindChange = vi.fn();
     render(

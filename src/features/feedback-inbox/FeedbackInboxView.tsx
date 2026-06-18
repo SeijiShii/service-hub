@@ -33,6 +33,12 @@ const FIELD_LABEL: CSSProperties = {
   fontSize: 13,
 };
 
+/** 「今すぐ pull」操作の UI state (dashboard ForcePullState と同型、inbox からも手動取り込み)。 */
+export interface InboxPullState {
+  running?: boolean;
+  error?: string;
+}
+
 export interface FeedbackInboxViewProps {
   vm: FeedbackInboxVM;
   service: string;
@@ -41,6 +47,9 @@ export interface FeedbackInboxViewProps {
   onServiceChange: (s: string) => void;
   onKindChange: (k: FeedbackKind | "") => void;
   onPeriodChange: (p: ChartPeriod) => void;
+  /** 指定時のみインボックス内に「今すぐ pull」ボタンを表示 (POST /api/admin/collect → refetch)。 */
+  onForcePull?: () => void;
+  forcePullState?: InboxPullState;
 }
 
 export function FeedbackInboxView({
@@ -51,8 +60,11 @@ export function FeedbackInboxView({
   onServiceChange,
   onKindChange,
   onPeriodChange,
+  onForcePull,
+  forcePullState,
 }: FeedbackInboxViewProps) {
   const [copied, setCopied] = useState<string | null>(null);
+  const running = forcePullState?.running ?? false;
 
   const onTriage = (id: string, text: string) => {
     void navigator.clipboard?.writeText(text).then(
@@ -76,6 +88,54 @@ export function FeedbackInboxView({
       }}
     >
       <header>
+        <nav style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+          <a
+            href="/"
+            data-testid="home-link"
+            style={{
+              color: "var(--text, #e6e9ef)",
+              textDecoration: "none",
+              padding: "6px 12px",
+              border: "1px solid var(--border, #232b3a)",
+              borderRadius: 6,
+              fontSize: 13,
+            }}
+          >
+            ← ホーム
+          </a>
+          {onForcePull && (
+            <span
+              data-section="force-pull"
+              style={{ display: "inline-flex", alignItems: "center", gap: 10 }}
+            >
+              <button
+                type="button"
+                onClick={onForcePull}
+                disabled={running}
+                style={{
+                  background: "transparent",
+                  color: "var(--text, #e6e9ef)",
+                  border: "1px solid var(--border, #232b3a)",
+                  borderRadius: 6,
+                  padding: "6px 12px",
+                  fontSize: 13,
+                  cursor: running ? "not-allowed" : "pointer",
+                  opacity: running ? 0.6 : 1,
+                }}
+              >
+                {running ? "実行中…" : "今すぐ pull"}
+              </button>
+              {forcePullState?.error && (
+                <span
+                  role="alert"
+                  style={{ color: "var(--status-down, #f87171)", fontSize: 12 }}
+                >
+                  {forcePullState.error}
+                </span>
+              )}
+            </span>
+          )}
+        </nav>
         <h1 style={{ marginBottom: 4 }}>フィードバック / 問い合わせ</h1>
         <p style={{ margin: 0, color: "var(--text-muted, #9aa4b2)" }}>
           全サービスに届いた声をまとめて確認できます
