@@ -1,8 +1,8 @@
 # feedback-inbox ドキュメントインデックス
 
 **最終更新**: 2026-06-18
-**生成元**: /flow:concept → /flow:feature
-**状態**: 設計済 (実装前)
+**生成元**: /flow:concept → /flow:feature → /flow:spec-review
+**状態**: 設計済 + spec-review 通過 (実装前)
 
 <!-- auto-generated-start -->
 
@@ -16,6 +16,7 @@
 | 002 | [002_feedback-inbox_PLAN.md](./002_feedback-inbox_PLAN.md) | PLAN | 確定 | 2026-06-18 | 5 Phase (型/DB→adapter→runner→API→UI) |
 | 003 | [003_feedback-inbox_UNIT_TEST.md](./003_feedback-inbox_UNIT_TEST.md) | UNIT_TEST | 確定 | 2026-06-18 | upsert冪等/pull検証/401/cap |
 | 004 | [004_feedback-inbox_E2E_TEST.md](./004_feedback-inbox_E2E_TEST.md) | E2E_TEST | 確定 | 2026-06-18 | 一覧/フィルタ/空/認証 + 視覚L1/L2 |
+| 905 | [905_feedback-inbox_SPEC_REVIEW.md](./905_feedback-inbox_SPEC_REVIEW.md) | SPEC_REVIEW | 完了 | 2026-06-18 | High1/Med2/Low2 (R1責務分離=feedbackRunner別関数) |
 
 ## サブフォルダ（改修・バグ修正・クレーム判定履歴）
 | パス | 種別 | issue/slug | 状態 | 概要 | INDEX |

@@ -38,3 +38,13 @@ stop 条件#1 により正当に終了 (= ✅ 適切な停止)。その後 commi
     SECURITY_REVIEW_20260618_1140) fresh、以降は doc-only commit 9d4b1c2 のみ (15 commits 未満・
     phase 遷移なし・大型 commit なし) のため再 audit 不要。release-pre 必須監査は P4.7 接近時のみ。
     → 新要件 [論点-007] の feature 設計を auto-pick + auto-invoke。Class A (設計 4 文書生成、git tracked)。
+
+- id: D20260618-008-02
+  question: 反復1 結果 + 反復2 auto-pick
+  chosen: /flow:spec-review feedback-inbox (P3.7 Spec-review gate)
+  chosen_type: auto-recommended
+  context: |
+    反復1 (/flow:feature feedback-inbox) 完了 — 001-004 + README + INDEX 生成、commit 5acb229。
+    再評価: P1 (open SEC 0) / P2 (中断なし)。feedback-inbox は 001-004 完成 + 905_SPEC_REVIEW.md
+    不在 + tdd 未着手 (101 不在) → P3.7 Spec-review gate HIT。tdd 着手前の実装前設計レビュー。
+    Class A (905 レポート生成 + 001-004 Edit + AI_LOG、可逆)。auto-pick + auto-invoke。

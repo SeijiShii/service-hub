@@ -20,7 +20,7 @@
 | U-08 | `fetchFeedback` | 正常 FeedbackResponse (mock) | FeedbackItem[] (検証通過分) |
 | U-09 | `inbox.ts` claim テンプレ生成 | 1 item | サービス名/kind/本文を含む claim 文字列 |
 | U-10 | `api/feedback/inbox` ハンドラ | 認証 OK + データ | 200 + `{items, services}` |
-| U-11 | runner 統合 | service-info + feedback 両方 mock | metrics と feedback の両方が永続化 |
+| U-11 | `runFeedbackCollection` (別関数、R1) | feedback mock | feedback_items に永続化、戻り値サマリに件数 |
 
 ### 1.2 異常系
 | ID | 対象 | 失敗条件 | 期待振る舞い |
@@ -32,7 +32,7 @@
 | U-24 | `fetchFeedback` | item.kind 未知値 | その item skip、他 item は通過 |
 | U-25 | `fetchFeedback` | item.createdAt 不正 | その item skip |
 | U-26 | `api/feedback/inbox` | 未認証 (requireSeiji throw) | 401 `{error:"unauthorized"}` |
-| U-27 | runner | 1 サービスの feedback pull が throw | 他サービスは継続 (per-service try/catch) |
+| U-27 | `runFeedbackCollection` | 1 サービスの feedback pull が throw | 他サービスは継続 (per-service try/catch)。既存 runner.test.ts は無改変 green |
 
 ### 1.3 境界値
 | ID | 対象 | 境界 | 期待振る舞い |

@@ -49,7 +49,10 @@
 | GET | `/api/feedback/inbox` | `?service=<slug>&kind=<feedback\|bug\|inquiry>&since=<iso>&limit=<n≤200>` (すべて任意) | `{ items: FeedbackItem[], services: {slug,name}[] }` | `requireSeiji` (Clerk) |
 | GET | `/api/hub/feedback` (★ producer 側契約、本フォルダは consumer。各サービスが実装) | `Authorization: Bearer <HUB_SERVICE_INFO_SECRET>` | `FeedbackResponse` | 共有シークレット |
 
-> pull は `/api/cron/collect` 内 (既存 collection cron) で adapter として実行 ([論点-FI-1])。専用 cron は設けない。
+<!-- spec-review R2: feedback endpoint 解決法を明示 (origin 派生、registry field 追加なし) -->
+> **feedback endpoint の解決 (R2)**: pull 先 URL は `s.serviceInfo.endpoint` が設定済ならその **origin** + 固定パス `/api/hub/feedback`、未設定なら `s.url` の origin + 同パスで派生する。service-info endpoint (`/api/hub/service-info`) とは別パスだが **registry に専用 field は追加しない** (concept §6.1「各サービスが 5 分で足せる軽い契約」維持、O66 が固定パスを規定)。
+>
+> pull は既存 collection cron (日次) の実行時に **`runCollection` とは別の orchestration `runFeedbackCollection`** で実行する ([論点-FI-1]、R1)。専用 cron は設けない (`api/cron/collect.ts` で両者を invoke)。
 
 ### 2.2 画面入力（`/feedback` 運営者画面）
 | フィールド | 型 | 必須 | バリデーション | 説明 |
@@ -59,7 +62,7 @@
 | 期間フィルタ | select | 任意 | all / 30d / 7d (既定 30d) | dashboard の `parsePeriod` と同方式 |
 
 ### 2.3 副作用
-- DB 書き込み: `feedback_items` upsert (pull 時)。`collection_runs.errorsJson` に feedback pull エラー追記
+- DB 書き込み: `feedback_items` upsert (pull 時)
 - 外部呼び出し: 各サービスの `GET /api/hub/feedback` (read-only pull)
 - 通知 / イベント発火: なし (MVP。将来 alerts と連携で新着通知も考えられるが本スコープ外)
 
@@ -122,11 +125,14 @@ interface FeedbackResponse {        // GET /api/hub/feedback の戻り
 ### 4.2 エラーケース
 | ID | 条件 | HTTP / 状態 | ユーザー表示 | ログ |
 |---|---|---|---|---|
-| E1 | producer 未実装 (404) | スキップ | (運営者画面に影響なし) | runs.errorsJson に "feedback:404" |
+<!-- spec-review R3: feedback pull エラーは collection_runs/ProviderKind に混ぜず独自記録 (MVP=warn) -->
+| E1 | producer 未実装 (404) | スキップ | (運営者画面に影響なし) | console.warn "feedback:404" + runFeedbackCollection 戻り値サマリ |
 | E2 | pull タイムアウト | スキップ | 同上 | "feedback:timeout" |
 | E3 | 認証失敗 (401 from producer) | スキップ | 同上 | "feedback:401" — シークレット不一致を示唆 |
 | E4 | `/api/feedback/inbox` 未認証 | 401 | "unauthorized" | — |
 | E5 | 不正スキーマ | reject (空扱い) | 同上 | "feedback:badschema" |
+
+> **R3**: feedback pull は `runCollection` と別 orchestration (`runFeedbackCollection`) のため、エラーは `collection_runs.errorsJson` (型 `provider: ProviderKind`) に混ぜず**独自に記録**する (MVP は `console.warn` + 戻り値サマリ、将来必要なら `feedback_runs` テーブル)。`ProviderKind` union は変更しない。
 
 ## 5. 機能固有 NFR + 既存機能連携
 
