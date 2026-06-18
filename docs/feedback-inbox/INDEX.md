@@ -2,7 +2,9 @@
 
 **最終更新**: 2026-06-18
 **生成元**: /flow:concept → /flow:feature → /flow:spec-review → /flow:tdd → /flow:e2e
-**状態**: 実装 + E2E green + 視覚レビュー green (unit 37 + E2E 3、prod DB 反映=db:push 待ち=Class B)
+**状態**: 実装 + E2E + 視覚レビュー green + **本番反映済 (18th deploy)** — feedback_items 本番 Neon 追加 + /api/feedback/inbox LIVE (smoke 401 authed gate green)。producer 各サービスの /api/hub/feedback 実装 (O66) 待ちでインボックスは空 (graceful degradation)
+
+<!-- ticket-status: shipped | updated: 20260618 | ref: dpl_7rAUwePWVhy3jdw99BfBtTRa3dqj (18th deploy) -->
 
 <!-- auto-generated-start -->
 
