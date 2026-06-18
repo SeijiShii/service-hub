@@ -5,11 +5,16 @@ import type { ChartPeriod } from "../dashboard/chartPeriod.js";
 import { CHART_PERIODS } from "../dashboard/chartPeriod.js";
 import { buildClaimText, type FeedbackInboxVM } from "./inbox.js";
 
-/** kind ごとのバッジ色 + ラベル (絵文字は使わない=design 原則#4、色 + 文言で区別)。 */
-const KIND_BADGE: Record<FeedbackKind, { bg: string; label: string }> = {
-  feedback: { bg: "#2d6cdf", label: "ひとこと" },
-  bug: { bg: "#c0392b", label: "不具合" },
-  inquiry: { bg: "#8e44ad", label: "問い合わせ" },
+/**
+ * kind ごとのバッジ色 + ラベル。design-system のセマンティック状態色トークンに寄せる
+ * (生値 hex の直書きをやめる=原則#3、絵文字なし=原則#4、色 + 文言で区別)。
+ * chip スタイル: トークン色を文字 + 枠線に、面は `--surface-raised` (dark/影最小の面区別、SoT §影)。
+ * feedback=accent (好意的な声) / bug=status-down (不具合) / inquiry=status-warn (要対応)。
+ */
+const KIND_BADGE: Record<FeedbackKind, { color: string; label: string }> = {
+  feedback: { color: "var(--accent, #4f9cf9)", label: "ひとこと" },
+  bug: { color: "var(--status-down, #f87171)", label: "不具合" },
+  inquiry: { color: "var(--status-warn, #fbbf24)", label: "問い合わせ" },
 };
 
 export interface FeedbackInboxViewProps {
@@ -50,7 +55,7 @@ export function FeedbackInboxView({
     >
       <header>
         <h1>フィードバック / 問い合わせ</h1>
-        <p style={{ color: "var(--text-muted, #8a94a6)" }}>
+        <p style={{ color: "var(--text-muted, #9aa4b2)" }}>
           各サービスに届いた声をまとめて確認できます
         </p>
       </header>
@@ -126,7 +131,8 @@ export function FeedbackInboxView({
                 data-testid="feedback-item"
                 data-created={item.createdAt}
                 style={{
-                  border: "1px solid var(--border, #1f2430)",
+                  background: "var(--surface, #131720)",
+                  border: "1px solid var(--border, #232b3a)",
                   borderRadius: 8,
                   padding: 12,
                   marginBottom: 8,
@@ -138,10 +144,11 @@ export function FeedbackInboxView({
                   <span
                     data-testid="kind-badge"
                     style={{
-                      background: badge.bg,
-                      color: "#fff",
+                      color: badge.color,
+                      border: `1px solid ${badge.color}`,
+                      background: "var(--surface-raised, #1b2230)",
                       borderRadius: 4,
-                      padding: "1px 6px",
+                      padding: "1px 8px",
                       fontSize: 12,
                     }}
                   >
@@ -151,7 +158,7 @@ export function FeedbackInboxView({
                     dateTime={item.createdAt}
                     style={{
                       marginLeft: "auto",
-                      color: "var(--text-muted, #8a94a6)",
+                      color: "var(--text-muted, #9aa4b2)",
                       fontSize: 12,
                     }}
                   >
@@ -164,6 +171,15 @@ export function FeedbackInboxView({
                 <button
                   type="button"
                   onClick={() => onTriage(id, buildClaimText(item))}
+                  style={{
+                    color: "var(--accent, #4f9cf9)",
+                    background: "transparent",
+                    border: "1px solid var(--border, #232b3a)",
+                    borderRadius: 6,
+                    padding: "4px 10px",
+                    fontSize: 13,
+                    cursor: "pointer",
+                  }}
                 >
                   {copied === id ? "コピーしました" : "クレーム文をコピー"}
                 </button>
