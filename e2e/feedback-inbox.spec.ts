@@ -1,12 +1,26 @@
 import { test, expect } from "@playwright/test";
-import type { FeedbackInboxVM } from "../src/features/feedback-inbox/inbox.js";
+import type {
+  FeedbackInboxVM,
+  FeedbackInboxItem,
+} from "../src/features/feedback-inbox/inbox.js";
 
-const vm: FeedbackInboxVM = {
-  services: [
-    { slug: "hana-memo", name: "ハナメモ" },
-    { slug: "naze-bako", name: "なぜ箱" },
-  ],
-  items: [
+/** items から counts を補完して VM を組む (API の buildInboxVM と同等)。 */
+function withCounts(
+  items: FeedbackInboxItem[],
+  services: { slug: string; name: string }[],
+): FeedbackInboxVM {
+  const byKind = { feedback: 0, bug: 0, inquiry: 0 };
+  for (const i of items) byKind[i.kind] += 1;
+  return { items, services, counts: { total: items.length, byKind } };
+}
+
+const services = [
+  { slug: "hana-memo", name: "ハナメモ" },
+  { slug: "naze-bako", name: "なぜ箱" },
+];
+
+const vm: FeedbackInboxVM = withCounts(
+  [
     {
       serviceSlug: "hana-memo",
       serviceName: "ハナメモ",
@@ -35,12 +49,13 @@ const vm: FeedbackInboxVM = {
       pulledAt: "2026-06-18T00:00:00.000Z",
     },
   ],
-};
+  services,
+);
 
-const emptyVm: FeedbackInboxVM = {
-  services: [{ slug: "hana-memo", name: "ハナメモ" }],
-  items: [],
-};
+const emptyVm: FeedbackInboxVM = withCounts(
+  [],
+  [{ slug: "hana-memo", name: "ハナメモ" }],
+);
 
 test("UC1-S1: 横断一覧 + kind バッジ + 新しい順 (L2-1)", async ({ page }) => {
   await page.route("**/api/feedback/inbox**", (r) => r.fulfill({ json: vm }));
@@ -72,17 +87,23 @@ test("UC1-S4: 空状態", async ({ page }) => {
   });
 });
 
-test("UC1-S3: kind フィルタで絞り込み (refetch)", async ({ page }) => {
+test("UC1-S3: kind segmented chips で絞り込み (refetch)", async ({ page }) => {
   await page.route("**/api/feedback/inbox**", (r) => {
     const kind = new URL(r.request().url()).searchParams.get("kind");
-    const filtered =
-      kind === "bug"
-        ? { ...vm, items: vm.items.filter((i) => i.kind === "bug") }
-        : vm;
-    return r.fulfill({ json: filtered });
+    const items =
+      kind === "bug" ? vm.items.filter((i) => i.kind === "bug") : vm.items;
+    return r.fulfill({ json: withCounts(items, services) });
   });
   await page.goto("/feedback");
   await expect(page.getByTestId("feedback-item")).toHaveCount(3);
-  await page.getByLabel("種別で絞り込む").selectOption("bug");
+  // kind は segmented chips (role=group)。「不具合」chip をクリックして絞り込み。
+  const group = page.getByRole("group", { name: "種別で絞り込む" });
+  await group.getByText("不具合", { exact: true }).click();
   await expect(page.getByTestId("feedback-item")).toHaveCount(1);
+});
+
+test("RE-UC1-S1: 件数サマリ (全 N 件) を表示", async ({ page }) => {
+  await page.route("**/api/feedback/inbox**", (r) => r.fulfill({ json: vm }));
+  await page.goto("/feedback");
+  await expect(page.getByTestId("count-summary")).toContainText("全 3 件");
 });

@@ -11,7 +11,8 @@
 | UC1-S4 空状態 | 同 | ✅ pass | visual baseline `feedback-inbox-empty.png` |
 | UC1-S3 kind フィルタ絞り込み (refetch) | 同 | ✅ pass | select 変更で 3→1 件 |
 
-- 3 passed / 0 failed / 0 flaky (初回 baseline 作成 → クリーン再実行で安定確認)
+- 4 passed / 0 failed / 0 flaky (revise inbox-ux で restyle → baseline 更新 + RE-UC1-S1 件数サマリ + UC1-S3 を kind segmented chips 操作に更新)
+- 旧: 3 passed (初回 baseline)。revise inbox-ux (2026-06-18) で UI 変更 (件数サマリ + token 絞り込みバー + kind chips) → visual baseline 再生成 + spec 更新、4 specs green。
 
 ## flaky / quarantine
 - なし
