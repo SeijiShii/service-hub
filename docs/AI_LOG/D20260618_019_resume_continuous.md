@@ -1,6 +1,6 @@
 # D20260618_019_resume_continuous — /flow:auto (revise inbox-ux 実装ループ)
 
-**状態**: 進行中
+**状態**: 完了
 **モード**: continuous
 **開始**: 2026-06-18
 
@@ -59,3 +59,21 @@
     反復3 (/flow:e2e) 完了 — 4 specs green (commit 34c6dec)。§3.0c release-pre full audit C0/H0
     (UI-only、AUDIT_2110、secure fresh)。P4.7 Release gate: live PJ の code-only redeploy (env/DB 変更なし)。
     Class B deploy のため §3.3 ハードゲートで明示承認待ち。承認後 deploy-prod.sh で 20th deploy → smoke。
+
+- id: D20260618-019-05
+  question: 反復4 結果 + P5 完了判定 (stop 条件#1)
+  chosen: 20th deploy 成功 → revise inbox-ux 完全 closed → service-hub P5 完了 → loop 終了
+  chosen_type: auto-recommended
+  context: |
+    ユーザー「YES」→ 20th deploy (2427505)、smoke green (frontend 200 / feedback-inbox 401 authed /
+    public-status 200)。revise inbox-ux (統合一覧 + styling) 完全 closed (実装+prod、ticket-status=shipped)。
+    全ゲート通過: P3.7✅/P4.4✅(token-conformance)/P4.45 defer/P4.46 N/A/P4.5✅(4 green)/P4.7✅20th/
+    P4.8 N/A、full audit 2110 C0/H0 + secure fresh。no-key Class A 枯渇、不足キーなし。
+    → §4.5.1 stop 条件#1 (全フェーズ完了)。.flow-loop-active marker 削除して loop 終了。
+    残は別 PJ/別 repo (producer O66 / Shipyard adapter [論点-FI-4] / shipyard [論点-010])。
+
+## 反復サマリ (4 反復)
+1. /flow:tdd feedback-inbox inbox-ux — VM counts + View token styling + kind chips、+4 / 全394 green (7048bde/a853430)
+2. /flow:design --review-only — restyle 視覚レビュー green (#2.6 token-conformance) (0c6e33e)
+3. /flow:e2e feedback-inbox — 4 specs green (chip 操作 + 件数サマリ、baseline 更新) (34c6dec)
+4. release-pre full audit C0/H0 (2110) → /flow:release 20th deploy (revise inbox-ux 本番反映、smoke green) (5e517b3)
