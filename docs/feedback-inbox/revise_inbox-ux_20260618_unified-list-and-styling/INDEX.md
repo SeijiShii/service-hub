@@ -2,9 +2,9 @@
 
 **issue / slug**: inbox-ux / unified-list-and-styling
 **実施日**: 2026-06-18
-**状態**: 実装完了 (unit +4 green、E2E + 視覚レビュー + prod 反映 待ち)
+**状態**: 完了 (本番反映済、20th deploy) — unit +4 + E2E 4 + 視覚レビュー green、prod LIVE
 
-<!-- ticket-status: implemented | updated: 20260618 | ref: 101 -->
+<!-- ticket-status: shipped | updated: 20260618 | ref: 20th deploy (2427505) -->
 
 <!-- auto-generated-start -->
 

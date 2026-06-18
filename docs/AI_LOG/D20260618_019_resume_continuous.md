@@ -50,3 +50,12 @@
     UI 変更 (件数サマリ + kind select→segmented chips + styled controls) で既存 e2e spec UC1-S3
     (kind を selectOption) が破綻 + visual snapshot 不一致 → P4.5 E2E gate: spec を chips 操作に更新 +
     baseline 再生成 + green 確認。Class A (ローカル headless)。auto-pick。次 P4.7 release (Class B)。
+
+- id: D20260618-019-04
+  question: 反復3 結果 + 反復4 (release-pre audit) + P4.7 Release gate
+  chosen: release-pre full audit C0/H0 (D022) → /flow:release (20th deploy、Class B 承認待ち)
+  chosen_type: auto-recommended
+  context: |
+    反復3 (/flow:e2e) 完了 — 4 specs green (commit 34c6dec)。§3.0c release-pre full audit C0/H0
+    (UI-only、AUDIT_2110、secure fresh)。P4.7 Release gate: live PJ の code-only redeploy (env/DB 変更なし)。
+    Class B deploy のため §3.3 ハードゲートで明示承認待ち。承認後 deploy-prod.sh で 20th deploy → smoke。
