@@ -7,17 +7,15 @@
  *
  * R3: エラーは collection_runs (provider: ProviderKind) に混ぜず、本関数の戻り値サマリに記録する。
  */
-import type {
-  ServiceDescriptor,
-  FeedbackItemRow,
-} from "../../types/index.js";
+import type { FeedbackItemRow } from "../../types/index.js";
 import type { FeedbackFetchResult } from "../../providers/feedback.js";
+import type { FeedbackSource } from "./feedbackSources.js";
 
 export interface FeedbackRunnerDeps {
-  /** active サービス一覧 (DB SoT)。 */
-  loadServices: () => Promise<ServiceDescriptor[]>;
-  /** 1 サービスの feedback を pull (throw せず {items, error?} を返す)。 */
-  fetchFeedback: (s: ServiceDescriptor) => Promise<FeedbackFetchResult>;
+  /** feedback pull 対象 (registered active ∪ env ソース、kind 付き)。 */
+  loadServices: () => Promise<FeedbackSource[]>;
+  /** 1 ソースの feedback を pull (kind 別 dispatch、throw せず {items, error?} を返す)。 */
+  fetchFeedback: (s: FeedbackSource) => Promise<FeedbackFetchResult>;
   /** pull した行を保存 (冪等 upsert)。 */
   saveFeedback: (rows: FeedbackItemRow[]) => Promise<void>;
 }
@@ -42,8 +40,7 @@ export async function runFeedbackCollection(
   for (const svc of services) {
     try {
       const res = await deps.fetchFeedback(svc);
-      if (res.error)
-        errors.push({ serviceSlug: svc.slug, message: res.error });
+      if (res.error) errors.push({ serviceSlug: svc.slug, message: res.error });
       for (const item of res.items) rows.push(item);
     } catch (e) {
       errors.push({

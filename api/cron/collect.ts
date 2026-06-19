@@ -12,11 +12,11 @@ import {
 } from "../../src/db/index.js";
 import { loadServices } from "../../src/registry/index.js";
 import { getAdapters } from "../../src/providers/index.js";
-import { fetchFeedback } from "../../src/providers/feedback.js";
 import {
   runCollection,
   runFeedbackCollection,
   loadFeedbackTargets,
+  fetchFromSource,
 } from "../../src/features/collection/index.js";
 import { checkCronSecret } from "../../src/features/collection/index.js";
 import { evaluate, notify } from "../../src/features/alerts/index.js";
@@ -65,7 +65,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           () => loadServices(db, { onlyActive: true }),
           process.env,
         ),
-      fetchFeedback: (s) => fetchFeedback(s, { env: process.env }),
+      fetchFeedback: (s) => fetchFromSource(s, { env: process.env }),
       saveFeedback: (rows) => upsertFeedbackItems(db, rows),
     });
   } catch (e) {

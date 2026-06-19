@@ -1,14 +1,14 @@
 import { describe, it, expect } from "vitest";
 import { runFeedbackCollection } from "./feedbackRunner.js";
-import type { ServiceDescriptor, FeedbackItemRow } from "../../types/index.js";
+import type { FeedbackItemRow } from "../../types/index.js";
 import type { FeedbackFetchResult } from "../../providers/feedback.js";
+import type { FeedbackSource } from "./feedbackSources.js";
 
-const svc = (slug: string): ServiceDescriptor => ({
+const svc = (slug: string): FeedbackSource => ({
   slug,
   name: slug,
   url: `https://${slug}.example.com`,
-  status: "active",
-  providers: {},
+  kind: "feedback",
 });
 
 const item = (slug: string, id: string): FeedbackItemRow => ({
@@ -24,8 +24,8 @@ describe("runFeedbackCollection (feedback-inbox orchestration, R1)", () => {
   it("U-11: 全サービス pull → saveFeedback に集約", async () => {
     const saved: FeedbackItemRow[] = [];
     const map: Record<string, FeedbackFetchResult> = {
-      "a": { items: [item("a", "1"), item("a", "2")] },
-      "b": { items: [item("b", "1")] },
+      a: { items: [item("a", "1"), item("a", "2")] },
+      b: { items: [item("b", "1")] },
     };
     const summary = await runFeedbackCollection({
       loadServices: async () => [svc("a"), svc("b")],
