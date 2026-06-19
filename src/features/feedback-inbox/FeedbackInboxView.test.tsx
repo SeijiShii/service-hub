@@ -118,6 +118,49 @@ describe("FeedbackInboxView", () => {
     );
   });
 
+  it("RI-S5: context.email/adminUrl があれば返信導線を表示", () => {
+    render(
+      <FeedbackInboxView
+        {...baseProps}
+        vm={vm({
+          items: [
+            item({
+              kind: "inquiry",
+              context: {
+                email: "visitor@example.com",
+                adminUrl: "https://givers.work/admin/x",
+                subject: "プラン",
+              },
+            }),
+          ],
+        })}
+      />,
+    );
+    const mail = screen.getByTestId("reply-email") as HTMLAnchorElement;
+    expect(mail.getAttribute("href")).toContain("mailto:visitor@example.com");
+    expect(mail.getAttribute("href")).toContain("subject=");
+    const admin = screen.getByTestId("reply-admin") as HTMLAnchorElement;
+    expect(admin.getAttribute("href")).toBe("https://givers.work/admin/x");
+    expect(admin.getAttribute("rel")).toContain("noopener");
+  });
+
+  it("RI-E6: context なしの通常 item は返信導線を出さない", () => {
+    render(<FeedbackInboxView {...baseProps} vm={vm({ items: [item()] })} />);
+    expect(screen.queryByTestId("reply-email")).toBeNull();
+    expect(screen.queryByTestId("reply-admin")).toBeNull();
+  });
+
+  it("RI-E5(view): email のみ (adminUrl なし) は mail のみ表示", () => {
+    render(
+      <FeedbackInboxView
+        {...baseProps}
+        vm={vm({ items: [item({ context: { email: "a@b.com" } })] })}
+      />,
+    );
+    expect(screen.getByTestId("reply-email")).toBeTruthy();
+    expect(screen.queryByTestId("reply-admin")).toBeNull();
+  });
+
   it("RE-N1: ホームへ戻るリンク (href=/) を表示", () => {
     render(<FeedbackInboxView {...baseProps} vm={vm({ items: [item()] })} />);
     const home = screen.getByTestId("home-link");

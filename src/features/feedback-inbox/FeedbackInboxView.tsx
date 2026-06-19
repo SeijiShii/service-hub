@@ -255,6 +255,19 @@ export function FeedbackInboxView({
           {vm.items.map((item) => {
             const id = `${item.serviceSlug}:${item.externalId}`;
             const badge = KIND_BADGE[item.kind];
+            // 返信導線 (inquiries 由来、context jsonb から)。email/adminUrl 不在なら出さない。
+            const ctx = item.context as
+              | { email?: unknown; adminUrl?: unknown; subject?: unknown }
+              | undefined;
+            const email =
+              typeof ctx?.email === "string" ? ctx.email : undefined;
+            const adminUrl =
+              typeof ctx?.adminUrl === "string" ? ctx.adminUrl : undefined;
+            const subject =
+              typeof ctx?.subject === "string" ? ctx.subject : undefined;
+            const mailtoHref = email
+              ? `mailto:${email}${subject ? `?subject=${encodeURIComponent(`Re: ${subject}`)}` : ""}`
+              : undefined;
             return (
               <li
                 key={id}
@@ -299,21 +312,66 @@ export function FeedbackInboxView({
                 <p style={{ margin: "8px 0", whiteSpace: "pre-wrap" }}>
                   {item.body}
                 </p>
-                <button
-                  type="button"
-                  onClick={() => onTriage(id, buildClaimText(item))}
+                <div
                   style={{
-                    color: "var(--accent, #4f9cf9)",
-                    background: "transparent",
-                    border: "1px solid var(--border, #232b3a)",
-                    borderRadius: 6,
-                    padding: "4px 10px",
-                    fontSize: 13,
-                    cursor: "pointer",
+                    display: "flex",
+                    gap: 8,
+                    alignItems: "center",
+                    flexWrap: "wrap",
                   }}
                 >
-                  {copied === id ? "コピーしました" : "クレーム文をコピー"}
-                </button>
+                  {mailtoHref && (
+                    <a
+                      href={mailtoHref}
+                      data-testid="reply-email"
+                      style={{
+                        color: "var(--accent, #4f9cf9)",
+                        background: "transparent",
+                        border: "1px solid var(--border, #232b3a)",
+                        borderRadius: 6,
+                        padding: "4px 10px",
+                        fontSize: 13,
+                        textDecoration: "none",
+                      }}
+                    >
+                      メールで返信
+                    </a>
+                  )}
+                  {adminUrl && (
+                    <a
+                      href={adminUrl}
+                      data-testid="reply-admin"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        color: "var(--text-muted, #9aa4b2)",
+                        background: "transparent",
+                        border: "1px solid var(--border, #232b3a)",
+                        borderRadius: 6,
+                        padding: "4px 10px",
+                        fontSize: 13,
+                        textDecoration: "none",
+                      }}
+                    >
+                      {item.serviceName} で返信
+                    </a>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => onTriage(id, buildClaimText(item))}
+                    style={{
+                      color: "var(--accent, #4f9cf9)",
+                      background: "transparent",
+                      border: "1px solid var(--border, #232b3a)",
+                      borderRadius: 6,
+                      padding: "4px 10px",
+                      fontSize: 13,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {copied === id ? "コピーしました" : "クレーム文をコピー"}
+                  </button>
+                </div>
               </li>
             );
           })}
