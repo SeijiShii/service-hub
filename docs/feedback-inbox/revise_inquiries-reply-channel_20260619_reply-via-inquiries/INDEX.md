@@ -2,9 +2,9 @@
 
 **issue / slug**: inquiries-reply-channel
 **実施日**: 2026-06-19
-**状態**: 実装 + E2E green (2026-06-19) — unit 427 + E2E 9、デプロイ待ち
+**状態**: 本番反映済 (2026-06-19、22nd deploy) — unit 427 + E2E 9 green、shipyard inquiries (email 返信導線) 有効化済
 
-<!-- ticket-status: implemented | updated: 20260619 | ref: 101 -->
+<!-- ticket-status: shipped | updated: 20260619 | ref: dpl_b9e5egd5K5Q56NBbsMaoXhyViasA (22nd deploy) -->
 
 <!-- auto-generated-start -->
 
