@@ -163,3 +163,53 @@ test("RE-P2: pull が 401 ならエラー表示・一覧は不変", async ({ pag
   await expect(page.getByRole("alert")).toContainText("http_401");
   await expect(page.getByTestId("feedback-item")).toHaveCount(3);
 });
+
+// inquiries 由来の返信導線 (inquiries-reply-channel revise)
+const inquiryVm = withCounts(
+  [
+    {
+      serviceSlug: "shipyard",
+      serviceName: "Shipyard",
+      externalId: "thread-1",
+      kind: "inquiry",
+      body: "有料プランの違いを教えてください",
+      createdAt: "2026-06-18T00:00:00.000Z",
+      pulledAt: "2026-06-19T00:00:00.000Z",
+      context: {
+        email: "visitor@example.com",
+        adminUrl: "https://givers.work/admin/inquiries/thread-1",
+        subject: "プランについて",
+      },
+    },
+  ],
+  [{ slug: "shipyard", name: "Shipyard" }],
+);
+
+test("RE-R1/R2/R3: 返信導線 (メール / admin deep-link)", async ({ page }) => {
+  await page.route("**/api/feedback/inbox**", (r) =>
+    r.fulfill({ json: inquiryVm }),
+  );
+  await page.goto("/feedback");
+  const mail = page.getByTestId("reply-email");
+  await expect(mail).toBeVisible();
+  await expect(mail).toHaveAttribute(
+    "href",
+    /^mailto:visitor@example\.com\?subject=/,
+  );
+  const admin = page.getByTestId("reply-admin");
+  await expect(admin).toHaveAttribute(
+    "href",
+    "https://givers.work/admin/inquiries/thread-1",
+  );
+  await expect(admin).toHaveAttribute("rel", /noopener/);
+});
+
+test("RE-RR1: 標準 (context なし) item には返信導線が出ない", async ({
+  page,
+}) => {
+  await page.route("**/api/feedback/inbox**", (r) => r.fulfill({ json: vm }));
+  await page.goto("/feedback");
+  await expect(page.getByTestId("feedback-item")).toHaveCount(3);
+  await expect(page.getByTestId("reply-email")).toHaveCount(0);
+  await expect(page.getByTestId("reply-admin")).toHaveCount(0);
+});

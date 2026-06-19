@@ -2,7 +2,7 @@
 
 **issue / slug**: inquiries-reply-channel
 **実施日**: 2026-06-19
-**状態**: 実装完了 (2026-06-19) — unit 427 green、E2E 待ち
+**状態**: 実装 + E2E green (2026-06-19) — unit 427 + E2E 9、デプロイ待ち
 
 <!-- ticket-status: implemented | updated: 20260619 | ref: 101 -->
 
@@ -17,6 +17,7 @@
 | 004 | [004_REVISE_E2E_TEST.md](./004_REVISE_E2E_TEST.md) | REVISE_E2E_TEST | 2026-06-19 |
 | 101 | [101_REVISE_IMPL_REPORT.md](./101_REVISE_IMPL_REPORT.md) | IMPL_REPORT | 2026-06-19 |
 | 102 | [102_REVISE_UNIT_TEST_REPORT.md](./102_REVISE_UNIT_TEST_REPORT.md) | UNIT_TEST_REPORT | 2026-06-19 |
+| 103 | [103_REVISE_E2E_REPORT.md](./103_REVISE_E2E_REPORT.md) | E2E_REPORT | 2026-06-19 |
 
 > マイグレーション (005): 不要 (email/adminUrl/subject は既存 context jsonb に格納)
 
