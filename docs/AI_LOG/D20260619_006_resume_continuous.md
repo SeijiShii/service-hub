@@ -12,6 +12,8 @@
 |---|---|---|---|
 | D20260619-030 | 前回停止の適切性 | 適切 (§4.5.1 条件1: 21st deploy P5 完了) | auto-recommended |
 | D20260619-031 | auto-pick (反復1) | P4.2 → /flow:tdd feedback-inbox inquiries-reply-channel | auto-recommended |
+| D20260619-035 | auto-pick (反復2) | P4.5 E2E gate → /flow:e2e (返信導線 9 green) | auto-recommended |
+| D20260619-036 | auto-pick (反復3) | P4.7 Release gate → deploy 22nd + shipyard kind:inquiries 化 (Class B/C 境界 pause) | auto-recommended |
 
 ## 依存関係
 - 直前 revise: `D20260619_005_revise_feedback-inbox_inquiries-reply-channel.md`
