@@ -19,7 +19,7 @@
 | 4 | ❌ | [dashboard](./dashboard/) | 実装済+デプロイ済 / 改修7件（admin-ux + nav-and-pull + last-deploy-col + biz-charts + tip-metrics(C20260607-001) + chart-ux(unit 331 green) + chart-colors(線色palette並べ替え、unit 337 + E2E 17/17 green) テスト完了） | 2026-06-08 | [INDEX](./dashboard/INDEX.md) |
 | 4 | ❌ | [service-detail](./service-detail/) | 実装済+デプロイ済 (unit+E2E+視覚 green) | 2026-05-27 | [INDEX](./service-detail/INDEX.md) |
 | 4 | ❌ | [alerts](./alerts/) | 実装済+デプロイ済 | 2026-05-26 | [INDEX](./alerts/INDEX.md) |
-| 4 | ❌ | [feedback-inbox](./feedback-inbox/) | 実装+E2E+視覚 green + **本番反映済 (21st deploy)** [論点-007]/O67 / 改修2件 (inbox-ux + inbox-pull-source ともに shipped: 無登録 shipyard pull + 操作導線) | 2026-06-19 | [INDEX](./feedback-inbox/INDEX.md) |
+| 4 | ❌ | [feedback-inbox](./feedback-inbox/) | 実装+E2E+視覚 green + **本番反映済 (21st deploy)** [論点-007]/O67 / 改修3件 (inbox-ux + inbox-pull-source shipped、inquiries-reply-channel 設計完了: inquiries 消費で email 返信導線) | 2026-06-19 | [INDEX](./feedback-inbox/INDEX.md) |
 
 ## 横断フォルダ（優先度順）
 | 優先度 | フォルダ | 状態 | 設計完了 | INDEX |

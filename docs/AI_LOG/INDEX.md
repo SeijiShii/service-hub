@@ -1,8 +1,8 @@
 # AI_LOG インデックス — service-hub
 
 **最終更新**: 2026-06-19 (+09:00)
-**総セッション数**: 66 (D20260619_001 revise feedback-inbox inbox-pull-source 追加)
-**総 decision 数**: 223 (D20260619-001〜009、D20260530-001〜052、D20260528-001〜131、D20260527-001〜035、+ D20260526 系)
+**総セッション数**: 70 (D20260619_001〜005: revise×2 / tdd / release / auto)
+**総 decision 数**: 243 (D20260619-001〜029、D20260530-001〜052、D20260528-001〜131、D20260527-001〜035、+ D20260526 系)
 
 > セッションごとに 1 ファイル、append-only、過去ファイルは削除・編集禁止。
 > 人間向けサマリは `../concept.md` §7 決定事項ログ を参照。
@@ -12,7 +12,11 @@
 ## セッション一覧（新しい順）
 | ファイル | 実行日 | コマンド | 対象 | decision 範囲 | 状態 |
 |---|---|---|---|---|---|
-| [D20260619_001_revise_feedback-inbox_inbox-pull-source.md](./D20260619_001_revise_feedback-inbox_inbox-pull-source.md) | 2026-06-19 | /flow:revise | feedback-inbox inbox-pull-source: 無登録 shipyard pull (env `HUB_FEEDBACK_SOURCES` で services 登録なしの feedback ソース定義、claim C20260618-001 §5「登録」を supersede) + inbox ホームリンク + その場「今すぐ pull」。DB/公開 API 不変・migration 不要 | D20260619-001〜009 | 完了 (4 文書設計、tdd 待ち) |
+| [D20260619_005_revise_feedback-inbox_inquiries-reply-channel.md](./D20260619_005_revise_feedback-inbox_inquiries-reply-channel.md) | 2026-06-19 | /flow:revise | feedback-inbox inquiries-reply-channel: source kind 追加 → shipyard `/api/hub/inquiries` 消費で email(生)+adminUrl+subject を context jsonb に取り込み、inbox に返信導線。threadToken 非複製。email PII at rest = accepted (Clerk ゲート内)。migration 不要 | D20260619-020〜029 | 完了 (4 文書設計、tdd 待ち) |
+| [D20260619_004_release_service-hub.md](./D20260619_004_release_service-hub.md) | 2026-06-19 | /flow:release | 21st deploy — inbox-pull-source 本番反映 (無登録 shipyard pull 有効化 givers.work + 操作導線)。smoke green | D20260619-017〜019 | 完了 |
+| [D20260619_003_tdd_feedback-inbox_revise_inbox-pull-source.md](./D20260619_003_tdd_feedback-inbox_revise_inbox-pull-source.md) | 2026-06-19 | /flow:tdd | inbox-pull-source 実装 (feedbackSources parser + collect 配線 + inbox UI、unit 409 green) | D20260619-012〜014 | 完了 |
+| [D20260619_002_resume_continuous.md](./D20260619_002_resume_continuous.md) | 2026-06-19 | /flow:auto | continuous loop (tdd→e2e→release、3 反復 P5 完了) | D20260619-010〜016 | 完了 |
+| [D20260619_001_revise_feedback-inbox_inbox-pull-source.md](./D20260619_001_revise_feedback-inbox_inbox-pull-source.md) | 2026-06-19 | /flow:revise | feedback-inbox inbox-pull-source: 無登録 shipyard pull (env `HUB_FEEDBACK_SOURCES` で services 登録なしの feedback ソース定義、claim C20260618-001 §5「登録」を supersede) + inbox ホームリンク + その場「今すぐ pull」。DB/公開 API 不変・migration 不要 | D20260619-001〜009 | shipped (21st deploy) |
 | [D20260610_001_audit_light.md](./D20260610_001_audit_light.md) | 2026-06-10 | /flow:audit | light 監査 (#1-#4)。Critical 0 / High 1 (SCENARIO §5 drift 再発 12th→16th) / Low 2 (AI_LOG INDEX 表記漏れ / §8 解消済み未移動)。release-blocking なし。AUDIT_20260610_0805.md | D20260610-001〜003 | 完了 |
 | [D20260608_001_revise_dashboard_chart-ux.md](./D20260608_001_revise_dashboard_chart-ux.md) | 2026-06-08 | /flow:revise | dashboard chart-ux: 上部 chart の (1) X 時間軸を共有 domain で統一 / (2) 期間セレクタ(全期間/30日/7日、`?period`) / (3) usd 系 3 chart(課金額/コスト/採算) 削除 → mau+収益¥ の2枚集約。DB/公開API不変・migration 不要 | D20260608-001〜006 | 完了 (設計、tdd 待ち) |
 | [D20260530_013_tdd_dashboard_revise_biz-charts.md](./D20260530_013_tdd_dashboard_revise_biz-charts.md) | 2026-05-30 | /flow:tdd | dashboard biz-charts 実装 (Phase1 chart 定義分離+label+取得キー / Phase2 profitAt 共通化+profit 派生、全 307 green、新規 tsc 0) | D20260530-050〜052 | 完了 (E2E 待ち) |
